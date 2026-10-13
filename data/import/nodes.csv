@@ -1,0 +1,76 @@
+id,kind,label,code,vocab,ontology_version,source_system,license,timestamp,attrs
+AE-MYOCARDITIS,AdverseEvent,Immune-related myocarditis (OAE_0001489),OAE_0001489,OAE,2025-09,OAE,CC-BY-4.0,2026-06-02T10:00:00Z,
+DRUG-CPI,Drug,Checkpoint inhibitor (anti-PD-1),RXN-2563889,RxNorm-Prescribable,2026-06,RxNorm,public-domain,2026-06-02T10:00:00Z,class=PD-1 inhibitor
+TGT-PDCD1,BiologicalTarget,PD-1 / PDCD1,P15116,UniProt,2026-04,Hetionet,CC0,2026-06-02T10:00:00Z,
+PW-CHECKPOINT,Pathway,T-cell immune checkpoint signaling,WP4585,WikiPathways,2026-05,Hetionet,CC0,2026-06-02T10:00:00Z,
+STAT-MYO-CPI,SignalStat,Disproportionality (PRR 4.2),,,,openFDA FAERS,public-domain,2026-06-15T00:00:00Z,prr=4.2;ror=4.6;chi2=58.3;ci=2.9-6.1;cases=37
+EV-FAERS,Evidence,openFDA FAERS aggregate 2024Q1-2026Q2,,,,openFDA FAERS,public-domain,2026-06-15T00:00:00Z,records=37
+EV-PMID,Evidence,Lit: checkpoint-inhibitor myocarditis (synthetic PMID 99000001),99000001,PubMed,,Synthetic citation,public-domain,2026-06-10T00:00:00Z,
+CON-MYOCARDITIS,Concept,Myocarditis (lymphocytic infiltration),MONDO_0004496,MONDO,2026-06,MONDO,CC-BY-4.0,2026-06-02T10:00:00Z,
+CON-PD1ACT,Concept,PD-1 pathway activation,GO_0002250,GO,2026-05,Gene Ontology,CC-BY-4.0,2026-06-02T10:00:00Z,
+IMG-BIOPSY,PathologyImage,Myocardial biopsy WSI (synthetic),,,,Synthetic WSI,CC0,2026-06-05T00:00:00Z,modality=H&E;tissue=myocardium
+OMX-RNASEQ,OmicsProfile,Bulk RNA-seq immune signature (synthetic),,,,Synthetic omics,CC0,2026-06-05T00:00:00Z,signature=IFN-gamma high
+AE-HYPERTENSION,AdverseEvent,Drug-induced hypertension (MedDRA 10020772),10020772,MedDRA,2025-03,MedDRA,public-domain,2026-06-12T00:00:00Z,
+DRUG-VEGFR,Drug,Anti-VEGFR2 inhibitor (ramucirumab),1535996,RxNorm,2026-06,RxNorm,public-domain,2026-06-12T00:00:00Z,class=VEGFR2 inhibitor
+TGT-KDR,BiologicalTarget,VEGFR2 / KDR,P35968,UniProt,2026-04,UniProt,CC-BY-4.0,2026-06-12T00:00:00Z,symbol=KDR
+PW-ANGIO,Pathway,VEGFA-VEGFR2 signaling (angiogenesis),R-HSA-4420097,Reactome,2026-03,Reactome,CC-BY-4.0,2026-06-12T00:00:00Z,
+STAT-VEGF-HTN,SignalStat,Disproportionality (PRR 3.6),,,,openFDA FAERS,public-domain,2026-06-15T00:00:00Z,prr=3.6;ror=3.8;chi2=41.2;ci=2.4-5.1;cases=29
+EV-PMID-VEGF,Evidence,Lit: VEGF-inhibitor hypertension (PMID 20694011),,,,PubMed,public-domain,2026-06-12T00:00:00Z,
+AE-AFIB,AdverseEvent,Atrial fibrillation (MedDRA 10003658),10003658,MedDRA,2025-03,MedDRA,public-domain,2026-06-12T00:00:00Z,
+DRUG-BTK,Drug,BTK inhibitor (ibrutinib),1442981,RxNorm,2026-06,RxNorm,public-domain,2026-06-12T00:00:00Z,class=BTK inhibitor
+TGT-BTK,BiologicalTarget,Bruton tyrosine kinase / BTK,Q06187,UniProt,2026-04,UniProt,CC-BY-4.0,2026-06-12T00:00:00Z,symbol=BTK
+STAT-BTK-AFIB,SignalStat,Disproportionality (PRR 5.1),,,,openFDA FAERS,public-domain,2026-06-15T00:00:00Z,prr=5.1;ror=5.5;chi2=63.0;ci=3.4-7.6;cases=44
+AE-LVDYS,AdverseEvent,Left ventricular dysfunction (MedDRA 10049694),10049694,MedDRA,2025-03,MedDRA,public-domain,2026-06-12T00:00:00Z,
+DRUG-HER2,Drug,Anti-HER2 antibody (trastuzumab),224905,RxNorm,2026-06,RxNorm,public-domain,2026-06-12T00:00:00Z,class=HER2 inhibitor
+TGT-ERBB2,BiologicalTarget,HER2 / ERBB2,P04626,UniProt,2026-04,UniProt,CC-BY-4.0,2026-06-12T00:00:00Z,symbol=ERBB2
+STAT-HER2-LVDYS,SignalStat,Disproportionality (PRR 4.8),,,,openFDA FAERS,public-domain,2026-06-15T00:00:00Z,prr=4.8;ror=5.0;chi2=55.7;ci=3.1-7.2;cases=38
+AE-COLITIS,AdverseEvent,Immune-mediated colitis (MedDRA 10009887),10009887,MedDRA,2025-03,MedDRA,public-domain,2026-06-12T00:00:00Z,
+STAT-CPI-COLITIS,SignalStat,Disproportionality (PRR 6.3),,,,openFDA FAERS,public-domain,2026-06-15T00:00:00Z,prr=6.3;ror=6.9;chi2=78.4;ci=4.2-9.4;cases=52
+AE-HYPOTHYROID,AdverseEvent,Immune-mediated hypothyroidism (MedDRA 10021114),10021114,MedDRA,2025-03,MedDRA,public-domain,2026-06-12T00:00:00Z,
+STAT-CPI-HYPOTHYROID,SignalStat,Disproportionality (PRR 7.0),,,,openFDA FAERS,public-domain,2026-06-15T00:00:00Z,prr=7.0;ror=7.4;chi2=85.1;ci=4.8-10.2;cases=61
+CON-HYPERTENSION,Concept,Hypertensive disorder,MONDO_0005044,MONDO,2026-06,MONDO,CC-BY-4.0,2026-06-12T00:00:00Z,
+CON-AFIB,Concept,Atrial fibrillation,MONDO_0004981,MONDO,2026-06,MONDO,CC-BY-4.0,2026-06-12T00:00:00Z,
+CON-CARDIOTOX,Concept,Cardiomyopathy (drug-induced),MONDO_0004994,MONDO,2026-06,MONDO,CC-BY-4.0,2026-06-12T00:00:00Z,
+CON-COLITIS,Concept,Colitis,MONDO_0005292,MONDO,2026-06,MONDO,CC-BY-4.0,2026-06-12T00:00:00Z,
+LIT-PMID-27959767,LiteratureAbstract,Fulminant myocarditis with combination checkpoint blockade (PMID 27959767),27959767,PubMed,2026-06,PubMed,public-domain,2026-06-10T00:00:00Z,summary=Synthetic: two cases of fatal immune-related myocarditis after anti-PD-1 plus anti-CTLA-4 therapy.
+LIT-PMID-20694011,LiteratureAbstract,Hypertension from VEGF-signaling-pathway inhibition (PMID 20694011),20694011,PubMed,2026-06,PubMed,public-domain,2026-06-10T00:00:00Z,summary=Synthetic: VEGFR2 inhibition raises blood pressure via reduced nitric-oxide and capillary rarefaction.
+LIT-PMID-25103805,LiteratureAbstract,Atrial fibrillation incidence with ibrutinib (PMID 25103805),25103805,PubMed,2026-06,PubMed,public-domain,2026-06-10T00:00:00Z,summary=Synthetic: BTK inhibition is associated with new-onset atrial fibrillation in CLL cohorts.
+LIT-PMID-11870201,LiteratureAbstract,Cardiac dysfunction with trastuzumab therapy (PMID 11870201),11870201,PubMed,2026-06,PubMed,public-domain,2026-06-10T00:00:00Z,summary=Synthetic: HER2-directed therapy reduces left-ventricular ejection fraction, especially with anthracyclines.
+LIT-PMID-29442540,LiteratureAbstract,Management of immune-related adverse events (PMID 29442540),29442540,PubMed,2026-06,PubMed,public-domain,2026-06-10T00:00:00Z,summary=Synthetic: checkpoint inhibitors cause immune-mediated colitis and endocrinopathies including hypothyroidism.
+CT-NCT02743819,ClinicalTrial,Checkpoint inhibitor safety registry (NCT02743819),NCT02743819,ClinicalTrials.gov,2026-06,ClinicalTrials.gov,public-domain,2026-06-11T00:00:00Z,phase=observational
+CT-NCT01168973,ClinicalTrial,Ramucirumab in advanced gastric cancer (NCT01168973),NCT01168973,ClinicalTrials.gov,2026-06,ClinicalTrials.gov,public-domain,2026-06-11T00:00:00Z,phase=3
+CT-NCT01578707,ClinicalTrial,Ibrutinib in relapsed CLL (NCT01578707),NCT01578707,ClinicalTrials.gov,2026-06,ClinicalTrials.gov,public-domain,2026-06-11T00:00:00Z,phase=3
+CT-NCT00021255,ClinicalTrial,Trastuzumab adjuvant breast cancer (NCT00021255),NCT00021255,ClinicalTrials.gov,2026-06,ClinicalTrials.gov,public-domain,2026-06-11T00:00:00Z,phase=3
+ONTO-MESH-2026-06,OntologySlice,MeSH 2026 release,,MeSH,2026-06,NLM MeSH,public-domain,2026-06-01T00:00:00Z,url=https://meshb.nlm.nih.gov
+ONTO-MONDO-2026-06,OntologySlice,MONDO 2026-06 release,,MONDO,2026-06,MONDO,public-domain,2026-06-01T00:00:00Z,url=https://mondo.monarchinitiative.org
+ONTO-OAE-2025-09,OntologySlice,OAE 2025-09 release,,OAE,2025-09,OAE,public-domain,2025-09-01T00:00:00Z,url=https://www.oae-ontology.org
+ONTO-REACTOME-88,OntologySlice,Reactome v88 release,,Reactome,2026-03,Reactome,public-domain,2026-03-01T00:00:00Z,url=https://reactome.org
+ONTO-MEDDRA-27,OntologySlice,MedDRA v27.0 release,,MedDRA,2025-03,MedDRA,public-domain,2025-03-01T00:00:00Z,url=https://www.meddra.org
+ONTO-ENSEMBL-111,OntologySlice,Ensembl release 111,,Ensembl,2024-01,Ensembl,public-domain,2024-01-01T00:00:00Z,url=https://www.ensembl.org
+ONTO-OT-2024-06,OntologySlice,Open Targets 2024.06 release,,Open Targets,2024-06,Open Targets,CC0,2024-06-01T00:00:00Z,url=https://platform.opentargets.org
+ONTO-DAILYMED-2026,OntologySlice,DailyMed 2026 SPL release,,DailyMed,2026-01,DailyMed,public-domain,2026-01-01T00:00:00Z,url=https://dailymed.nlm.nih.gov
+AE-SERIOUS-INFECTION,AdverseEvent,Serious infection - pneumonia (MedDRA 10035664),10035664,MedDRA,2025-03,MedDRA,public-domain,2026-06-18T00:00:00Z,
+DRUG-JAK,Drug,JAK inhibitor (tofacitinib),CHEMBL221959,ChEMBL,2024-03,ChEMBL,CC-BY-4.0,2026-06-18T00:00:00Z,class=JAK inhibitor;rxnorm=1430124
+TGT-JAK1,BiologicalTarget,Janus kinase 1 / JAK1,P23458,UniProt,2026-04,UniProt,CC-BY-4.0,2026-06-18T00:00:00Z,symbol=JAK1
+PW-JAKSTAT,Pathway,JAK-STAT signaling (cytokine),R-HSA-6785807,Reactome,2026-03,Reactome,CC-BY-4.0,2026-06-18T00:00:00Z,
+STAT-JAK-INFECTION,SignalStat,Disproportionality (PRR 3.9),,,,openFDA FAERS,public-domain,2026-06-18T00:00:00Z,prr=3.9;ror=4.1;chi2=47.6;ci=2.7-5.6;cases=34
+EV-PMID-JAK,Evidence,Lit: serious infections with tofacitinib (PMID 28953575),,,,PubMed,public-domain,2026-06-18T00:00:00Z,
+CON-RA,Concept,Rheumatoid arthritis,MONDO_0008383,MONDO,2026-06,MONDO,CC-BY-4.0,2026-06-18T00:00:00Z,
+LIT-PMID-28953575,LiteratureAbstract,Serious infection risk with tofacitinib in RA (PMID 28953575),28953575,PubMed,2026-06,PubMed,public-domain,2026-06-18T00:00:00Z,summary=Synthetic: JAK inhibition raises rates of serious and opportunistic infections including pneumonia and herpes zoster in rheumatoid-arthritis cohorts.
+CT-NCT00847613,ClinicalTrial,Tofacitinib in active rheumatoid arthritis (NCT00847613),NCT00847613,ClinicalTrials.gov,2026-06,ClinicalTrials.gov,public-domain,2026-06-18T00:00:00Z,phase=3
+AE-NEUTROPENIA,AdverseEvent,Neutropenia (MedDRA 10029354),10029354,MedDRA,2025-03,MedDRA,public-domain,2026-06-18T00:00:00Z,
+DRUG-CDK,Drug,CDK4/6 inhibitor (palbociclib),CHEMBL189963,ChEMBL,2024-03,ChEMBL,CC-BY-4.0,2026-06-18T00:00:00Z,class=CDK4/6 inhibitor;rxnorm=1601381
+TGT-CDK6,BiologicalTarget,Cyclin-dependent kinase 6 / CDK6,Q00534,UniProt,2026-04,UniProt,CC-BY-4.0,2026-06-18T00:00:00Z,symbol=CDK6
+STAT-CDK-NEUTRO,SignalStat,Disproportionality (PRR 8.2),,,,openFDA FAERS,public-domain,2026-06-18T00:00:00Z,prr=8.2;ror=9.1;chi2=102.4;ci=6.0-11.2;cases=73
+LIT-PMID-25524798,LiteratureAbstract,Neutropenia with palbociclib in breast cancer (PMID 25524798),25524798,PubMed,2026-06,PubMed,public-domain,2026-06-18T00:00:00Z,summary=Synthetic: CDK4/6 inhibition causes dose-dependent reversible neutropenia distinct from chemotherapy myelosuppression.
+CT-NCT01740427,ClinicalTrial,Palbociclib plus letrozole in advanced breast cancer (NCT01740427),NCT01740427,ClinicalTrials.gov,2026-06,ClinicalTrials.gov,public-domain,2026-06-18T00:00:00Z,phase=3
+CON-NEUTROPENIA,Concept,Neutropenia,MONDO_0002240,MONDO,2026-06,MONDO,CC-BY-4.0,2026-06-18T00:00:00Z,
+GA-OT-PDCD1-MYOCARDITIS,GeneticAssociation,Open Targets: PDCD1-myocarditis association,ENSG00000188389,Ensembl;Open Targets,2024-06,Open Targets,CC0,2026-06-18T00:00:00Z,otScore=0.41;datatype=genetic_association;efo=EFO_0000556
+GA-OT-KDR-HYPERTENSION,GeneticAssociation,Open Targets: KDR-hypertension association,ENSG00000128052,Ensembl;Open Targets,2024-06,Open Targets,CC0,2026-06-18T00:00:00Z,otScore=0.36;datatype=genetic_association;efo=EFO_0000537
+GA-OT-JAK1-RA,GeneticAssociation,Open Targets: JAK1-rheumatoid-arthritis association,ENSG00000162434,Ensembl;Open Targets,2024-06,Open Targets,CC0,2026-06-18T00:00:00Z,otScore=0.52;datatype=genetic_association;efo=EFO_0000685
+GA-OT-BTK-AFIB,GeneticAssociation,Open Targets: BTK-atrial-fibrillation association,ENSG00000010671,Ensembl;Open Targets,2024-06,Open Targets,CC0,2026-06-18T00:00:00Z,otScore=0.29;datatype=genetic_association;efo=EFO_0000275
+GA-OT-ERBB2-CARDIOTOX,GeneticAssociation,Open Targets: ERBB2-cardiomyopathy association,ENSG00000141736,Ensembl;Open Targets,2024-06,Open Targets,CC0,2026-06-18T00:00:00Z,otScore=0.33;datatype=genetic_association;efo=EFO_0000318
+REG-FDA-CPI-MYOCARDITIS,RegulatoryDoc,FDA label - checkpoint inhibitor immune-mediated myocarditis warning (BLA 125514),125514,FDA Application Number,2026-01,DailyMed,public-domain,2026-06-18T00:00:00Z,section=Warnings and Precautions;setid=synthetic-cpi-spl;summary=Synthetic: label warns of immune-mediated myocarditis; withhold and start corticosteroids for grade 2+.
+REG-FDA-JAK-INFECTION,RegulatoryDoc,FDA boxed warning - JAK inhibitor serious infections (NDA 203214),203214,FDA Application Number,2026-01,DailyMed,public-domain,2026-06-18T00:00:00Z,section=Boxed Warning;setid=synthetic-jak-spl;summary=Synthetic: boxed warning for serious infections including tuberculosis and opportunistic infection; screen and monitor.
+REG-FDA-VEGFR-HTN,RegulatoryDoc,FDA label - VEGFR inhibitor hypertension (BLA 125477),125477,FDA Application Number,2026-01,DailyMed,public-domain,2026-06-18T00:00:00Z,section=Warnings and Precautions;setid=synthetic-vegfr-spl;summary=Synthetic: monitor blood pressure; interrupt for severe hypertension not controlled with therapy.
+REG-EMA-HER2-LVDYS,RegulatoryDoc,EMA assessment - HER2 therapy cardiac dysfunction (EMEA/H/C/000278),EMEA-H-C-000278,EMA Procedure Number,2026-01,EMA,public-domain,2026-06-18T00:00:00Z,section=Special warnings;summary=Synthetic: assess LVEF before and during treatment; interrupt for clinically significant decrease.

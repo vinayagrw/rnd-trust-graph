@@ -1,0 +1,15 @@
+/*
+ * Admin surface styles — Phase 3a: now a THIN scoped layer.
+ *
+ * The Tailwind v4 entry, the shadcn semantic tokens, and `@theme inline` all
+ * moved to the single global entry `src/theme/tokens.css` (imported in main.tsx),
+ * which now drives the WHOLE app on one unified design system + app-wide preflight.
+ * This file keeps only the `.admin-root` niceties that remain admin-specific.
+ *
+ * `.admin-root` no longer needs its own token block (it inherits the promoted
+ * `:root` shadcn tokens) nor its own box-sizing/border reset (preflight is now
+ * global). We keep a cursor affordance for completeness.
+ */
+.admin-root button {
+  cursor: pointer;
+}

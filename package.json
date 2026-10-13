@@ -1,0 +1,31 @@
+{
+  "name": "rnd-trust-graph",
+  "version": "0.1.0",
+  "private": true,
+  "description": "R&D Trust Graph — pharmaceutical R&D and pharmacovigilance demo. One graph, three beats: FAIR Data-Readiness Radar, PV Signal-Causality Explanation Path, Multimodal resolve.",
+  "workspaces": [
+    "shared",
+    "bff",
+    "web"
+  ],
+  "scripts": {
+    "db:up": "docker compose up -d neo4j",
+    "db:down": "docker compose down",
+    "db:logs": "docker compose logs -f neo4j",
+    "etl": "npm run etl --workspace bff",
+    "rdf": "npm run rdf --workspace bff",
+    "rdf:generate": "npm run rdf:generate --workspace bff",
+    "rdf:verify": "npm run rdf:verify --workspace bff",
+    "dev:bff": "npm run dev --workspace bff",
+    "dev:web": "npm run dev --workspace web",
+    "dev": "concurrently -n bff,web -c blue,green \"npm:dev:bff\" \"npm:dev:web\"",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

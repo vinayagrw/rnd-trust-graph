@@ -1,0 +1,8 @@
+id,kind,label,code,vocab,ontology_version,source_system,license,timestamp,attrs
+DRUG-ORPHAN,Drug,Investigational compound JNJ-XR (no target link),RXN-9999999,RxNorm-Prescribable,2026-06,Internal,unknown,2026-06-20T00:00:00Z,
+CON-STALE,Concept,Cardiotoxicity (deprecated code),C0876994,UMLS,2019-01,Legacy import,CC-BY-4.0,2026-06-20T00:00:00Z,
+TGT-NOPROV,BiologicalTarget,Uncurated target P0XXXX,P0XXXX,UniProt,,,,,
+AE-CONFLICT,AdverseEvent,Myocarditis (conflicting status),OAE_0001489,OAE,2024-02,Legacy PV,CC-BY-4.0,2026-06-20T00:00:00Z,status=refuted
+STAT-DUP-A,SignalStat,Disproportionality (duplicate import A),FAERS-DUP-0001,FAERS,,openFDA FAERS,public-domain,2026-06-20T00:00:00Z,prr=4.2;ror=4.6
+STAT-DUP-B,SignalStat,Disproportionality (duplicate import B),FAERS-DUP-0001,FAERS,,openFDA FAERS,public-domain,2026-06-20T00:00:00Z,prr=4.2;ror=4.6
+STAT-NOFOLLOWUP,SignalStat,Disproportionality escalated awaiting review,FAERS-ESC-0007,FAERS,,openFDA FAERS,public-domain,2026-06-20T00:00:00Z,prr=5.5;status=escalated

@@ -1,0 +1,100 @@
+{
+  "changeSets": [
+    {
+      "id": "4d24c30e-ac36-4a58-aa35-1135fe7cff91",
+      "ts": "2026-07-09T20:10:40.509Z",
+      "findingId": "unmapped-local-code:SUBJ-206",
+      "subjectId": "SUBJ-206",
+      "title": "Correct: unmapped-local-code (SUBJ-206)",
+      "forwardOps": [
+        {
+          "op": "ensureNode",
+          "nodeId": "CON-HEPTOX",
+          "label": "Concept",
+          "nodeLabel": "Drug-induced liver injury (MedDRA 10072268)"
+        },
+        {
+          "op": "setProp",
+          "nodeId": "CON-HEPTOX",
+          "prop": "code",
+          "value": "10072268"
+        },
+        {
+          "op": "addEdge",
+          "source": "LC-206",
+          "kind": "MAPS_TO",
+          "target": "CON-HEPTOX"
+        }
+      ],
+      "inverseOps": [
+        {
+          "op": "removeEdge",
+          "source": "LC-206",
+          "kind": "MAPS_TO",
+          "target": "CON-HEPTOX"
+        },
+        {
+          "op": "unsetProp",
+          "nodeId": "CON-HEPTOX",
+          "prop": "code",
+          "value": "10072268"
+        },
+        {
+          "op": "deleteNode",
+          "nodeId": "CON-HEPTOX",
+          "label": "Concept",
+          "nodeLabel": "Drug-induced liver injury (MedDRA 10072268)"
+        }
+      ],
+      "status": "reverted"
+    },
+    {
+      "id": "052733ae-ec71-448b-92b8-f0cfd50c52ae",
+      "ts": "2026-07-09T20:21:19.082Z",
+      "findingId": "unmapped-local-code:SUBJ-206",
+      "subjectId": "SUBJ-206",
+      "title": "Correct: unmapped-local-code (SUBJ-206)",
+      "forwardOps": [
+        {
+          "op": "ensureNode",
+          "nodeId": "CON-HEPTOX",
+          "label": "Concept",
+          "nodeLabel": "Drug-induced liver injury (MedDRA 10072268)"
+        },
+        {
+          "op": "setProp",
+          "nodeId": "CON-HEPTOX",
+          "prop": "code",
+          "value": "10072268"
+        },
+        {
+          "op": "addEdge",
+          "source": "LC-206",
+          "kind": "MAPS_TO",
+          "target": "CON-HEPTOX"
+        }
+      ],
+      "inverseOps": [
+        {
+          "op": "removeEdge",
+          "source": "LC-206",
+          "kind": "MAPS_TO",
+          "target": "CON-HEPTOX"
+        },
+        {
+          "op": "unsetProp",
+          "nodeId": "CON-HEPTOX",
+          "prop": "code",
+          "value": "10072268"
+        },
+        {
+          "op": "deleteNode",
+          "nodeId": "CON-HEPTOX",
+          "label": "Concept",
+          "nodeLabel": "Drug-induced liver injury (MedDRA 10072268)"
+        }
+      ],
+      "status": "reverted"
+    }
+  ]
+}

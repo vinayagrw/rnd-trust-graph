@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>UC4 Patient-Safety Radar — UX + AI Design Direction</title>
+<style>
+  :root {
+    --navy-900:#04111f; --navy-800:#0a2742; --navy-700:#12365f;
+    --clinical:#1769d6; --clinical-bright:#318cf5;
+    --surface:#ffffff; --surface-2:#f7fafd; --border:#d7dfea; --border-strong:#c2cdda;
+    --text:#0a2540; --muted:#5b6b7f;
+    --f1:#1769d6; --f2:#8250c8; --f3:#0f9d8c; --f4:#0a7d4b; --f5:#9a6a00;
+    --ok:#0a7d4b; --warn:#9a6a00; --bad:#b4231f;
+    --radius:12px; --radius-sm:8px; --radius-pill:999px;
+    --shadow:0 8px 28px rgba(4,17,31,.10); --shadow-sm:0 1px 3px rgba(4,17,31,.10);
+    --font:"Georgia","Iowan Old Style",serif;
+    --sans:ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SFMono-Regular",Menlo,monospace;
+  }
+  * { box-sizing:border-box; }
+  html,body { margin:0; }
+  body {
+    font-family:var(--sans); color:var(--text);
+    background:
+      radial-gradient(1200px 500px at 80% -10%, rgba(23,105,214,.10), transparent 60%),
+      linear-gradient(180deg,#eef3f8 0%, #f7fafd 40%, #ffffff 100%);
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  .wrap { max-width:1120px; margin:0 auto; padding:0 22px 80px; }
+
+  header.hero {
+    background:linear-gradient(110deg,var(--navy-900) 0%,var(--navy-800) 46%,var(--navy-700) 100%);
+    color:#eaf2fb; padding:38px 0 30px; box-shadow:var(--shadow);
+    border-bottom:1px solid rgba(255,255,255,.06);
+  }
+  header.hero .wrap { padding-bottom:0; }
+  .kicker { letter-spacing:.22em; text-transform:uppercase; font-size:11px; color:var(--clinical-bright); font-weight:700; }
+  h1 { font-family:var(--font); font-weight:600; margin:.35em 0 .15em; font-size:34px; line-height:1.1; }
+  header.hero p { color:#a9c2df; max-width:70ch; font-size:15px; line-height:1.55; margin:.4em 0 0; }
+  .badges { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+  .badge { font-size:11px; font-weight:700; letter-spacing:.04em; padding:5px 11px; border-radius:var(--radius-pill);
+    background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); color:#dce9f8; }
+  .badge b { color:#fff; }
+
+  section { margin-top:34px; }
+  h2.sec { font-family:var(--font); font-weight:600; font-size:24px; margin:0 0 4px; }
+  .lead { color:var(--muted); font-size:14px; line-height:1.55; max-width:76ch; margin:0 0 16px; }
+  .eyebrow { font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--clinical); font-weight:800; margin-bottom:6px; }
+
+  /* Hero reveal diagram */
+  .diagram-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px 20px 12px; }
+  .diagram-card h3 { font-size:13px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin:0 0 2px; font-weight:700; }
+  .diagram-card .sub { color:var(--muted); font-size:13px; margin:0 0 6px; }
+  .replay { float:right; font:inherit; font-size:12px; font-weight:700; cursor:pointer; color:var(--clinical);
+    background:var(--surface-2); border:1px solid var(--border-strong); border-radius:var(--radius-pill); padding:5px 13px; }
+  .replay:hover { border-color:var(--clinical); }
+
+  /* Before / after */
+  .ba { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media(max-width:760px){ .ba{grid-template-columns:1fr;} }
+  .panel { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); box-shadow:var(--shadow-sm); padding:15px 16px; }
+  .panel.before { border-top:3px solid var(--bad); }
+  .panel.after { border-top:3px solid var(--f3); }
+  .panel h4 { margin:0 0 8px; font-size:14px; }
+  .panel .tagline { font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
+  .before .tagline { color:var(--bad); } .after .tagline { color:var(--f3); }
+  .fakecard { border:1px solid var(--border); border-left:3px solid var(--muted); border-radius:6px; padding:8px 10px; margin:6px 0; font-size:12px; color:var(--muted); background:var(--surface-2); }
+  .mininodes { display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:11px; margin-top:4px; }
+  .pill { padding:3px 9px; border-radius:var(--radius-pill); font-weight:700; border:1px solid var(--border-strong); background:#fff; }
+  .pill.subj { border-color:var(--clinical); color:var(--clinical); }
+  .pill.gap { border-color:var(--bad); color:var(--bad); background:#fdeceb; }
+  .pill.risk { background:var(--bad); color:#fff; border-color:var(--bad); }
+  .arrow { color:var(--muted); font-weight:800; }
+
+  /* three-zone cockpit mock */
+  .cockpit { display:grid; grid-template-columns:1.3fr 1fr; grid-template-rows:auto auto; gap:12px; }
+  @media(max-width:760px){ .cockpit{grid-template-columns:1fr;} }
+  .zone { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); box-shadow:var(--shadow-sm); padding:12px 14px; position:relative; }
+  .zone .zn { position:absolute; top:10px; right:12px; font-family:var(--font); font-size:18px; color:var(--border-strong); }
+  .zone h4 { margin:0 0 3px; font-size:13px; }
+  .zone p { margin:0; font-size:11.5px; color:var(--muted); line-height:1.45; }
+  .zone.z1 { grid-column:1 / -1; border-top:3px solid var(--f3); }
+  .zone.z2 { border-top:3px solid var(--f1); }
+  .zone.z4 { border-top:3px solid var(--f2); }
+  .miniflow { display:flex; align-items:center; gap:7px; margin-top:7px; }
+  .bar { height:9px; border-radius:3px; }
+
+  /* feature cards */
+  .grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
+  @media(max-width:760px){ .grid{grid-template-columns:1fr;} }
+  .card { background:var(--surface); border:1px solid var(--border); border-left-width:4px; border-radius:var(--radius-sm);
+    box-shadow:var(--shadow-sm); overflow:hidden; transition:.2s; cursor:pointer; }
+  .card:hover { box-shadow:var(--shadow); transform:translateY(-2px); }
+  .card.f1 { border-left-color:var(--f1);} .card.f2 { border-left-color:var(--f2);}
+  .card.f3 { border-left-color:var(--f3);} .card.f4 { border-left-color:var(--f4);} .card.f5 { border-left-color:var(--f5);}
+  .card .head { padding:14px 15px; }
+  .card .tag { font-size:10.5px; font-weight:800; letter-spacing:.09em; text-transform:uppercase; }
+  .card.f1 .tag{color:var(--f1);} .card.f2 .tag{color:var(--f2);} .card.f3 .tag{color:var(--f3);} .card.f4 .tag{color:var(--f4);} .card.f5 .tag{color:var(--f5);}
+  .card .code { font-family:var(--font); font-size:18px; font-weight:600; margin:5px 0 2px; }
+  .card .one { font-size:12.5px; color:var(--muted); line-height:1.45; margin-top:5px; }
+  .card .more { font-size:11px; font-weight:700; margin-top:8px; }
+  .card.f1 .more{color:var(--f1);} .card.f2 .more{color:var(--f2);} .card.f3 .more{color:var(--f3);} .card.f4 .more{color:var(--f4);} .card.f5 .more{color:var(--f5);}
+  .card .body { max-height:0; opacity:0; padding:0 15px; transition:max-height .34s ease, opacity .22s ease, padding .34s ease;
+    border-top:1px solid transparent; font-size:12.5px; line-height:1.5; }
+  .card.open .body { max-height:520px; opacity:1; padding:12px 15px 15px; border-top-color:var(--border); }
+  .card .row { margin:8px 0; }
+  .card .row b { display:block; font-size:10px; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); margin-bottom:2px; }
+  .card code { font-family:var(--mono); font-size:11px; background:var(--surface-2); border:1px solid var(--border); border-radius:4px; padding:1px 5px; }
+  .card .inv { color:var(--bad); font-weight:700; }
+
+  /* matrix + gaps */
+  table { width:100%; border-collapse:collapse; background:var(--surface); border:1px solid var(--border);
+    border-radius:var(--radius-sm); overflow:hidden; box-shadow:var(--shadow-sm); font-size:12.5px; }
+  th,td { text-align:left; padding:9px 12px; border-bottom:1px solid var(--border); vertical-align:top; }
+  th { background:var(--surface-2); font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:var(--muted); }
+  tr:last-child td { border-bottom:none; }
+  td b { color:var(--text); }
+  .tblwrap { overflow-x:auto; }
+  .chip { display:inline-block; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:var(--radius-pill); color:#fff; }
+  .c-f1{background:var(--f1);} .c-f2{background:var(--f2);} .c-f3{background:var(--f3);} .c-f4{background:var(--f4);} .c-f5{background:var(--f5);}
+
+  .gaps { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+  @media(max-width:760px){ .gaps{grid-template-columns:1fr;} }
+  .gap { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); box-shadow:var(--shadow-sm); padding:11px 13px; display:flex; gap:11px; }
+  .gap .num { font-family:var(--font); font-size:20px; color:var(--bad); line-height:1; flex:none; width:24px; }
+  .gap h5 { margin:0 0 2px; font-size:12.5px; } .gap p { margin:0; font-size:11.5px; color:var(--muted); line-height:1.4; }
+  .gap .fix { font-size:11px; font-weight:800; }
+
+  /* timeline */
+  .timeline { display:flex; gap:10px; flex-wrap:wrap; }
+  .step { flex:1 1 190px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm);
+    box-shadow:var(--shadow-sm); padding:13px 14px; border-top:3px solid var(--clinical); position:relative; }
+  .step:nth-child(1){border-top-color:var(--f1);} .step:nth-child(2){border-top-color:var(--f4);}
+  .step:nth-child(3){border-top-color:var(--f3);} .step:nth-child(4){border-top-color:var(--f2);}
+  .step .ord { font-size:10.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+  .step h4 { margin:4px 0 3px; font-size:14px; } .step p { margin:0; font-size:11.5px; color:var(--muted); line-height:1.45; }
+
+  .callout { margin-top:16px; background:linear-gradient(180deg,#fbfdff,#f3f8fc); border:1px solid var(--border);
+    border-left:4px solid var(--warn); border-radius:var(--radius); padding:14px 18px; font-size:13px; line-height:1.55; color:#20374d; }
+  .callout b { color:var(--warn); }
+
+  footer { color:var(--muted); font-size:12px; margin-top:40px; text-align:center; line-height:1.7; }
+  footer a { color:var(--clinical); }
+  .srcs { font-size:11px; color:var(--muted); margin-top:6px; }
+  .srcs a { color:var(--clinical); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .draw,.flow,.spark,.nodepop,.gapglow { animation:none !important; }
+    .draw { stroke-dashoffset:0 !important; } .nodepop { opacity:1 !important; transform:none !important; }
+    .spark { opacity:0 !important; }
+  }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">pharma R&amp;D Trust Graph · UC4 · Design + Research</div>
+    <h1>The safety radar has the data. It needs a cockpit.</h1>
+    <p>The 10 subjects behind the <b>30 / 100</b> readiness score are already in Neo4j — we just never put the subject graph on screen. This is the UX + AI direction to turn a flat card list into a graph‑first, signal‑first, action‑first patient‑safety cockpit. Grounded in the live <code style="color:#bcd6f5">/api/safety</code> payload; no runtime code changed in this pass.</p>
+    <div class="badges">
+      <span class="badge"><b>10</b>&nbsp;subjects in Neo4j</span>
+      <span class="badge"><b>7</b>&nbsp;unsafe · <b>6</b>&nbsp;findings</span>
+      <span class="badge">SHACL + PROV‑O + grounded LLM</span>
+      <span class="badge"><b>F1–F4</b>&nbsp;to build · F5 horizon</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- 1. THE REVEAL -->
+  <section>
+    <div class="eyebrow">The core insight</div>
+    <h2 class="sec">The graph was there the whole time — just hidden</h2>
+    <p class="lead">A live, fallback‑free Neo4j read (<code>MATCH (s:Subject) RETURN count(DISTINCT s)</code>) returns 10. The subjects are tagged <code>:Subject:Safety</code> and excluded from the FAIR canvas <i>by design</i> (<code>WHERE NOT n:Safety</code>). Watch the hidden subgraph appear — then the contraindication gap that makes SUBJ‑202 a P0.</p>
+
+    <div class="diagram-card">
+      <button class="replay" id="replay">↻ Replay</button>
+      <h3>Evidence path · SUBJ‑202 · conflicting medication</h3>
+      <p class="sub">subject → two active prescriptions → contraindicated drug pair → P0 patient‑safety risk</p>
+      <svg id="reveal" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 220" width="100%" role="img" aria-label="SUBJ-202 has two active prescriptions, Apixaban and Ibuprofen, which are contraindicated, raising a P0 conflicting-medication risk.">
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#5b6b7f"/>
+          </marker>
+          <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="3.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- connectors (draw-on) -->
+        <path class="draw d1" d="M150,110 C205,110 205,58 262,58"  fill="none" stroke="#1769d6" stroke-width="2.4" pathLength="1" marker-end="url(#ah)"/>
+        <path class="draw d2" d="M150,110 C205,110 205,162 262,162" fill="none" stroke="#1769d6" stroke-width="2.4" pathLength="1" marker-end="url(#ah)"/>
+        <!-- contraindication gap edge (red, glows) -->
+        <path class="draw d3 gapglow" d="M330,72 C372,92 372,128 330,148" fill="none" stroke="#b4231f" stroke-width="2.6" stroke-dasharray="6 5" pathLength="1"/>
+        <!-- to risk -->
+        <path class="draw d4" d="M398,110 C470,110 486,110 556,110" fill="none" stroke="#b4231f" stroke-width="2.6" pathLength="1" marker-end="url(#ah)"/>
+        <!-- flow particle on the risk edge -->
+        <circle class="spark" r="4" fill="#b4231f"><animateMotion dur="2.6s" begin="2.6s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear" path="M398,110 C470,110 486,110 556,110"/></circle>
+
+        <!-- nodes (pop in, staggered) -->
+        <g class="nodepop n0">
+          <rect x="70" y="90" width="80" height="40" rx="9" fill="#eef4fc" stroke="#1769d6" stroke-width="1.6"/>
+          <text x="110" y="107" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="700" fill="#0a2540">SUBJ‑202</text>
+          <text x="110" y="121" text-anchor="middle" font-family="var(--sans)" font-size="9.5" fill="#5b6b7f">Trial subject</text>
+        </g>
+        <g class="nodepop n1">
+          <rect x="262" y="40" width="70" height="36" rx="9" fill="#ffffff" stroke="#c2cdda"/>
+          <text x="297" y="58" text-anchor="middle" font-size="11" font-weight="700" fill="#0a2540">RX‑202A</text>
+          <text x="297" y="70" text-anchor="middle" font-size="9" fill="#5b6b7f">Apixaban</text>
+        </g>
+        <g class="nodepop n2">
+          <rect x="262" y="144" width="70" height="36" rx="9" fill="#ffffff" stroke="#c2cdda"/>
+          <text x="297" y="162" text-anchor="middle" font-size="11" font-weight="700" fill="#0a2540">RX‑202B</text>
+          <text x="297" y="174" text-anchor="middle" font-size="9" fill="#5b6b7f">Ibuprofen</text>
+        </g>
+        <g class="nodepop n3">
+          <text x="366" y="114" text-anchor="middle" font-size="9.5" font-weight="800" fill="#b4231f">CONTRA‑</text>
+          <text x="366" y="125" text-anchor="middle" font-size="9.5" font-weight="800" fill="#b4231f">INDICATES</text>
+        </g>
+        <g class="nodepop n4" filter="url(#glow)">
+          <rect x="556" y="88" width="150" height="44" rx="10" fill="#b4231f"/>
+          <text x="631" y="107" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">P0 · Bleed risk</text>
+          <text x="631" y="122" text-anchor="middle" font-size="9.5" fill="#ffdad7">MedicationConflictShape</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="ba" style="margin-top:14px">
+      <div class="panel before">
+        <div class="tagline">Today</div>
+        <h4>A flat list of cards</h4>
+        <div class="fakecard">P0 · Conflicting medication · SUBJ‑202 ▸</div>
+        <div class="fakecard">P0 · Missing allergy status · SUBJ‑201 ▸</div>
+        <div class="fakecard">P1 · Duplicate subject · SUBJ‑205A+B ▸</div>
+        <p style="font-size:11.5px;color:var(--muted);margin:8px 0 0">No graph. No population signal. No trend. Remediation is a sentence.</p>
+      </div>
+      <div class="panel after">
+        <div class="tagline">Direction</div>
+        <h4>The patient, the broken edge, the fix</h4>
+        <div class="mininodes"><span class="pill subj">SUBJ‑202</span><span class="arrow">→</span><span class="pill">Apixaban</span><span class="pill gap">✕ contraindicated</span><span class="pill">Ibuprofen</span><span class="arrow">→</span><span class="pill risk">P0</span></div>
+        <p style="font-size:11.5px;color:var(--muted);margin:10px 0 0">Graph‑first (F1) · signal over the cohort (F3) · ask the data (F4) · agent drafts a governed fix (F2).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. COCKPIT -->
+  <section>
+    <div class="eyebrow">The redesign</div>
+    <h2 class="sec">One screen, three zones, drill‑down between them</h2>
+    <p class="lead">The shape every serious central‑monitoring tool converges on: population signal on top, the patient graph as the centrepiece, the grounded findings beside it, and an agent drawer that turns a finding into an approved fix.</p>
+    <div class="cockpit">
+      <div class="zone z1"><span class="zn">①</span><h4>Signal strip</h4><p>Score band · risk‑by‑type · readiness trend · by‑site outliers — the cohort picture before any single card.</p>
+        <div class="miniflow"><span class="bar" style="width:70px;background:var(--bad)"></span><span class="bar" style="width:44px;background:var(--warn)"></span><span class="bar" style="width:30px;background:var(--f3)"></span><span style="font-size:10.5px;color:var(--muted)">4×P0 · 2×P1</span></div>
+      </div>
+      <div class="zone z2"><span class="zn">②</span><h4>Subject‑safety graph canvas</h4><p>The subgraph we already projected into Neo4j — patient → Rx → drug → allergy → lab — with the failing edge glowing.</p></div>
+      <div class="zone z3"><span class="zn">③</span><h4>Finding rail</h4><p>Today's grounded P0/P1 cards + evidence path, kept — now linked to the canvas selection.</p></div>
+      <div class="zone z4" style="grid-column:1 / -1"><span class="zn">④</span><h4>Agent drawer</h4><p>Explain (grounded) → draft the change‑set → preview diff → route to human approval through the authorized writer. Grounded "ask the radar" lives here too.</p></div>
+    </div>
+  </section>
+
+  <!-- 3. FEATURES -->
+  <section>
+    <div class="eyebrow">Five features · click to expand</div>
+    <h2 class="sec">How AI helps — grounded, governed, and mostly reuse</h2>
+    <p class="lead">F1–F4 are the build set; F5 is the horizon. Each reuses components we already ship and keeps a named trust invariant.</p>
+    <div class="grid" id="cards">
+
+      <div class="card f1"><div class="head"><div class="tag">F1 · fixes the visibility complaint</div>
+        <div class="code">Subject‑Safety Graph Canvas ⭐</div>
+        <div class="one">Render the hidden subject subgraph on the canvas, coloured by status, with the failing “gap” edge highlighted and particles flowing along the evidence path.</div>
+        <div class="more">Architecture, reuse & invariant ▾</div></div>
+        <div class="body">
+          <div class="row"><b>Architecture</b>A separate read endpoint over <code>:Safety</code> nodes (no <code>getFullGraph</code> exclusion); the canvas renders it like Beat 1.</div>
+          <div class="row"><b>Reuse</b><code>web/src/components/GraphCanvas.tsx</code> — readiness colouring, flow particles, rings. Findings already carry real <code>path[].nodeId</code>s.</div>
+          <div class="row"><b class="inv">Invariant</b><span class="inv">FAIR canvas stays byte‑identical — a separate view; never relax <code>WHERE NOT n:Safety</code>.</span></div>
+        </div></div>
+
+      <div class="card f2"><div class="head"><div class="tag">F2 · the headline “AI does the work”</div>
+        <div class="code">Agentic Remediate agent</div>
+        <div class="one">One click: explain the finding, draft the concrete change‑set (add allergy record, deconflict the Rx pair, book the follow‑up), preview the diff, route for approval.</div>
+        <div class="more">Architecture, reuse & invariant ▾</div></div>
+        <div class="body">
+          <div class="row"><b>Architecture</b>The model <i>proposes</i> a structured op + diff; a human commits it. Reported to cut investigation cycle time 40–50%.</div>
+          <div class="row"><b>Reuse</b><code>bff/src/hitl/ops.ts</code> — the only authorized writer (Neo4j <code>write()</code> + <code>reasoner.update()</code>), plus the explain grounding in <code>bff/src/safety/explain.ts</code>.</div>
+          <div class="row"><b class="inv">Invariant</b><span class="inv">No new write path. Every change is a reversible, PROV‑O‑logged change‑set through HITL. MCP stays read‑only.</span></div>
+        </div></div>
+
+      <div class="card f3"><div class="head"><div class="tag">F3 · population signal</div>
+        <div class="code">Fleet / cohort signal view</div>
+        <div class="one">Turn six isolated findings into a signal: risk‑by‑type and risk‑by‑site bars, a readiness trend sparkline, “N subjects hit rule X.”</div>
+        <div class="more">Architecture, reuse & invariant ▾</div></div>
+        <div class="body">
+          <div class="row"><b>Architecture</b>Aggregate the audit payload (<code>perSubject.firedShapes</code>, <code>sourceSystems</code>) client‑side; add a small history store for the trend.</div>
+          <div class="row"><b>Reuse</b><code>StatChart</code>/<code>EvidenceSubgraph</code> in <code>web/src/components/GroundedDiagrams.tsx</code> (recharts), <code>web/src/finops/Sparkline.tsx</code>.</div>
+          <div class="row"><b class="inv">Invariant</b><span class="inv">Every bar drills back to the exact audited subjects — no un‑sourced totals.</span></div>
+        </div></div>
+
+      <div class="card f4"><div class="head"><div class="tag">F4 · cheapest win · mostly wiring</div>
+        <div class="code">Grounded “Ask the radar” Q&amp;A</div>
+        <div class="one">“Which subjects on an anticoagulant have no allergy record?” → cited rows, a faithfulness flag, and refuse‑if‑not‑in‑graph.</div>
+        <div class="more">Architecture, reuse & invariant ▾</div></div>
+        <div class="body">
+          <div class="row"><b>Architecture</b>Point the existing read‑only <code>/ask</code> agent at the subject subgraph; surface it in the agent drawer.</div>
+          <div class="row"><b>Reuse</b><code>bff/src/ask/agent.ts</code> — <code>--read-only</code> MCP, rows‑only citations, faithfulness/hallucination checks. Little new code.</div>
+          <div class="row"><b class="inv">Invariant</b><span class="inv">Read‑only; cites Neo4j rows or refuses with <code>NOT_IN_GRAPH</code> — the brief’s “8th risk” made literal.</span></div>
+        </div></div>
+
+      <div class="card f5" style="grid-column:1 / -1"><div class="head"><div class="tag">F5 · horizon (not in this build set)</div>
+        <div class="code">Predictive / early‑warning tier</div>
+        <div class="one">Beyond binary pass/fail — flag subjects <i>trending toward</i> a violation (a follow‑up due soon, a lab about to age out) as an amber “at‑risk” tier before they fail. SHACL warning shapes + a light propensity score. The reactive→predictive shift the field is betting on for 2026.</div></div><div class="body"></div></div>
+
+    </div>
+  </section>
+
+  <!-- 4. MATRIX -->
+  <section>
+    <div class="eyebrow">How the industry does it</div>
+    <h2 class="sec">Three converging patterns — and where we already sit</h2>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Pattern</th><th>What leaders do</th><th>Where we sit</th><th>Feature</th></tr></thead>
+      <tbody>
+        <tr><td><b>Central risk / signal dashboards</b><br><span style="font-size:11px;color:var(--muted)">CluePoints, Medidata</span></td>
+            <td>Aggregate KPIs → detect site/region outliers → <b>drill into patient data</b> → issues &amp; actions workflow.</td>
+            <td>We have the drill‑down evidence path; we lack the aggregate + action loop.</td>
+            <td><span class="chip c-f3">F3</span> <span class="chip c-f2">F2</span></td></tr>
+        <tr><td><b>KG‑grounded pharmacovigilance</b><br><span style="font-size:11px;color:var(--muted)">OpenPVSignal, GraphRAG</span></td>
+            <td>Publish signals as a FAIR knowledge graph; ground LLM answers on the graph to kill hallucination.</td>
+            <td>We already are a FAIR‑graph + refuse‑if‑off‑evidence system.</td>
+            <td><span class="chip c-f4">F4</span></td></tr>
+        <tr><td><b>Agentic data management</b><br><span style="font-size:11px;color:var(--muted)">ZS, IntuitionLabs</span></td>
+            <td>Loop: detect anomaly → pull related records → draft root cause → route to reviewer (−40–50% cycle time).</td>
+            <td>That loop is F2 — and our HITL writer + PROV‑O log is exactly the governance they call the gating requirement.</td>
+            <td><span class="chip c-f2">F2</span></td></tr>
+      </tbody>
+    </table></div>
+    <p class="lead" style="margin-top:12px"><b>Our differentiator:</b> most tools do statistical outlier detection; we carry the <i>why</i> as a graph path + SHACL rule + provenance, and we already refuse ungrounded AI. The redesign surfaces strengths we built and hid.</p>
+  </section>
+
+  <!-- 5. GAPS -->
+  <section>
+    <div class="eyebrow">Red‑team</div>
+    <h2 class="sec">What we’re missing — and the fix for each</h2>
+    <div class="gaps">
+      <div class="gap"><div class="num">1</div><div><h5>The subject graph is invisible</h5><p>Looks like missing data; the best asset is unseen.</p><span class="fix" style="color:var(--f1)">→ F1</span></div></div>
+      <div class="gap"><div class="num">2</div><div><h5>No population / trend</h5><p>Six findings, never “the signal” or its direction.</p><span class="fix" style="color:var(--f3)">→ F3</span></div></div>
+      <div class="gap"><div class="num">3</div><div><h5>Remediation is text only</h5><p>A “radar that can’t fix” — low value vs. agentic peers.</p><span class="fix" style="color:var(--f2)">→ F2</span></div></div>
+      <div class="gap"><div class="num">4</div><div><h5>No grounded Q&amp;A over subjects</h5><p>The capability exists but isn’t demoable.</p><span class="fix" style="color:var(--f4)">→ F4</span></div></div>
+      <div class="gap"><div class="num">5</div><div><h5>Purely reactive</h5><p>Only flags after a rule fully breaks.</p><span class="fix" style="color:var(--f5)">→ F5</span></div></div>
+      <div class="gap"><div class="num">6</div><div><h5>Score isn’t severity‑weighted</h5><p>A P0 bleed‑risk counts the same as a P1 duplicate in 30/100.</p><span class="fix" style="color:var(--muted)">→ add a weighted headline beside the reproducible %</span></div></div>
+      <div class="gap"><div class="num">7</div><div><h5>Unmapped code not resolved to a terminology</h5><p><code style="font-size:10.5px">SITE‑HEPTOX‑07 → MedDRA/SNOMED</code> is asserted, not looked up.</p><span class="fix" style="color:var(--muted)">→ terminology oracle when F4 lands</span></div></div>
+      <div class="gap"><div class="num">8</div><div><h5>Agent could over‑reach <span style="font-weight:400;color:var(--muted)">(red‑team of F2)</span></h5><p>An LLM proposing writes is a new attack surface.</p><span class="fix" style="color:var(--bad)">→ propose‑only; HITL is the sole commit path</span></div></div>
+    </div>
+  </section>
+
+  <!-- 6. SEQUENCE -->
+  <section>
+    <div class="eyebrow">Recommended build sequence</div>
+    <h2 class="sec">Visibility first, then grounding, signal, and the governed agent</h2>
+    <div class="timeline">
+      <div class="step"><div class="ord">Step 1 · F1</div><h4>Graph canvas</h4><p>Fixes the visibility complaint and unlocks the visual the other three hang off. High impact.</p></div>
+      <div class="step"><div class="ord">Step 2 · F4</div><h4>Ask the radar</h4><p>Smallest surface — the <code>/ask</code> agent already exists. Makes grounding demoable.</p></div>
+      <div class="step"><div class="ord">Step 3 · F3</div><h4>Fleet signal</h4><p>Reuses <code>StatChart</code>/<code>Sparkline</code>; turns findings into a population signal.</p></div>
+      <div class="step"><div class="ord">Step 4 · F2</div><h4>Remediate agent</h4><p>Highest value <i>and</i> most care. Build once the canvas + grounding are proven, so approvals land on a trusted surface.</p></div>
+    </div>
+    <div class="callout"><b>Guardrail:</b> each step re‑proves the invariants before it’s called done — FAIR canvas byte‑identical, HITL is the only writer, MCP read‑only, every AI surface refuses off‑evidence. These are the trust guarantees the platform sells.</div>
+  </section>
+
+  <footer>
+    Design + research deliverable · grounded in the live <code>/api/safety</code> + <code>/api/safety/audit</code> payloads · no runtime code changed in this pass.<br>
+    Full written record → <a href="UC4-SAFETY-UX-AND-AI.md">UC4‑SAFETY‑UX‑AND‑AI.md</a> · demo script → <a href="UC4-DEMO-SCRIPT.md">UC4‑DEMO‑SCRIPT.md</a>
+    <div class="srcs">Sources:
+      <a href="https://cluepoints.com/what-we-do/risk-based-quality-management-rbqm/detection/">CluePoints RBQM</a> ·
+      <a href="https://www.medidata.com/en/clinical-data-studio/">Medidata Clinical Data Studio</a> ·
+      <a href="https://www.clinicaltrials101.com/signal-detection-dashboards-for-safety-efficacy-and-operational-risk/">Signal‑detection dashboards</a> ·
+      <a href="https://link.springer.com/article/10.1007/s40264-024-01503-8">OpenPVSignal FAIR‑KG</a> ·
+      <a href="https://pubmed.ncbi.nlm.nih.gov/38981792/">KG‑in‑PV scoping review</a> ·
+      <a href="https://datavid.com/blog/graphrag-for-pharma">GraphRAG for pharma</a> ·
+      <a href="https://medium.com/zs-associates/insights-at-scale-why-agentic-ai-is-the-next-frontier-for-data-management-in-pharma-a6b392b20db1">ZS agentic data management</a> ·
+      <a href="https://intuitionlabs.ai/articles/agentic-ai-pharma-scaling-production">IntuitionLabs agentic scaling</a> ·
+      <a href="https://pharmaphorum.com/digital/agentic-ai-shift-rd-rp-will-deliver-first-predictive-drug-pipeline-2026">pharmaphorum predictive 2026</a>
+    </div>
+  </footer>
+</div>
+
+<style>
+  /* ---- reveal animation (draw-on + pop + flow) ---- */
+  .draw { stroke-dasharray:1; stroke-dashoffset:1; }
+  /* d3 keeps its own dashed look; give it matching dash math for the draw-on */
+  .draw.d3 { stroke-dasharray:.06 .05; }
+  #reveal.play .draw { animation:draw .7s ease forwards; }
+  #reveal.play .d1 { animation-delay:.55s; } #reveal.play .d2 { animation-delay:.8s; }
+  #reveal.play .d3 { animation-delay:1.25s; } #reveal.play .d4 { animation-delay:1.7s; }
+  @keyframes draw { to { stroke-dashoffset:0; } }
+  .nodepop { opacity:0; transform:translateY(6px); transform-box:fill-box; transform-origin:center; }
+  #reveal.play .nodepop { animation:pop .5s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+  #reveal.play .n0 { animation-delay:.1s; } #reveal.play .n1 { animation-delay:.6s; }
+  #reveal.play .n2 { animation-delay:.85s; } #reveal.play .n3 { animation-delay:1.3s; }
+  #reveal.play .n4 { animation-delay:1.9s; }
+  @keyframes pop { to { opacity:1; transform:translateY(0);} }
+  .gapglow { }
+  #reveal.play .gapglow { animation:draw .7s ease 1.25s forwards, glow 1.4s ease-in-out 2s infinite; }
+  @keyframes glow { 0%,100%{ stroke-opacity:.55;} 50%{ stroke-opacity:1;} }
+  .spark { opacity:0; } #reveal.play .spark { opacity:1; }
+  @media (prefers-reduced-motion: reduce) {
+    #reveal .draw { stroke-dashoffset:0 !important; animation:none !important; }
+    #reveal .nodepop { opacity:1 !important; transform:none !important; animation:none !important; }
+    #reveal .spark { opacity:0 !important; }
+  }
+</style>
+<script>
+  // feature card expand
+  document.getElementById('cards').addEventListener('click', function (e) {
+    var card = e.target.closest('.card'); if (!card) return;
+    card.classList.toggle('open');
+  });
+  // play + replay the reveal
+  var reveal = document.getElementById('reveal');
+  function play(){ reveal.classList.remove('play'); void reveal.getBoundingClientRect(); reveal.classList.add('play'); }
+  document.getElementById('replay').addEventListener('click', play);
+  // autoplay once on load
+  window.addEventListener('load', function(){ setTimeout(play, 250); });
+</script>
+</body>
+</html>

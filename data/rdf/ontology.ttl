@@ -1,0 +1,279 @@
+# =============================================================================
+# R&D Trust Graph — OWL ontology (the canonical T-Box).
+#
+# This is the SCHEMA half of the W3C/RDF stack. The A-Box (instance
+# data) is data/rdf/hero.ttl (hand-authored hero) and data/rdf/dataset.generated.ttl
+# (the full machine-generated dataset). Both use this vocabulary.
+#
+# Design stance (matches data/rdf/hero.ttl EXACTLY):
+#   * Namespace: rtg: <https://vinayagrw.github.io/rnd-trust-graph#>
+#   * Object properties are UPPER_SNAKE relation IRIs (rtg:SUSPECTED_IN, rtg:TARGETS …)
+#     — identical to the Neo4j relationship types, so the triplestore and the
+#     serving cache speak one vocabulary.
+#   * Provenance is carried as datatype properties (rtg:sourceSystem,
+#     rtg:ontologyVersion, rtg:timestamp) plus dcterms:license, mirroring PROV-O
+#     usage (prov:wasDerivedFrom) already in hero.ttl.
+#
+# Mechanistic reasoning: rtg:CANDIDATE_SIGNAL is DERIVED. A property chain
+# (SUSPECTED_IN o TARGETS o IN_PATHWAY) lets a real OWL-RL reasoner entail the
+# Drug↔Pathway candidate-signal relation from the deterministic explanation path.
+# IN_PATHWAY is declared transitive so multi-step pathway hierarchies still close.
+# =============================================================================
+
+@prefix rtg:     <https://vinayagrw.github.io/rnd-trust-graph#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+# -----------------------------------------------------------------------------
+# Ontology header
+# -----------------------------------------------------------------------------
+<https://vinayagrw.github.io/rnd-trust-graph> a owl:Ontology ;
+    dcterms:title "R&D Trust Graph ontology" ;
+    rdfs:comment "OWL T-Box for the pharma R&D Trust Graph demo: adverse-event safety signals over multimodal, provenance-carrying data." ;
+    owl:versionInfo "1.0.0" ;
+    dcterms:license "CC-BY-4.0" .
+
+# -----------------------------------------------------------------------------
+# Class hierarchy
+#
+# rtg:GraphNode is the common superclass (the SHACL NodeProvenanceShape targets
+# it, so every node inherits the ALCOA+ provenance obligation). Below it sit a
+# few intermediate groupings to give a real subClassOf shape:
+#   GraphNode
+#     ├─ ClinicalEntity   (things observed in the clinic)
+#     │    ├─ AdverseEvent
+#     │    └─ Patient
+#     ├─ MechanisticEntity (the biological "why")
+#     │    ├─ Drug
+#     │    ├─ BiologicalTarget
+#     │    └─ Pathway
+#     ├─ EvidenceEntity    (what supports a claim)
+#     │    ├─ SignalStat
+#     │    ├─ Evidence
+#     │    ├─ LiteratureAbstract
+#     │    ├─ ClinicalTrial
+#     │    ├─ RegulatoryDoc
+#     │    └─ GeneticAssociation
+#     ├─ ModalityEntity    (raw multimodal inputs)
+#     │    ├─ PathologyImage
+#     │    └─ OmicsProfile
+#     └─ TerminologyEntity (vocabulary scaffolding)
+#          ├─ Concept
+#          └─ OntologySlice
+# -----------------------------------------------------------------------------
+
+rtg:GraphNode a owl:Class ;
+    rdfs:label "Graph node" ;
+    rdfs:comment "Common superclass of every node; bears the ALCOA+ provenance obligation." .
+
+rtg:ClinicalEntity   a owl:Class ; rdfs:subClassOf rtg:GraphNode ; rdfs:label "Clinical entity" .
+rtg:MechanisticEntity a owl:Class ; rdfs:subClassOf rtg:GraphNode ; rdfs:label "Mechanistic entity" .
+rtg:EvidenceEntity   a owl:Class ; rdfs:subClassOf rtg:GraphNode ; rdfs:label "Evidence entity" .
+rtg:ModalityEntity   a owl:Class ; rdfs:subClassOf rtg:GraphNode ; rdfs:label "Modality entity" .
+rtg:TerminologyEntity a owl:Class ; rdfs:subClassOf rtg:GraphNode ; rdfs:label "Terminology entity" .
+
+rtg:AdverseEvent a owl:Class ;
+    rdfs:subClassOf rtg:ClinicalEntity ;
+    rdfs:label "Adverse event" ;
+    rdfs:comment "A coded adverse drug reaction (OAE / MedDRA term)." .
+
+rtg:Patient a owl:Class ;
+    rdfs:subClassOf rtg:ClinicalEntity ;
+    rdfs:label "Patient" ;
+    rdfs:comment "Synthetic (Synthea) subject reporting an adverse event. PHI-free." .
+
+rtg:Drug a owl:Class ;
+    rdfs:subClassOf rtg:MechanisticEntity ;
+    rdfs:label "Drug" ;
+    rdfs:comment "A pharmacological agent (RxNorm / ChEMBL)." .
+
+rtg:BiologicalTarget a owl:Class ;
+    rdfs:subClassOf rtg:MechanisticEntity ;
+    rdfs:label "Biological target" ;
+    rdfs:comment "A molecular target (UniProt protein) a drug acts on." .
+
+rtg:Pathway a owl:Class ;
+    rdfs:subClassOf rtg:MechanisticEntity ;
+    rdfs:label "Pathway" ;
+    rdfs:comment "A biological pathway (Reactome / WikiPathways)." .
+
+rtg:SignalStat a owl:Class ;
+    rdfs:subClassOf rtg:EvidenceEntity ;
+    rdfs:label "Signal statistic" ;
+    rdfs:comment "Disproportionality statistics (PRR/ROR/chi2) for a drug-event pair." .
+
+rtg:Evidence a owl:Class ;
+    rdfs:subClassOf rtg:EvidenceEntity ;
+    rdfs:label "Evidence" ;
+    rdfs:comment "An aggregate evidence record backing a signal (FAERS / citation)." .
+
+rtg:LiteratureAbstract a owl:Class ;
+    rdfs:subClassOf rtg:EvidenceEntity ;
+    rdfs:label "Literature abstract" ;
+    rdfs:comment "A PubMed/PMC abstract (synthetic summary, real PMID)." .
+
+rtg:ClinicalTrial a owl:Class ;
+    rdfs:subClassOf rtg:EvidenceEntity ;
+    rdfs:label "Clinical trial" ;
+    rdfs:comment "A ClinicalTrials.gov registered study (real NCT id)." .
+
+rtg:RegulatoryDoc a owl:Class ;
+    rdfs:subClassOf rtg:EvidenceEntity ;
+    rdfs:label "Regulatory document" ;
+    rdfs:comment "An FDA label / EMA assessment excerpt (synthetic text, real application number)." .
+
+rtg:GeneticAssociation a owl:Class ;
+    rdfs:subClassOf rtg:EvidenceEntity ;
+    rdfs:label "Genetic association" ;
+    rdfs:comment "An Open Targets-style target-disease association (Ensembl gene id)." .
+
+rtg:PathologyImage a owl:Class ;
+    rdfs:subClassOf rtg:ModalityEntity ;
+    rdfs:label "Pathology image" ;
+    rdfs:comment "A whole-slide pathology image (synthetic)." .
+
+rtg:OmicsProfile a owl:Class ;
+    rdfs:subClassOf rtg:ModalityEntity ;
+    rdfs:label "Omics profile" ;
+    rdfs:comment "An omics signature, e.g. bulk RNA-seq (synthetic)." .
+
+rtg:Concept a owl:Class ;
+    rdfs:subClassOf rtg:TerminologyEntity ;
+    rdfs:label "Concept" ;
+    rdfs:comment "An ontology / UMLS-style concept (MONDO / GO term)." .
+
+rtg:OntologySlice a owl:Class ;
+    rdfs:subClassOf rtg:TerminologyEntity ;
+    rdfs:label "Ontology slice" ;
+    rdfs:comment "A dated ontology release that codes are anchored to." .
+
+# -----------------------------------------------------------------------------
+# Object properties (UPPER_SNAKE — identical to the Neo4j relationship types and
+# to data/rdf/hero.ttl). Domains/ranges declared where the model constrains them.
+# -----------------------------------------------------------------------------
+
+rtg:REPORTS a owl:ObjectProperty ;
+    rdfs:label "reports" ;
+    rdfs:domain rtg:Patient ;
+    rdfs:range rtg:AdverseEvent ;
+    rdfs:comment "A patient reports an adverse event." .
+
+rtg:SUSPECTED_IN a owl:ObjectProperty ;
+    rdfs:label "suspected in" ;
+    rdfs:domain rtg:AdverseEvent ;
+    rdfs:range rtg:Drug ;
+    rdfs:comment "An adverse event is suspected to be caused by a drug." .
+
+rtg:TARGETS a owl:ObjectProperty ;
+    rdfs:label "targets" ;
+    rdfs:domain rtg:Drug ;
+    rdfs:range rtg:BiologicalTarget ;
+    rdfs:comment "A drug acts on a biological target." .
+
+rtg:IN_PATHWAY a owl:ObjectProperty, owl:TransitiveProperty ;
+    rdfs:label "in pathway" ;
+    rdfs:domain rtg:BiologicalTarget ;
+    rdfs:range rtg:Pathway ;
+    rdfs:comment "A target participates in a pathway. Transitive so nested pathway hierarchies close." .
+
+rtg:HAS_STAT a owl:ObjectProperty ;
+    rdfs:label "has stat" ;
+    rdfs:domain rtg:AdverseEvent ;
+    rdfs:range rtg:SignalStat ;
+    rdfs:comment "An adverse event carries a disproportionality statistic." .
+
+rtg:SUPPORTED_BY a owl:ObjectProperty ;
+    rdfs:label "supported by" ;
+    rdfs:domain rtg:SignalStat ;
+    rdfs:range rtg:EvidenceEntity ;
+    rdfs:comment "A signal statistic is supported by an evidence record." .
+
+rtg:RESOLVES_TO a owl:ObjectProperty ;
+    rdfs:label "resolves to" ;
+    rdfs:comment "A multimodal artifact resolves (via kNN / ontology mapping) to a concept or node." .
+
+rtg:MENTIONS a owl:ObjectProperty ;
+    rdfs:label "mentions" ;
+    rdfs:domain rtg:LiteratureAbstract ;
+    rdfs:comment "A literature abstract mentions a drug / adverse event / target." .
+
+rtg:STUDIES a owl:ObjectProperty ;
+    rdfs:label "studies" ;
+    rdfs:domain rtg:ClinicalTrial ;
+    rdfs:comment "A clinical trial investigates a drug / adverse event." .
+
+rtg:IN_ONTOLOGY a owl:ObjectProperty ;
+    rdfs:label "in ontology" ;
+    rdfs:range rtg:OntologySlice ;
+    rdfs:comment "A coded entity belongs to a dated ontology slice." .
+
+rtg:HAS_LABEL a owl:ObjectProperty ;
+    rdfs:label "has label" ;
+    rdfs:domain rtg:RegulatoryDoc ;
+    rdfs:comment "A regulatory document labels a drug / adverse event." .
+
+rtg:GENETIC_EVIDENCE a owl:ObjectProperty ;
+    rdfs:label "genetic evidence" ;
+    rdfs:domain rtg:GeneticAssociation ;
+    rdfs:comment "A genetic association provides evidence for a target / disease concept." .
+
+# --- Derived (entailed) mechanistic relation ---------------------------------
+# CANDIDATE_SIGNAL links a Drug to a Pathway whenever the deterministic chain
+#   Drug -TARGETS-> Target -IN_PATHWAY-> Pathway
+# holds. Declared via an OWL property chain so a reasoner MATERIALIZES it; the
+# verify script reproduces the same entailment with a SPARQL INSERT...WHERE
+# (Oxigraph does not run an OWL reasoner).
+rtg:CANDIDATE_SIGNAL a owl:ObjectProperty ;
+    rdfs:label "candidate signal" ;
+    rdfs:domain rtg:Drug ;
+    rdfs:range rtg:Pathway ;
+    owl:propertyChainAxiom ( rtg:TARGETS rtg:IN_PATHWAY ) ;
+    rdfs:comment "DERIVED: a drug is a candidate signal for a pathway it perturbs (TARGETS o IN_PATHWAY)." .
+
+# -----------------------------------------------------------------------------
+# Datatype properties — provenance / governance (the ALCOA+ / Part-11 surface).
+# These mirror the columns in data/import/*.csv and the literals in hero.ttl.
+# -----------------------------------------------------------------------------
+
+rtg:sourceSystem a owl:DatatypeProperty ;
+    rdfs:label "source system" ;
+    rdfs:domain rtg:GraphNode ;
+    rdfs:range xsd:string ;
+    rdfs:comment "ALCOA+ (Attributable): the system the fact was derived from." .
+
+rtg:ontologyVersion a owl:DatatypeProperty ;
+    rdfs:label "ontology version" ;
+    rdfs:domain rtg:GraphNode ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Currency: the dated terminology release (must be >= 2023)." .
+
+rtg:timestamp a owl:DatatypeProperty ;
+    rdfs:label "timestamp" ;
+    rdfs:domain rtg:GraphNode ;
+    rdfs:range xsd:dateTime ;
+    rdfs:comment "ALCOA+ (Contemporaneous): when the fact was recorded (ISO-8601)." .
+
+dcterms:license a owl:DatatypeProperty ;
+    rdfs:label "license" ;
+    rdfs:comment "Governance: the commercial-clean license of the fact (CC0 / CC-BY-4.0 / public-domain / Apache-2.0)." .
+
+# A handful of intrinsic datatype properties used across instances.
+rtg:code a owl:DatatypeProperty ; rdfs:domain rtg:GraphNode ; rdfs:range xsd:string ; rdfs:label "code" .
+rtg:vocab a owl:DatatypeProperty ; rdfs:domain rtg:GraphNode ; rdfs:range xsd:string ; rdfs:label "vocab" .
+rtg:class a owl:DatatypeProperty ; rdfs:domain rtg:Drug ; rdfs:range xsd:string ; rdfs:label "drug class" .
+rtg:symbol a owl:DatatypeProperty ; rdfs:domain rtg:BiologicalTarget ; rdfs:range xsd:string ; rdfs:label "gene symbol" .
+rtg:prr a owl:DatatypeProperty ; rdfs:domain rtg:SignalStat ; rdfs:range xsd:decimal ; rdfs:label "PRR" .
+rtg:ror a owl:DatatypeProperty ; rdfs:domain rtg:SignalStat ; rdfs:range xsd:decimal ; rdfs:label "ROR" .
+rtg:chi2 a owl:DatatypeProperty ; rdfs:domain rtg:SignalStat ; rdfs:range xsd:decimal ; rdfs:label "chi-squared" .
+rtg:ci a owl:DatatypeProperty ; rdfs:domain rtg:SignalStat ; rdfs:range xsd:string ; rdfs:label "confidence interval" .
+rtg:cases a owl:DatatypeProperty ; rdfs:domain rtg:SignalStat ; rdfs:range xsd:decimal ; rdfs:label "cases" .
+rtg:records a owl:DatatypeProperty ; rdfs:domain rtg:Evidence ; rdfs:range xsd:decimal ; rdfs:label "records" .
+rtg:otScore a owl:DatatypeProperty ; rdfs:domain rtg:GeneticAssociation ; rdfs:range xsd:decimal ; rdfs:label "Open Targets score" .
+rtg:efo a owl:DatatypeProperty ; rdfs:domain rtg:GeneticAssociation ; rdfs:range xsd:string ; rdfs:label "EFO id" .
+rtg:section a owl:DatatypeProperty ; rdfs:domain rtg:RegulatoryDoc ; rdfs:range xsd:string ; rdfs:label "label section" .
+rtg:summary a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "synthetic summary" .
+rtg:url a owl:DatatypeProperty ; rdfs:domain rtg:OntologySlice ; rdfs:range xsd:anyURI ; rdfs:label "url" .

@@ -1,0 +1,79 @@
+# =============================================================================
+# R&D Trust Graph — SKOS thesaurus (synonyms + hierarchy) for the demo concepts.
+#
+# This is an HONEST terminology surface: a hand-authored SKOS concept scheme
+# giving prefLabel / altLabel (synonyms) and broader / narrower (hierarchy) for
+# the concepts in the graph. The BFF parses it and serves it at GET /api/terminology.
+# It is NOT a live OWL reasoner — just real, version-controlled vocabulary data
+# we map against the codes already on the nodes.
+#
+# License hygiene: vocabulary terms here are public-domain / CC-BY ontology labels
+# (MONDO / MeSH / MedDRA style), restated as short synthetic synonyms.
+# =============================================================================
+
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix rtg:     <https://vinayagrw.github.io/rnd-trust-graph#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+rtg:scheme a skos:ConceptScheme ;
+    dcterms:title "R&D Trust Graph demo thesaurus" ;
+    dcterms:license "CC-BY-4.0" .
+
+rtg:CON-MYOCARDITIS a skos:Concept ;
+    skos:inScheme rtg:scheme ;
+    skos:prefLabel "Myocarditis" ;
+    skos:altLabel "inflammation of the heart muscle" ;
+    skos:altLabel "lymphocytic myocarditis" ;
+    skos:broader rtg:CON-CARDIOTOX ;
+    skos:notation "MONDO_0004496" .
+
+rtg:CON-CARDIOTOX a skos:Concept ;
+    skos:inScheme rtg:scheme ;
+    skos:prefLabel "Cardiomyopathy (drug-induced)" ;
+    skos:altLabel "cardiotoxicity" ;
+    skos:altLabel "heart muscle injury" ;
+    skos:narrower rtg:CON-MYOCARDITIS ;
+    skos:notation "MONDO_0004994" .
+
+rtg:CON-HYPERTENSION a skos:Concept ;
+    skos:inScheme rtg:scheme ;
+    skos:prefLabel "Hypertensive disorder" ;
+    skos:altLabel "high blood pressure" ;
+    skos:altLabel "raised blood pressure" ;
+    skos:notation "MONDO_0005044" .
+
+rtg:CON-AFIB a skos:Concept ;
+    skos:inScheme rtg:scheme ;
+    skos:prefLabel "Atrial fibrillation" ;
+    skos:altLabel "AFib" ;
+    skos:altLabel "irregular heartbeat" ;
+    skos:notation "MONDO_0004981" .
+
+rtg:CON-MI a skos:Concept ;
+    skos:inScheme rtg:scheme ;
+    skos:prefLabel "Myocardial infarction" ;
+    skos:altLabel "heart attack" ;
+    skos:altLabel "MI" ;
+    skos:broader rtg:CON-CARDIOTOX ;
+    skos:notation "MONDO_0005068" .
+
+rtg:CON-RA a skos:Concept ;
+    skos:inScheme rtg:scheme ;
+    skos:prefLabel "Rheumatoid arthritis" ;
+    skos:altLabel "RA" ;
+    skos:altLabel "inflammatory polyarthritis" ;
+    skos:notation "MONDO_0008383" .
+
+rtg:CON-COLITIS a skos:Concept ;
+    skos:inScheme rtg:scheme ;
+    skos:prefLabel "Colitis" ;
+    skos:altLabel "inflammation of the colon" ;
+    skos:altLabel "immune-mediated colitis" ;
+    skos:notation "MONDO_0005292" .
+
+rtg:CON-NEUTROPENIA a skos:Concept ;
+    skos:inScheme rtg:scheme ;
+    skos:prefLabel "Neutropenia" ;
+    skos:altLabel "low neutrophil count" ;
+    skos:altLabel "granulocytopenia" ;
+    skos:notation "MONDO_0002240" .

@@ -1,0 +1,1453 @@
+# =============================================================================
+# R&D Trust Graph — FULL dataset, generated from data/import/*.csv.
+# DO NOT EDIT BY HAND — regenerate via: tsx src/etl/rdf/generate.ts
+# Canonical RDF source of truth. Vocabulary matches data/rdf/ontology.ttl.
+# Generated at 2026-10-13T06:43:17.153Z
+# =============================================================================
+
+@prefix rtg:     <https://vinayagrw.github.io/rnd-trust-graph#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+# ---- Nodes (curated hero dataset) ------------------------------------------
+rtg:AE-MYOCARDITIS a rtg:AdverseEvent ;
+    rdfs:label "Immune-related myocarditis (OAE_0001489)" ;
+    rtg:code "OAE_0001489" ;
+    rtg:vocab "OAE" ;
+    prov:wasDerivedFrom "OAE" ;
+    rtg:sourceSystem "OAE" ;
+    rtg:ontologyVersion "2025-09" ;
+    rtg:timestamp "2026-06-02T10:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-02T10:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" .
+
+rtg:DRUG-CPI a rtg:Drug ;
+    rdfs:label "Checkpoint inhibitor (anti-PD-1)" ;
+    rtg:code "RXN-2563889" ;
+    rtg:vocab "RxNorm-Prescribable" ;
+    prov:wasDerivedFrom "RxNorm" ;
+    rtg:sourceSystem "RxNorm" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-02T10:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-02T10:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:class "PD-1 inhibitor" .
+
+rtg:TGT-PDCD1 a rtg:BiologicalTarget ;
+    rdfs:label "PD-1 / PDCD1" ;
+    rtg:code "P15116" ;
+    rtg:vocab "UniProt" ;
+    prov:wasDerivedFrom "Hetionet" ;
+    rtg:sourceSystem "Hetionet" ;
+    rtg:ontologyVersion "2026-04" ;
+    rtg:timestamp "2026-06-02T10:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-02T10:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC0" .
+
+rtg:PW-CHECKPOINT a rtg:Pathway ;
+    rdfs:label "T-cell immune checkpoint signaling" ;
+    rtg:code "WP4585" ;
+    rtg:vocab "WikiPathways" ;
+    prov:wasDerivedFrom "Hetionet" ;
+    rtg:sourceSystem "Hetionet" ;
+    rtg:ontologyVersion "2026-05" ;
+    rtg:timestamp "2026-06-02T10:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-02T10:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC0" .
+
+rtg:STAT-MYO-CPI a rtg:SignalStat ;
+    rdfs:label "Disproportionality (PRR 4.2)" ;
+    prov:wasDerivedFrom "openFDA FAERS" ;
+    rtg:sourceSystem "openFDA FAERS" ;
+    rtg:timestamp "2026-06-15T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-15T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:prr "4.2"^^xsd:decimal ;
+    rtg:ror "4.6"^^xsd:decimal ;
+    rtg:chi2 "58.3"^^xsd:decimal ;
+    rtg:ci "2.9-6.1" ;
+    rtg:cases "37"^^xsd:decimal .
+
+rtg:EV-FAERS a rtg:Evidence ;
+    rdfs:label "openFDA FAERS aggregate 2024Q1-2026Q2" ;
+    prov:wasDerivedFrom "openFDA FAERS" ;
+    rtg:sourceSystem "openFDA FAERS" ;
+    rtg:timestamp "2026-06-15T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-15T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:records "37"^^xsd:decimal .
+
+rtg:EV-PMID a rtg:Evidence ;
+    rdfs:label "Lit: checkpoint-inhibitor myocarditis (synthetic PMID 99000001)" ;
+    rtg:code "99000001" ;
+    rtg:vocab "PubMed" ;
+    prov:wasDerivedFrom "Synthetic citation" ;
+    rtg:sourceSystem "Synthetic citation" ;
+    rtg:timestamp "2026-06-10T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-10T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:CON-MYOCARDITIS a rtg:Concept ;
+    rdfs:label "Myocarditis (lymphocytic infiltration)" ;
+    rtg:code "MONDO_0004496" ;
+    rtg:vocab "MONDO" ;
+    prov:wasDerivedFrom "MONDO" ;
+    rtg:sourceSystem "MONDO" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-02T10:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-02T10:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" .
+
+rtg:CON-PD1ACT a rtg:Concept ;
+    rdfs:label "PD-1 pathway activation" ;
+    rtg:code "GO_0002250" ;
+    rtg:vocab "GO" ;
+    prov:wasDerivedFrom "Gene Ontology" ;
+    rtg:sourceSystem "Gene Ontology" ;
+    rtg:ontologyVersion "2026-05" ;
+    rtg:timestamp "2026-06-02T10:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-02T10:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" .
+
+rtg:IMG-BIOPSY a rtg:PathologyImage ;
+    rdfs:label "Myocardial biopsy WSI (synthetic)" ;
+    prov:wasDerivedFrom "Synthetic WSI" ;
+    rtg:sourceSystem "Synthetic WSI" ;
+    rtg:timestamp "2026-06-05T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-05T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC0" .
+
+rtg:OMX-RNASEQ a rtg:OmicsProfile ;
+    rdfs:label "Bulk RNA-seq immune signature (synthetic)" ;
+    prov:wasDerivedFrom "Synthetic omics" ;
+    rtg:sourceSystem "Synthetic omics" ;
+    rtg:timestamp "2026-06-05T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-05T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC0" .
+
+rtg:AE-HYPERTENSION a rtg:AdverseEvent ;
+    rdfs:label "Drug-induced hypertension (MedDRA 10020772)" ;
+    rtg:code "10020772" ;
+    rtg:vocab "MedDRA" ;
+    prov:wasDerivedFrom "MedDRA" ;
+    rtg:sourceSystem "MedDRA" ;
+    rtg:ontologyVersion "2025-03" ;
+    rtg:timestamp "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:DRUG-VEGFR a rtg:Drug ;
+    rdfs:label "Anti-VEGFR2 inhibitor (ramucirumab)" ;
+    rtg:code "1535996" ;
+    rtg:vocab "RxNorm" ;
+    prov:wasDerivedFrom "RxNorm" ;
+    rtg:sourceSystem "RxNorm" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:class "VEGFR2 inhibitor" .
+
+rtg:TGT-KDR a rtg:BiologicalTarget ;
+    rdfs:label "VEGFR2 / KDR" ;
+    rtg:code "P35968" ;
+    rtg:vocab "UniProt" ;
+    prov:wasDerivedFrom "UniProt" ;
+    rtg:sourceSystem "UniProt" ;
+    rtg:ontologyVersion "2026-04" ;
+    rtg:timestamp "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" ;
+    rtg:symbol "KDR" .
+
+rtg:PW-ANGIO a rtg:Pathway ;
+    rdfs:label "VEGFA-VEGFR2 signaling (angiogenesis)" ;
+    rtg:code "R-HSA-4420097" ;
+    rtg:vocab "Reactome" ;
+    prov:wasDerivedFrom "Reactome" ;
+    rtg:sourceSystem "Reactome" ;
+    rtg:ontologyVersion "2026-03" ;
+    rtg:timestamp "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" .
+
+rtg:STAT-VEGF-HTN a rtg:SignalStat ;
+    rdfs:label "Disproportionality (PRR 3.6)" ;
+    prov:wasDerivedFrom "openFDA FAERS" ;
+    rtg:sourceSystem "openFDA FAERS" ;
+    rtg:timestamp "2026-06-15T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-15T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:prr "3.6"^^xsd:decimal ;
+    rtg:ror "3.8"^^xsd:decimal ;
+    rtg:chi2 "41.2"^^xsd:decimal ;
+    rtg:ci "2.4-5.1" ;
+    rtg:cases "29"^^xsd:decimal .
+
+rtg:EV-PMID-VEGF a rtg:Evidence ;
+    rdfs:label "Lit: VEGF-inhibitor hypertension (PMID 20694011)" ;
+    prov:wasDerivedFrom "PubMed" ;
+    rtg:sourceSystem "PubMed" ;
+    rtg:timestamp "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:AE-AFIB a rtg:AdverseEvent ;
+    rdfs:label "Atrial fibrillation (MedDRA 10003658)" ;
+    rtg:code "10003658" ;
+    rtg:vocab "MedDRA" ;
+    prov:wasDerivedFrom "MedDRA" ;
+    rtg:sourceSystem "MedDRA" ;
+    rtg:ontologyVersion "2025-03" ;
+    rtg:timestamp "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:DRUG-BTK a rtg:Drug ;
+    rdfs:label "BTK inhibitor (ibrutinib)" ;
+    rtg:code "1442981" ;
+    rtg:vocab "RxNorm" ;
+    prov:wasDerivedFrom "RxNorm" ;
+    rtg:sourceSystem "RxNorm" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:class "BTK inhibitor" .
+
+rtg:TGT-BTK a rtg:BiologicalTarget ;
+    rdfs:label "Bruton tyrosine kinase / BTK" ;
+    rtg:code "Q06187" ;
+    rtg:vocab "UniProt" ;
+    prov:wasDerivedFrom "UniProt" ;
+    rtg:sourceSystem "UniProt" ;
+    rtg:ontologyVersion "2026-04" ;
+    rtg:timestamp "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" ;
+    rtg:symbol "BTK" .
+
+rtg:STAT-BTK-AFIB a rtg:SignalStat ;
+    rdfs:label "Disproportionality (PRR 5.1)" ;
+    prov:wasDerivedFrom "openFDA FAERS" ;
+    rtg:sourceSystem "openFDA FAERS" ;
+    rtg:timestamp "2026-06-15T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-15T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:prr "5.1"^^xsd:decimal ;
+    rtg:ror "5.5"^^xsd:decimal ;
+    rtg:chi2 "63.0"^^xsd:decimal ;
+    rtg:ci "3.4-7.6" ;
+    rtg:cases "44"^^xsd:decimal .
+
+rtg:AE-LVDYS a rtg:AdverseEvent ;
+    rdfs:label "Left ventricular dysfunction (MedDRA 10049694)" ;
+    rtg:code "10049694" ;
+    rtg:vocab "MedDRA" ;
+    prov:wasDerivedFrom "MedDRA" ;
+    rtg:sourceSystem "MedDRA" ;
+    rtg:ontologyVersion "2025-03" ;
+    rtg:timestamp "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:DRUG-HER2 a rtg:Drug ;
+    rdfs:label "Anti-HER2 antibody (trastuzumab)" ;
+    rtg:code "224905" ;
+    rtg:vocab "RxNorm" ;
+    prov:wasDerivedFrom "RxNorm" ;
+    rtg:sourceSystem "RxNorm" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:class "HER2 inhibitor" .
+
+rtg:TGT-ERBB2 a rtg:BiologicalTarget ;
+    rdfs:label "HER2 / ERBB2" ;
+    rtg:code "P04626" ;
+    rtg:vocab "UniProt" ;
+    prov:wasDerivedFrom "UniProt" ;
+    rtg:sourceSystem "UniProt" ;
+    rtg:ontologyVersion "2026-04" ;
+    rtg:timestamp "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" ;
+    rtg:symbol "ERBB2" .
+
+rtg:STAT-HER2-LVDYS a rtg:SignalStat ;
+    rdfs:label "Disproportionality (PRR 4.8)" ;
+    prov:wasDerivedFrom "openFDA FAERS" ;
+    rtg:sourceSystem "openFDA FAERS" ;
+    rtg:timestamp "2026-06-15T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-15T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:prr "4.8"^^xsd:decimal ;
+    rtg:ror "5.0"^^xsd:decimal ;
+    rtg:chi2 "55.7"^^xsd:decimal ;
+    rtg:ci "3.1-7.2" ;
+    rtg:cases "38"^^xsd:decimal .
+
+rtg:AE-COLITIS a rtg:AdverseEvent ;
+    rdfs:label "Immune-mediated colitis (MedDRA 10009887)" ;
+    rtg:code "10009887" ;
+    rtg:vocab "MedDRA" ;
+    prov:wasDerivedFrom "MedDRA" ;
+    rtg:sourceSystem "MedDRA" ;
+    rtg:ontologyVersion "2025-03" ;
+    rtg:timestamp "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:STAT-CPI-COLITIS a rtg:SignalStat ;
+    rdfs:label "Disproportionality (PRR 6.3)" ;
+    prov:wasDerivedFrom "openFDA FAERS" ;
+    rtg:sourceSystem "openFDA FAERS" ;
+    rtg:timestamp "2026-06-15T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-15T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:prr "6.3"^^xsd:decimal ;
+    rtg:ror "6.9"^^xsd:decimal ;
+    rtg:chi2 "78.4"^^xsd:decimal ;
+    rtg:ci "4.2-9.4" ;
+    rtg:cases "52"^^xsd:decimal .
+
+rtg:AE-HYPOTHYROID a rtg:AdverseEvent ;
+    rdfs:label "Immune-mediated hypothyroidism (MedDRA 10021114)" ;
+    rtg:code "10021114" ;
+    rtg:vocab "MedDRA" ;
+    prov:wasDerivedFrom "MedDRA" ;
+    rtg:sourceSystem "MedDRA" ;
+    rtg:ontologyVersion "2025-03" ;
+    rtg:timestamp "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:STAT-CPI-HYPOTHYROID a rtg:SignalStat ;
+    rdfs:label "Disproportionality (PRR 7.0)" ;
+    prov:wasDerivedFrom "openFDA FAERS" ;
+    rtg:sourceSystem "openFDA FAERS" ;
+    rtg:timestamp "2026-06-15T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-15T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:prr "7.0"^^xsd:decimal ;
+    rtg:ror "7.4"^^xsd:decimal ;
+    rtg:chi2 "85.1"^^xsd:decimal ;
+    rtg:ci "4.8-10.2" ;
+    rtg:cases "61"^^xsd:decimal .
+
+rtg:CON-HYPERTENSION a rtg:Concept ;
+    rdfs:label "Hypertensive disorder" ;
+    rtg:code "MONDO_0005044" ;
+    rtg:vocab "MONDO" ;
+    prov:wasDerivedFrom "MONDO" ;
+    rtg:sourceSystem "MONDO" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" .
+
+rtg:CON-AFIB a rtg:Concept ;
+    rdfs:label "Atrial fibrillation" ;
+    rtg:code "MONDO_0004981" ;
+    rtg:vocab "MONDO" ;
+    prov:wasDerivedFrom "MONDO" ;
+    rtg:sourceSystem "MONDO" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" .
+
+rtg:CON-CARDIOTOX a rtg:Concept ;
+    rdfs:label "Cardiomyopathy (drug-induced)" ;
+    rtg:code "MONDO_0004994" ;
+    rtg:vocab "MONDO" ;
+    prov:wasDerivedFrom "MONDO" ;
+    rtg:sourceSystem "MONDO" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" .
+
+rtg:CON-COLITIS a rtg:Concept ;
+    rdfs:label "Colitis" ;
+    rtg:code "MONDO_0005292" ;
+    rtg:vocab "MONDO" ;
+    prov:wasDerivedFrom "MONDO" ;
+    rtg:sourceSystem "MONDO" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" .
+
+rtg:LIT-PMID-27959767 a rtg:LiteratureAbstract ;
+    rdfs:label "Fulminant myocarditis with combination checkpoint blockade (PMID 27959767)" ;
+    rtg:code "27959767" ;
+    rtg:vocab "PubMed" ;
+    prov:wasDerivedFrom "PubMed" ;
+    rtg:sourceSystem "PubMed" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-10T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-10T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:summary "Synthetic: two cases of fatal immune-related myocarditis after anti-PD-1 plus anti-CTLA-4 therapy." .
+
+rtg:LIT-PMID-20694011 a rtg:LiteratureAbstract ;
+    rdfs:label "Hypertension from VEGF-signaling-pathway inhibition (PMID 20694011)" ;
+    rtg:code "20694011" ;
+    rtg:vocab "PubMed" ;
+    prov:wasDerivedFrom "PubMed" ;
+    rtg:sourceSystem "PubMed" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-10T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-10T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:summary "Synthetic: VEGFR2 inhibition raises blood pressure via reduced nitric-oxide and capillary rarefaction." .
+
+rtg:LIT-PMID-25103805 a rtg:LiteratureAbstract ;
+    rdfs:label "Atrial fibrillation incidence with ibrutinib (PMID 25103805)" ;
+    rtg:code "25103805" ;
+    rtg:vocab "PubMed" ;
+    prov:wasDerivedFrom "PubMed" ;
+    rtg:sourceSystem "PubMed" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-10T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-10T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:summary "Synthetic: BTK inhibition is associated with new-onset atrial fibrillation in CLL cohorts." .
+
+rtg:LIT-PMID-11870201 a rtg:LiteratureAbstract ;
+    rdfs:label "Cardiac dysfunction with trastuzumab therapy (PMID 11870201)" ;
+    rtg:code "11870201" ;
+    rtg:vocab "PubMed" ;
+    prov:wasDerivedFrom "PubMed" ;
+    rtg:sourceSystem "PubMed" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-10T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-10T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:summary "Synthetic: HER2-directed therapy reduces left-ventricular ejection fraction, especially with anthracyclines." .
+
+rtg:LIT-PMID-29442540 a rtg:LiteratureAbstract ;
+    rdfs:label "Management of immune-related adverse events (PMID 29442540)" ;
+    rtg:code "29442540" ;
+    rtg:vocab "PubMed" ;
+    prov:wasDerivedFrom "PubMed" ;
+    rtg:sourceSystem "PubMed" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-10T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-10T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:summary "Synthetic: checkpoint inhibitors cause immune-mediated colitis and endocrinopathies including hypothyroidism." .
+
+rtg:CT-NCT02743819 a rtg:ClinicalTrial ;
+    rdfs:label "Checkpoint inhibitor safety registry (NCT02743819)" ;
+    rtg:code "NCT02743819" ;
+    rtg:vocab "ClinicalTrials.gov" ;
+    prov:wasDerivedFrom "ClinicalTrials.gov" ;
+    rtg:sourceSystem "ClinicalTrials.gov" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-11T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-11T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:CT-NCT01168973 a rtg:ClinicalTrial ;
+    rdfs:label "Ramucirumab in advanced gastric cancer (NCT01168973)" ;
+    rtg:code "NCT01168973" ;
+    rtg:vocab "ClinicalTrials.gov" ;
+    prov:wasDerivedFrom "ClinicalTrials.gov" ;
+    rtg:sourceSystem "ClinicalTrials.gov" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-11T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-11T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:CT-NCT01578707 a rtg:ClinicalTrial ;
+    rdfs:label "Ibrutinib in relapsed CLL (NCT01578707)" ;
+    rtg:code "NCT01578707" ;
+    rtg:vocab "ClinicalTrials.gov" ;
+    prov:wasDerivedFrom "ClinicalTrials.gov" ;
+    rtg:sourceSystem "ClinicalTrials.gov" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-11T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-11T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:CT-NCT00021255 a rtg:ClinicalTrial ;
+    rdfs:label "Trastuzumab adjuvant breast cancer (NCT00021255)" ;
+    rtg:code "NCT00021255" ;
+    rtg:vocab "ClinicalTrials.gov" ;
+    prov:wasDerivedFrom "ClinicalTrials.gov" ;
+    rtg:sourceSystem "ClinicalTrials.gov" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-11T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-11T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:ONTO-MESH-2026-06 a rtg:OntologySlice ;
+    rdfs:label "MeSH 2026 release" ;
+    rtg:vocab "MeSH" ;
+    prov:wasDerivedFrom "NLM MeSH" ;
+    rtg:sourceSystem "NLM MeSH" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-01T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-01T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:url "https://meshb.nlm.nih.gov" .
+
+rtg:ONTO-MONDO-2026-06 a rtg:OntologySlice ;
+    rdfs:label "MONDO 2026-06 release" ;
+    rtg:vocab "MONDO" ;
+    prov:wasDerivedFrom "MONDO" ;
+    rtg:sourceSystem "MONDO" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-01T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-01T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:url "https://mondo.monarchinitiative.org" .
+
+rtg:ONTO-OAE-2025-09 a rtg:OntologySlice ;
+    rdfs:label "OAE 2025-09 release" ;
+    rtg:vocab "OAE" ;
+    prov:wasDerivedFrom "OAE" ;
+    rtg:sourceSystem "OAE" ;
+    rtg:ontologyVersion "2025-09" ;
+    rtg:timestamp "2025-09-01T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2025-09-01T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:url "https://www.oae-ontology.org" .
+
+rtg:ONTO-REACTOME-88 a rtg:OntologySlice ;
+    rdfs:label "Reactome v88 release" ;
+    rtg:vocab "Reactome" ;
+    prov:wasDerivedFrom "Reactome" ;
+    rtg:sourceSystem "Reactome" ;
+    rtg:ontologyVersion "2026-03" ;
+    rtg:timestamp "2026-03-01T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-03-01T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:url "https://reactome.org" .
+
+rtg:ONTO-MEDDRA-27 a rtg:OntologySlice ;
+    rdfs:label "MedDRA v27.0 release" ;
+    rtg:vocab "MedDRA" ;
+    prov:wasDerivedFrom "MedDRA" ;
+    rtg:sourceSystem "MedDRA" ;
+    rtg:ontologyVersion "2025-03" ;
+    rtg:timestamp "2025-03-01T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2025-03-01T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:url "https://www.meddra.org" .
+
+rtg:ONTO-ENSEMBL-111 a rtg:OntologySlice ;
+    rdfs:label "Ensembl release 111" ;
+    rtg:vocab "Ensembl" ;
+    prov:wasDerivedFrom "Ensembl" ;
+    rtg:sourceSystem "Ensembl" ;
+    rtg:ontologyVersion "2024-01" ;
+    rtg:timestamp "2024-01-01T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2024-01-01T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:url "https://www.ensembl.org" .
+
+rtg:ONTO-OT-2024-06 a rtg:OntologySlice ;
+    rdfs:label "Open Targets 2024.06 release" ;
+    rtg:vocab "Open Targets" ;
+    prov:wasDerivedFrom "Open Targets" ;
+    rtg:sourceSystem "Open Targets" ;
+    rtg:ontologyVersion "2024-06" ;
+    rtg:timestamp "2024-06-01T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2024-06-01T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC0" ;
+    rtg:url "https://platform.opentargets.org" .
+
+rtg:ONTO-DAILYMED-2026 a rtg:OntologySlice ;
+    rdfs:label "DailyMed 2026 SPL release" ;
+    rtg:vocab "DailyMed" ;
+    prov:wasDerivedFrom "DailyMed" ;
+    rtg:sourceSystem "DailyMed" ;
+    rtg:ontologyVersion "2026-01" ;
+    rtg:timestamp "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:url "https://dailymed.nlm.nih.gov" .
+
+rtg:AE-SERIOUS-INFECTION a rtg:AdverseEvent ;
+    rdfs:label "Serious infection - pneumonia (MedDRA 10035664)" ;
+    rtg:code "10035664" ;
+    rtg:vocab "MedDRA" ;
+    prov:wasDerivedFrom "MedDRA" ;
+    rtg:sourceSystem "MedDRA" ;
+    rtg:ontologyVersion "2025-03" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:DRUG-JAK a rtg:Drug ;
+    rdfs:label "JAK inhibitor (tofacitinib)" ;
+    rtg:code "CHEMBL221959" ;
+    rtg:vocab "ChEMBL" ;
+    prov:wasDerivedFrom "ChEMBL" ;
+    rtg:sourceSystem "ChEMBL" ;
+    rtg:ontologyVersion "2024-03" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" ;
+    rtg:class "JAK inhibitor" .
+
+rtg:TGT-JAK1 a rtg:BiologicalTarget ;
+    rdfs:label "Janus kinase 1 / JAK1" ;
+    rtg:code "P23458" ;
+    rtg:vocab "UniProt" ;
+    prov:wasDerivedFrom "UniProt" ;
+    rtg:sourceSystem "UniProt" ;
+    rtg:ontologyVersion "2026-04" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" ;
+    rtg:symbol "JAK1" .
+
+rtg:PW-JAKSTAT a rtg:Pathway ;
+    rdfs:label "JAK-STAT signaling (cytokine)" ;
+    rtg:code "R-HSA-6785807" ;
+    rtg:vocab "Reactome" ;
+    prov:wasDerivedFrom "Reactome" ;
+    rtg:sourceSystem "Reactome" ;
+    rtg:ontologyVersion "2026-03" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" .
+
+rtg:STAT-JAK-INFECTION a rtg:SignalStat ;
+    rdfs:label "Disproportionality (PRR 3.9)" ;
+    prov:wasDerivedFrom "openFDA FAERS" ;
+    rtg:sourceSystem "openFDA FAERS" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:prr "3.9"^^xsd:decimal ;
+    rtg:ror "4.1"^^xsd:decimal ;
+    rtg:chi2 "47.6"^^xsd:decimal ;
+    rtg:ci "2.7-5.6" ;
+    rtg:cases "34"^^xsd:decimal .
+
+rtg:EV-PMID-JAK a rtg:Evidence ;
+    rdfs:label "Lit: serious infections with tofacitinib (PMID 28953575)" ;
+    prov:wasDerivedFrom "PubMed" ;
+    rtg:sourceSystem "PubMed" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:CON-RA a rtg:Concept ;
+    rdfs:label "Rheumatoid arthritis" ;
+    rtg:code "MONDO_0008383" ;
+    rtg:vocab "MONDO" ;
+    prov:wasDerivedFrom "MONDO" ;
+    rtg:sourceSystem "MONDO" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" .
+
+rtg:LIT-PMID-28953575 a rtg:LiteratureAbstract ;
+    rdfs:label "Serious infection risk with tofacitinib in RA (PMID 28953575)" ;
+    rtg:code "28953575" ;
+    rtg:vocab "PubMed" ;
+    prov:wasDerivedFrom "PubMed" ;
+    rtg:sourceSystem "PubMed" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:summary "Synthetic: JAK inhibition raises rates of serious and opportunistic infections including pneumonia and herpes zoster in rheumatoid-arthritis cohorts." .
+
+rtg:CT-NCT00847613 a rtg:ClinicalTrial ;
+    rdfs:label "Tofacitinib in active rheumatoid arthritis (NCT00847613)" ;
+    rtg:code "NCT00847613" ;
+    rtg:vocab "ClinicalTrials.gov" ;
+    prov:wasDerivedFrom "ClinicalTrials.gov" ;
+    rtg:sourceSystem "ClinicalTrials.gov" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:AE-NEUTROPENIA a rtg:AdverseEvent ;
+    rdfs:label "Neutropenia (MedDRA 10029354)" ;
+    rtg:code "10029354" ;
+    rtg:vocab "MedDRA" ;
+    prov:wasDerivedFrom "MedDRA" ;
+    rtg:sourceSystem "MedDRA" ;
+    rtg:ontologyVersion "2025-03" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:DRUG-CDK a rtg:Drug ;
+    rdfs:label "CDK4/6 inhibitor (palbociclib)" ;
+    rtg:code "CHEMBL189963" ;
+    rtg:vocab "ChEMBL" ;
+    prov:wasDerivedFrom "ChEMBL" ;
+    rtg:sourceSystem "ChEMBL" ;
+    rtg:ontologyVersion "2024-03" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" ;
+    rtg:class "CDK4/6 inhibitor" .
+
+rtg:TGT-CDK6 a rtg:BiologicalTarget ;
+    rdfs:label "Cyclin-dependent kinase 6 / CDK6" ;
+    rtg:code "Q00534" ;
+    rtg:vocab "UniProt" ;
+    prov:wasDerivedFrom "UniProt" ;
+    rtg:sourceSystem "UniProt" ;
+    rtg:ontologyVersion "2026-04" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" ;
+    rtg:symbol "CDK6" .
+
+rtg:STAT-CDK-NEUTRO a rtg:SignalStat ;
+    rdfs:label "Disproportionality (PRR 8.2)" ;
+    prov:wasDerivedFrom "openFDA FAERS" ;
+    rtg:sourceSystem "openFDA FAERS" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:prr "8.2"^^xsd:decimal ;
+    rtg:ror "9.1"^^xsd:decimal ;
+    rtg:chi2 "102.4"^^xsd:decimal ;
+    rtg:ci "6.0-11.2" ;
+    rtg:cases "73"^^xsd:decimal .
+
+rtg:LIT-PMID-25524798 a rtg:LiteratureAbstract ;
+    rdfs:label "Neutropenia with palbociclib in breast cancer (PMID 25524798)" ;
+    rtg:code "25524798" ;
+    rtg:vocab "PubMed" ;
+    prov:wasDerivedFrom "PubMed" ;
+    rtg:sourceSystem "PubMed" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:summary "Synthetic: CDK4/6 inhibition causes dose-dependent reversible neutropenia distinct from chemotherapy myelosuppression." .
+
+rtg:CT-NCT01740427 a rtg:ClinicalTrial ;
+    rdfs:label "Palbociclib plus letrozole in advanced breast cancer (NCT01740427)" ;
+    rtg:code "NCT01740427" ;
+    rtg:vocab "ClinicalTrials.gov" ;
+    prov:wasDerivedFrom "ClinicalTrials.gov" ;
+    rtg:sourceSystem "ClinicalTrials.gov" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:CON-NEUTROPENIA a rtg:Concept ;
+    rdfs:label "Neutropenia" ;
+    rtg:code "MONDO_0002240" ;
+    rtg:vocab "MONDO" ;
+    prov:wasDerivedFrom "MONDO" ;
+    rtg:sourceSystem "MONDO" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" .
+
+rtg:GA-OT-PDCD1-MYOCARDITIS a rtg:GeneticAssociation ;
+    rdfs:label "Open Targets: PDCD1-myocarditis association" ;
+    rtg:code "ENSG00000188389" ;
+    rtg:vocab "Ensembl;Open Targets" ;
+    prov:wasDerivedFrom "Open Targets" ;
+    rtg:sourceSystem "Open Targets" ;
+    rtg:ontologyVersion "2024-06" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC0" ;
+    rtg:otScore "0.41"^^xsd:decimal ;
+    rtg:efo "EFO_0000556" .
+
+rtg:GA-OT-KDR-HYPERTENSION a rtg:GeneticAssociation ;
+    rdfs:label "Open Targets: KDR-hypertension association" ;
+    rtg:code "ENSG00000128052" ;
+    rtg:vocab "Ensembl;Open Targets" ;
+    prov:wasDerivedFrom "Open Targets" ;
+    rtg:sourceSystem "Open Targets" ;
+    rtg:ontologyVersion "2024-06" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC0" ;
+    rtg:otScore "0.36"^^xsd:decimal ;
+    rtg:efo "EFO_0000537" .
+
+rtg:GA-OT-JAK1-RA a rtg:GeneticAssociation ;
+    rdfs:label "Open Targets: JAK1-rheumatoid-arthritis association" ;
+    rtg:code "ENSG00000162434" ;
+    rtg:vocab "Ensembl;Open Targets" ;
+    prov:wasDerivedFrom "Open Targets" ;
+    rtg:sourceSystem "Open Targets" ;
+    rtg:ontologyVersion "2024-06" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC0" ;
+    rtg:otScore "0.52"^^xsd:decimal ;
+    rtg:efo "EFO_0000685" .
+
+rtg:GA-OT-BTK-AFIB a rtg:GeneticAssociation ;
+    rdfs:label "Open Targets: BTK-atrial-fibrillation association" ;
+    rtg:code "ENSG00000010671" ;
+    rtg:vocab "Ensembl;Open Targets" ;
+    prov:wasDerivedFrom "Open Targets" ;
+    rtg:sourceSystem "Open Targets" ;
+    rtg:ontologyVersion "2024-06" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC0" ;
+    rtg:otScore "0.29"^^xsd:decimal ;
+    rtg:efo "EFO_0000275" .
+
+rtg:GA-OT-ERBB2-CARDIOTOX a rtg:GeneticAssociation ;
+    rdfs:label "Open Targets: ERBB2-cardiomyopathy association" ;
+    rtg:code "ENSG00000141736" ;
+    rtg:vocab "Ensembl;Open Targets" ;
+    prov:wasDerivedFrom "Open Targets" ;
+    rtg:sourceSystem "Open Targets" ;
+    rtg:ontologyVersion "2024-06" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC0" ;
+    rtg:otScore "0.33"^^xsd:decimal ;
+    rtg:efo "EFO_0000318" .
+
+rtg:REG-FDA-CPI-MYOCARDITIS a rtg:RegulatoryDoc ;
+    rdfs:label "FDA label - checkpoint inhibitor immune-mediated myocarditis warning (BLA 125514)" ;
+    rtg:code "125514" ;
+    rtg:vocab "FDA Application Number" ;
+    prov:wasDerivedFrom "DailyMed" ;
+    rtg:sourceSystem "DailyMed" ;
+    rtg:ontologyVersion "2026-01" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:section "Warnings and Precautions" ;
+    rtg:summary "Synthetic: label warns of immune-mediated myocarditis" .
+
+rtg:REG-FDA-JAK-INFECTION a rtg:RegulatoryDoc ;
+    rdfs:label "FDA boxed warning - JAK inhibitor serious infections (NDA 203214)" ;
+    rtg:code "203214" ;
+    rtg:vocab "FDA Application Number" ;
+    prov:wasDerivedFrom "DailyMed" ;
+    rtg:sourceSystem "DailyMed" ;
+    rtg:ontologyVersion "2026-01" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:section "Boxed Warning" ;
+    rtg:summary "Synthetic: boxed warning for serious infections including tuberculosis and opportunistic infection" .
+
+rtg:REG-FDA-VEGFR-HTN a rtg:RegulatoryDoc ;
+    rdfs:label "FDA label - VEGFR inhibitor hypertension (BLA 125477)" ;
+    rtg:code "125477" ;
+    rtg:vocab "FDA Application Number" ;
+    prov:wasDerivedFrom "DailyMed" ;
+    rtg:sourceSystem "DailyMed" ;
+    rtg:ontologyVersion "2026-01" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:section "Warnings and Precautions" ;
+    rtg:summary "Synthetic: monitor blood pressure" .
+
+rtg:REG-EMA-HER2-LVDYS a rtg:RegulatoryDoc ;
+    rdfs:label "EMA assessment - HER2 therapy cardiac dysfunction (EMEA/H/C/000278)" ;
+    rtg:code "EMEA-H-C-000278" ;
+    rtg:vocab "EMA Procedure Number" ;
+    prov:wasDerivedFrom "EMA" ;
+    rtg:sourceSystem "EMA" ;
+    rtg:ontologyVersion "2026-01" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:section "Special warnings" ;
+    rtg:summary "Synthetic: assess LVEF before and during treatment" .
+
+# ---- Noise nodes (deliberate SHACL violators for the readiness radar) ------
+rtg:DRUG-ORPHAN a rtg:Drug ;
+    rdfs:label "Investigational compound JNJ-XR (no target link)" ;
+    rtg:code "RXN-9999999" ;
+    rtg:vocab "RxNorm-Prescribable" ;
+    prov:wasDerivedFrom "Internal" ;
+    rtg:sourceSystem "Internal" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-20T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-20T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "unknown" .
+
+rtg:CON-STALE a rtg:Concept ;
+    rdfs:label "Cardiotoxicity (deprecated code)" ;
+    rtg:code "C0876994" ;
+    rtg:vocab "UMLS" ;
+    prov:wasDerivedFrom "Legacy import" ;
+    rtg:sourceSystem "Legacy import" ;
+    rtg:ontologyVersion "2019-01" ;
+    rtg:timestamp "2026-06-20T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-20T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" .
+
+rtg:TGT-NOPROV a rtg:BiologicalTarget ;
+    rdfs:label "Uncurated target P0XXXX" ;
+    rtg:code "P0XXXX" ;
+    rtg:vocab "UniProt" .
+
+rtg:AE-CONFLICT a rtg:AdverseEvent ;
+    rdfs:label "Myocarditis (conflicting status)" ;
+    rtg:code "OAE_0001489" ;
+    rtg:vocab "OAE" ;
+    prov:wasDerivedFrom "Legacy PV" ;
+    rtg:sourceSystem "Legacy PV" ;
+    rtg:ontologyVersion "2024-02" ;
+    rtg:timestamp "2026-06-20T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-20T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" ;
+    rtg:status "refuted" .
+
+rtg:STAT-DUP-A a rtg:SignalStat ;
+    rdfs:label "Disproportionality (duplicate import A)" ;
+    rtg:code "FAERS-DUP-0001" ;
+    rtg:vocab "FAERS" ;
+    prov:wasDerivedFrom "openFDA FAERS" ;
+    rtg:sourceSystem "openFDA FAERS" ;
+    rtg:timestamp "2026-06-20T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-20T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:prr "4.2"^^xsd:decimal ;
+    rtg:ror "4.6"^^xsd:decimal .
+
+rtg:STAT-DUP-B a rtg:SignalStat ;
+    rdfs:label "Disproportionality (duplicate import B)" ;
+    rtg:code "FAERS-DUP-0001" ;
+    rtg:vocab "FAERS" ;
+    prov:wasDerivedFrom "openFDA FAERS" ;
+    rtg:sourceSystem "openFDA FAERS" ;
+    rtg:timestamp "2026-06-20T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-20T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:prr "4.2"^^xsd:decimal ;
+    rtg:ror "4.6"^^xsd:decimal .
+
+rtg:STAT-NOFOLLOWUP a rtg:SignalStat ;
+    rdfs:label "Disproportionality escalated awaiting review" ;
+    rtg:code "FAERS-ESC-0007" ;
+    rtg:vocab "FAERS" ;
+    prov:wasDerivedFrom "openFDA FAERS" ;
+    rtg:sourceSystem "openFDA FAERS" ;
+    rtg:timestamp "2026-06-20T00:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-20T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" ;
+    rtg:prr "5.5"^^xsd:decimal ;
+    rtg:status "escalated" .
+
+# ---- Patients (synthetic Synthea subjects, PHI-free) -----------------------
+rtg:PT-001 a rtg:Patient ;
+    rdfs:label "Subject SYN-001" ;
+    rtg:gender "F" ;
+    rtg:birthdate "1958-04-12" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-01T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-01T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-002 a rtg:Patient ;
+    rdfs:label "Subject SYN-002" ;
+    rtg:gender "M" ;
+    rtg:birthdate "1949-11-03" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-01T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-01T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-003 a rtg:Patient ;
+    rdfs:label "Subject SYN-003" ;
+    rtg:gender "F" ;
+    rtg:birthdate "1963-07-21" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-01T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-01T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-004 a rtg:Patient ;
+    rdfs:label "Subject SYN-004" ;
+    rtg:gender "M" ;
+    rtg:birthdate "1955-02-09" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-01T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-01T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-005 a rtg:Patient ;
+    rdfs:label "Subject SYN-005" ;
+    rtg:gender "F" ;
+    rtg:birthdate "1968-09-30" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-01T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-01T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-006 a rtg:Patient ;
+    rdfs:label "Subject SYN-006" ;
+    rtg:gender "M" ;
+    rtg:birthdate "1951-12-17" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-01T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-01T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-101 a rtg:Patient ;
+    rdfs:label "Subject SYN-101" ;
+    rtg:gender "F" ;
+    rtg:birthdate "1960-03-08" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-08T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-08T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-102 a rtg:Patient ;
+    rdfs:label "Subject SYN-102" ;
+    rtg:gender "M" ;
+    rtg:birthdate "1954-07-19" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-08T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-08T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-103 a rtg:Patient ;
+    rdfs:label "Subject SYN-103" ;
+    rtg:gender "F" ;
+    rtg:birthdate "1966-01-25" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-08T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-08T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-104 a rtg:Patient ;
+    rdfs:label "Subject SYN-104" ;
+    rtg:gender "M" ;
+    rtg:birthdate "1948-10-02" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-08T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-08T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-105 a rtg:Patient ;
+    rdfs:label "Subject SYN-105" ;
+    rtg:gender "F" ;
+    rtg:birthdate "1971-05-14" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-08T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-08T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-106 a rtg:Patient ;
+    rdfs:label "Subject SYN-106" ;
+    rtg:gender "M" ;
+    rtg:birthdate "1957-09-11" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-08T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-08T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-201 a rtg:Patient ;
+    rdfs:label "Subject SYN-201" ;
+    rtg:gender "M" ;
+    rtg:birthdate "1945-02-28" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-09T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-09T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-202 a rtg:Patient ;
+    rdfs:label "Subject SYN-202" ;
+    rtg:gender "F" ;
+    rtg:birthdate "1952-11-06" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-09T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-09T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-203 a rtg:Patient ;
+    rdfs:label "Subject SYN-203" ;
+    rtg:gender "M" ;
+    rtg:birthdate "1959-06-23" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-09T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-09T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-301 a rtg:Patient ;
+    rdfs:label "Subject SYN-301" ;
+    rtg:gender "F" ;
+    rtg:birthdate "1969-04-17" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-09T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-09T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-302 a rtg:Patient ;
+    rdfs:label "Subject SYN-302" ;
+    rtg:gender "F" ;
+    rtg:birthdate "1962-08-30" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-09T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-09T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-303 a rtg:Patient ;
+    rdfs:label "Subject SYN-303" ;
+    rtg:gender "M" ;
+    rtg:birthdate "1950-12-05" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-09T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-09T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-401 a rtg:Patient ;
+    rdfs:label "Subject SYN-401" ;
+    rtg:gender "M" ;
+    rtg:birthdate "1956-07-12" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-10T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-10T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-402 a rtg:Patient ;
+    rdfs:label "Subject SYN-402" ;
+    rtg:gender "F" ;
+    rtg:birthdate "1964-03-21" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-10T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-10T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-403 a rtg:Patient ;
+    rdfs:label "Subject SYN-403" ;
+    rtg:gender "M" ;
+    rtg:birthdate "1947-09-08" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-10T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-10T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-501 a rtg:Patient ;
+    rdfs:label "Subject SYN-501" ;
+    rtg:gender "F" ;
+    rtg:birthdate "1973-02-16" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-10T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-10T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-502 a rtg:Patient ;
+    rdfs:label "Subject SYN-502" ;
+    rtg:gender "M" ;
+    rtg:birthdate "1953-11-29" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-10T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-10T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-503 a rtg:Patient ;
+    rdfs:label "Subject SYN-503" ;
+    rtg:gender "F" ;
+    rtg:birthdate "1967-06-04" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-10T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-10T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-601 a rtg:Patient ;
+    rdfs:label "Subject SYN-601" ;
+    rtg:gender "F" ;
+    rtg:birthdate "1965-03-19" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-18T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-602 a rtg:Patient ;
+    rdfs:label "Subject SYN-602" ;
+    rtg:gender "M" ;
+    rtg:birthdate "1958-08-07" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-18T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-603 a rtg:Patient ;
+    rdfs:label "Subject SYN-603" ;
+    rtg:gender "F" ;
+    rtg:birthdate "1972-11-28" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-18T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-604 a rtg:Patient ;
+    rdfs:label "Subject SYN-604" ;
+    rtg:gender "M" ;
+    rtg:birthdate "1961-05-15" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-18T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-605 a rtg:Patient ;
+    rdfs:label "Subject SYN-605" ;
+    rtg:gender "F" ;
+    rtg:birthdate "1969-01-09" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-18T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-606 a rtg:Patient ;
+    rdfs:label "Subject SYN-606" ;
+    rtg:gender "M" ;
+    rtg:birthdate "1954-10-22" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-18T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-607 a rtg:Patient ;
+    rdfs:label "Subject SYN-607" ;
+    rtg:gender "F" ;
+    rtg:birthdate "1976-07-03" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-18T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-701 a rtg:Patient ;
+    rdfs:label "Subject SYN-701" ;
+    rtg:gender "F" ;
+    rtg:birthdate "1963-04-25" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-18T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-702 a rtg:Patient ;
+    rdfs:label "Subject SYN-702" ;
+    rtg:gender "F" ;
+    rtg:birthdate "1970-09-12" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-18T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+rtg:PT-703 a rtg:Patient ;
+    rdfs:label "Subject SYN-703" ;
+    rtg:gender "M" ;
+    rtg:birthdate "1957-12-30" ;
+    prov:wasDerivedFrom "Synthea v4.0.0" ;
+    rtg:sourceSystem "Synthea v4.0.0" ;
+    rtg:timestamp "2026-06-18T09:00:00Z"^^xsd:dateTime ;
+    prov:generatedAtTime "2026-06-18T09:00:00Z"^^xsd:dateTime ;
+    dcterms:license "Apache-2.0" .
+
+# ---- Edges -----------------------------------------------------------------
+rtg:PT-001 rtg:REPORTS rtg:AE-MYOCARDITIS .
+rtg:PT-002 rtg:REPORTS rtg:AE-MYOCARDITIS .
+rtg:PT-003 rtg:REPORTS rtg:AE-MYOCARDITIS .
+rtg:PT-004 rtg:REPORTS rtg:AE-MYOCARDITIS .
+rtg:PT-005 rtg:REPORTS rtg:AE-MYOCARDITIS .
+rtg:PT-006 rtg:REPORTS rtg:AE-MYOCARDITIS .
+rtg:AE-MYOCARDITIS rtg:SUSPECTED_IN rtg:DRUG-CPI .
+rtg:DRUG-CPI rtg:TARGETS rtg:TGT-PDCD1 .
+rtg:TGT-PDCD1 rtg:IN_PATHWAY rtg:PW-CHECKPOINT .
+rtg:AE-MYOCARDITIS rtg:HAS_STAT rtg:STAT-MYO-CPI .
+rtg:STAT-MYO-CPI rtg:SUPPORTED_BY rtg:EV-FAERS .
+rtg:STAT-MYO-CPI rtg:SUPPORTED_BY rtg:EV-PMID .
+rtg:IMG-BIOPSY rtg:RESOLVES_TO rtg:CON-MYOCARDITIS .
+rtg:CON-MYOCARDITIS rtg:RESOLVES_TO rtg:AE-MYOCARDITIS .
+rtg:OMX-RNASEQ rtg:RESOLVES_TO rtg:CON-PD1ACT .
+rtg:CON-PD1ACT rtg:RESOLVES_TO rtg:PW-CHECKPOINT .
+rtg:PT-101 rtg:REPORTS rtg:AE-HYPERTENSION .
+rtg:PT-102 rtg:REPORTS rtg:AE-HYPERTENSION .
+rtg:PT-103 rtg:REPORTS rtg:AE-HYPERTENSION .
+rtg:PT-104 rtg:REPORTS rtg:AE-HYPERTENSION .
+rtg:PT-105 rtg:REPORTS rtg:AE-HYPERTENSION .
+rtg:PT-106 rtg:REPORTS rtg:AE-HYPERTENSION .
+rtg:AE-HYPERTENSION rtg:SUSPECTED_IN rtg:DRUG-VEGFR .
+rtg:DRUG-VEGFR rtg:TARGETS rtg:TGT-KDR .
+rtg:TGT-KDR rtg:IN_PATHWAY rtg:PW-ANGIO .
+rtg:AE-HYPERTENSION rtg:HAS_STAT rtg:STAT-VEGF-HTN .
+rtg:STAT-VEGF-HTN rtg:SUPPORTED_BY rtg:EV-PMID-VEGF .
+rtg:STAT-VEGF-HTN rtg:SUPPORTED_BY rtg:LIT-PMID-20694011 .
+rtg:PT-201 rtg:REPORTS rtg:AE-AFIB .
+rtg:PT-202 rtg:REPORTS rtg:AE-AFIB .
+rtg:PT-203 rtg:REPORTS rtg:AE-AFIB .
+rtg:AE-AFIB rtg:SUSPECTED_IN rtg:DRUG-BTK .
+rtg:DRUG-BTK rtg:TARGETS rtg:TGT-BTK .
+rtg:AE-AFIB rtg:HAS_STAT rtg:STAT-BTK-AFIB .
+rtg:STAT-BTK-AFIB rtg:SUPPORTED_BY rtg:LIT-PMID-25103805 .
+rtg:PT-301 rtg:REPORTS rtg:AE-LVDYS .
+rtg:PT-302 rtg:REPORTS rtg:AE-LVDYS .
+rtg:PT-303 rtg:REPORTS rtg:AE-LVDYS .
+rtg:AE-LVDYS rtg:SUSPECTED_IN rtg:DRUG-HER2 .
+rtg:DRUG-HER2 rtg:TARGETS rtg:TGT-ERBB2 .
+rtg:AE-LVDYS rtg:HAS_STAT rtg:STAT-HER2-LVDYS .
+rtg:STAT-HER2-LVDYS rtg:SUPPORTED_BY rtg:LIT-PMID-11870201 .
+rtg:PT-401 rtg:REPORTS rtg:AE-COLITIS .
+rtg:PT-402 rtg:REPORTS rtg:AE-COLITIS .
+rtg:PT-403 rtg:REPORTS rtg:AE-COLITIS .
+rtg:AE-COLITIS rtg:SUSPECTED_IN rtg:DRUG-CPI .
+rtg:AE-COLITIS rtg:HAS_STAT rtg:STAT-CPI-COLITIS .
+rtg:STAT-CPI-COLITIS rtg:SUPPORTED_BY rtg:LIT-PMID-29442540 .
+rtg:PT-501 rtg:REPORTS rtg:AE-HYPOTHYROID .
+rtg:PT-502 rtg:REPORTS rtg:AE-HYPOTHYROID .
+rtg:PT-503 rtg:REPORTS rtg:AE-HYPOTHYROID .
+rtg:AE-HYPOTHYROID rtg:SUSPECTED_IN rtg:DRUG-CPI .
+rtg:AE-HYPOTHYROID rtg:HAS_STAT rtg:STAT-CPI-HYPOTHYROID .
+rtg:STAT-CPI-HYPOTHYROID rtg:SUPPORTED_BY rtg:LIT-PMID-29442540 .
+rtg:LIT-PMID-27959767 rtg:MENTIONS rtg:DRUG-CPI .
+rtg:LIT-PMID-27959767 rtg:MENTIONS rtg:AE-MYOCARDITIS .
+rtg:LIT-PMID-27959767 rtg:MENTIONS rtg:TGT-PDCD1 .
+rtg:LIT-PMID-20694011 rtg:MENTIONS rtg:DRUG-VEGFR .
+rtg:LIT-PMID-20694011 rtg:MENTIONS rtg:AE-HYPERTENSION .
+rtg:LIT-PMID-20694011 rtg:MENTIONS rtg:TGT-KDR .
+rtg:LIT-PMID-25103805 rtg:MENTIONS rtg:DRUG-BTK .
+rtg:LIT-PMID-25103805 rtg:MENTIONS rtg:AE-AFIB .
+rtg:LIT-PMID-25103805 rtg:MENTIONS rtg:TGT-BTK .
+rtg:LIT-PMID-11870201 rtg:MENTIONS rtg:DRUG-HER2 .
+rtg:LIT-PMID-11870201 rtg:MENTIONS rtg:AE-LVDYS .
+rtg:LIT-PMID-11870201 rtg:MENTIONS rtg:TGT-ERBB2 .
+rtg:LIT-PMID-29442540 rtg:MENTIONS rtg:DRUG-CPI .
+rtg:LIT-PMID-29442540 rtg:MENTIONS rtg:AE-COLITIS .
+rtg:LIT-PMID-29442540 rtg:MENTIONS rtg:AE-HYPOTHYROID .
+rtg:CT-NCT02743819 rtg:STUDIES rtg:DRUG-CPI .
+rtg:CT-NCT02743819 rtg:STUDIES rtg:AE-MYOCARDITIS .
+rtg:CT-NCT01168973 rtg:STUDIES rtg:DRUG-VEGFR .
+rtg:CT-NCT01168973 rtg:STUDIES rtg:AE-HYPERTENSION .
+rtg:CT-NCT01578707 rtg:STUDIES rtg:DRUG-BTK .
+rtg:CT-NCT01578707 rtg:STUDIES rtg:AE-AFIB .
+rtg:CT-NCT00021255 rtg:STUDIES rtg:DRUG-HER2 .
+rtg:CT-NCT00021255 rtg:STUDIES rtg:AE-LVDYS .
+rtg:AE-MYOCARDITIS rtg:IN_ONTOLOGY rtg:ONTO-OAE-2025-09 .
+rtg:AE-HYPERTENSION rtg:IN_ONTOLOGY rtg:ONTO-MEDDRA-27 .
+rtg:AE-AFIB rtg:IN_ONTOLOGY rtg:ONTO-MEDDRA-27 .
+rtg:AE-LVDYS rtg:IN_ONTOLOGY rtg:ONTO-MEDDRA-27 .
+rtg:AE-COLITIS rtg:IN_ONTOLOGY rtg:ONTO-MEDDRA-27 .
+rtg:AE-HYPOTHYROID rtg:IN_ONTOLOGY rtg:ONTO-MEDDRA-27 .
+rtg:CON-MYOCARDITIS rtg:IN_ONTOLOGY rtg:ONTO-MONDO-2026-06 .
+rtg:CON-HYPERTENSION rtg:IN_ONTOLOGY rtg:ONTO-MONDO-2026-06 .
+rtg:CON-AFIB rtg:IN_ONTOLOGY rtg:ONTO-MONDO-2026-06 .
+rtg:CON-CARDIOTOX rtg:IN_ONTOLOGY rtg:ONTO-MONDO-2026-06 .
+rtg:CON-COLITIS rtg:IN_ONTOLOGY rtg:ONTO-MONDO-2026-06 .
+rtg:PW-ANGIO rtg:IN_ONTOLOGY rtg:ONTO-REACTOME-88 .
+rtg:PW-CHECKPOINT rtg:IN_ONTOLOGY rtg:ONTO-REACTOME-88 .
+rtg:LIT-PMID-27959767 rtg:IN_ONTOLOGY rtg:ONTO-MESH-2026-06 .
+rtg:LIT-PMID-20694011 rtg:IN_ONTOLOGY rtg:ONTO-MESH-2026-06 .
+rtg:LIT-PMID-25103805 rtg:IN_ONTOLOGY rtg:ONTO-MESH-2026-06 .
+rtg:LIT-PMID-11870201 rtg:IN_ONTOLOGY rtg:ONTO-MESH-2026-06 .
+rtg:LIT-PMID-29442540 rtg:IN_ONTOLOGY rtg:ONTO-MESH-2026-06 .
+rtg:PT-601 rtg:REPORTS rtg:AE-SERIOUS-INFECTION .
+rtg:PT-602 rtg:REPORTS rtg:AE-SERIOUS-INFECTION .
+rtg:PT-603 rtg:REPORTS rtg:AE-SERIOUS-INFECTION .
+rtg:PT-604 rtg:REPORTS rtg:AE-SERIOUS-INFECTION .
+rtg:PT-605 rtg:REPORTS rtg:AE-SERIOUS-INFECTION .
+rtg:PT-606 rtg:REPORTS rtg:AE-SERIOUS-INFECTION .
+rtg:PT-607 rtg:REPORTS rtg:AE-SERIOUS-INFECTION .
+rtg:AE-SERIOUS-INFECTION rtg:SUSPECTED_IN rtg:DRUG-JAK .
+rtg:DRUG-JAK rtg:TARGETS rtg:TGT-JAK1 .
+rtg:TGT-JAK1 rtg:IN_PATHWAY rtg:PW-JAKSTAT .
+rtg:AE-SERIOUS-INFECTION rtg:HAS_STAT rtg:STAT-JAK-INFECTION .
+rtg:STAT-JAK-INFECTION rtg:SUPPORTED_BY rtg:EV-PMID-JAK .
+rtg:STAT-JAK-INFECTION rtg:SUPPORTED_BY rtg:LIT-PMID-28953575 .
+rtg:LIT-PMID-28953575 rtg:MENTIONS rtg:DRUG-JAK .
+rtg:LIT-PMID-28953575 rtg:MENTIONS rtg:AE-SERIOUS-INFECTION .
+rtg:LIT-PMID-28953575 rtg:MENTIONS rtg:TGT-JAK1 .
+rtg:CT-NCT00847613 rtg:STUDIES rtg:DRUG-JAK .
+rtg:CT-NCT00847613 rtg:STUDIES rtg:AE-SERIOUS-INFECTION .
+rtg:PT-701 rtg:REPORTS rtg:AE-NEUTROPENIA .
+rtg:PT-702 rtg:REPORTS rtg:AE-NEUTROPENIA .
+rtg:PT-703 rtg:REPORTS rtg:AE-NEUTROPENIA .
+rtg:AE-NEUTROPENIA rtg:SUSPECTED_IN rtg:DRUG-CDK .
+rtg:DRUG-CDK rtg:TARGETS rtg:TGT-CDK6 .
+rtg:AE-NEUTROPENIA rtg:HAS_STAT rtg:STAT-CDK-NEUTRO .
+rtg:STAT-CDK-NEUTRO rtg:SUPPORTED_BY rtg:LIT-PMID-25524798 .
+rtg:LIT-PMID-25524798 rtg:MENTIONS rtg:DRUG-CDK .
+rtg:LIT-PMID-25524798 rtg:MENTIONS rtg:AE-NEUTROPENIA .
+rtg:LIT-PMID-25524798 rtg:MENTIONS rtg:TGT-CDK6 .
+rtg:CT-NCT01740427 rtg:STUDIES rtg:DRUG-CDK .
+rtg:CT-NCT01740427 rtg:STUDIES rtg:AE-NEUTROPENIA .
+rtg:GA-OT-PDCD1-MYOCARDITIS rtg:GENETIC_EVIDENCE rtg:TGT-PDCD1 .
+rtg:GA-OT-PDCD1-MYOCARDITIS rtg:GENETIC_EVIDENCE rtg:CON-MYOCARDITIS .
+rtg:GA-OT-KDR-HYPERTENSION rtg:GENETIC_EVIDENCE rtg:TGT-KDR .
+rtg:GA-OT-KDR-HYPERTENSION rtg:GENETIC_EVIDENCE rtg:CON-HYPERTENSION .
+rtg:GA-OT-JAK1-RA rtg:GENETIC_EVIDENCE rtg:TGT-JAK1 .
+rtg:GA-OT-JAK1-RA rtg:GENETIC_EVIDENCE rtg:CON-RA .
+rtg:GA-OT-BTK-AFIB rtg:GENETIC_EVIDENCE rtg:TGT-BTK .
+rtg:GA-OT-BTK-AFIB rtg:GENETIC_EVIDENCE rtg:CON-AFIB .
+rtg:GA-OT-ERBB2-CARDIOTOX rtg:GENETIC_EVIDENCE rtg:TGT-ERBB2 .
+rtg:GA-OT-ERBB2-CARDIOTOX rtg:GENETIC_EVIDENCE rtg:CON-CARDIOTOX .
+rtg:REG-FDA-CPI-MYOCARDITIS rtg:HAS_LABEL rtg:DRUG-CPI .
+rtg:REG-FDA-CPI-MYOCARDITIS rtg:HAS_LABEL rtg:AE-MYOCARDITIS .
+rtg:REG-FDA-JAK-INFECTION rtg:HAS_LABEL rtg:DRUG-JAK .
+rtg:REG-FDA-JAK-INFECTION rtg:HAS_LABEL rtg:AE-SERIOUS-INFECTION .
+rtg:REG-FDA-VEGFR-HTN rtg:HAS_LABEL rtg:DRUG-VEGFR .
+rtg:REG-FDA-VEGFR-HTN rtg:HAS_LABEL rtg:AE-HYPERTENSION .
+rtg:REG-EMA-HER2-LVDYS rtg:HAS_LABEL rtg:DRUG-HER2 .
+rtg:REG-EMA-HER2-LVDYS rtg:HAS_LABEL rtg:AE-LVDYS .
+rtg:AE-SERIOUS-INFECTION rtg:IN_ONTOLOGY rtg:ONTO-MEDDRA-27 .
+rtg:AE-NEUTROPENIA rtg:IN_ONTOLOGY rtg:ONTO-MEDDRA-27 .
+rtg:CON-RA rtg:IN_ONTOLOGY rtg:ONTO-MONDO-2026-06 .
+rtg:CON-NEUTROPENIA rtg:IN_ONTOLOGY rtg:ONTO-MONDO-2026-06 .
+rtg:PW-JAKSTAT rtg:IN_ONTOLOGY rtg:ONTO-REACTOME-88 .
+rtg:LIT-PMID-28953575 rtg:IN_ONTOLOGY rtg:ONTO-MESH-2026-06 .
+rtg:LIT-PMID-25524798 rtg:IN_ONTOLOGY rtg:ONTO-MESH-2026-06 .
+rtg:GA-OT-PDCD1-MYOCARDITIS rtg:IN_ONTOLOGY rtg:ONTO-OT-2024-06 .
+rtg:GA-OT-KDR-HYPERTENSION rtg:IN_ONTOLOGY rtg:ONTO-OT-2024-06 .
+rtg:GA-OT-JAK1-RA rtg:IN_ONTOLOGY rtg:ONTO-OT-2024-06 .
+rtg:GA-OT-BTK-AFIB rtg:IN_ONTOLOGY rtg:ONTO-OT-2024-06 .
+rtg:GA-OT-ERBB2-CARDIOTOX rtg:IN_ONTOLOGY rtg:ONTO-OT-2024-06 .
+rtg:REG-FDA-CPI-MYOCARDITIS rtg:IN_ONTOLOGY rtg:ONTO-DAILYMED-2026 .
+rtg:REG-FDA-JAK-INFECTION rtg:IN_ONTOLOGY rtg:ONTO-DAILYMED-2026 .
+rtg:REG-FDA-VEGFR-HTN rtg:IN_ONTOLOGY rtg:ONTO-DAILYMED-2026 .

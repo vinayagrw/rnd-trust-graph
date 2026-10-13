@@ -1,0 +1,966 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Query-Adaptive Dashboards — Generative Studio</title>
+<!--
+  Query-Adaptive Dashboards — Generative Studio
+  Illustrative mockup for a pharma R&D audience.
+  Single self-contained file: inline CSS + vanilla JS + inline SVG. No external assets.
+  Concept (see sibling QUERY_ADAPTIVE_DASHBOARDS_DESIGN.md):
+    ONE grounded question -> DIFFERENT purpose-built dashboards.
+    The host picks a layout ARCHETYPE, derives FILTER CONTROLS from data cardinality,
+    and RANKS candidate boards. The LLM only ever emits INTENT, never a data value.
+  NOTE: nothing here is live data — every number is a fixed sample (AFIB / ibrutinib / BTK signal).
+-->
+<style>
+/* ---------- design tokens ---------- */
+:root{
+  --bg:#0d1117; --panel:#161b22; --panel-2:#1a2029; --border:#30363d;
+  --text:#e6edf3; --muted:#8b949e;
+  --model-fg:#5b8def; --model-bg:#1c2a4a;      /* blue  = model / LLM intent */
+  --host-fg:#2ea043;  --host-bg:#0b3d2e;        /* green = trusted host owns   */
+  --hi:#58a6ff;                                 /* highlight blue             */
+  --radius:12px; --radius-sm:10px;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.25);
+  --ease:cubic-bezier(.2,.7,.2,1);
+  /* categorical palette for the 5 `kind` values */
+  --k-ae:#f778ba; --k-drug:#58a6ff; --k-subj:#2ea043; --k-stat:#d29922; --k-study:#a371f7;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--text);
+  font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.01em}
+.mono{font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace}
+.muted{color:var(--muted)}
+a{color:var(--hi)}
+
+/* ---------- sticky header ---------- */
+header.top{
+  position:sticky; top:0; z-index:50;
+  background:rgba(13,17,23,.82); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+  padding:14px 24px;
+}
+.top-row{display:flex; align-items:center; gap:16px; flex-wrap:wrap}
+.brand{display:flex; flex-direction:column; gap:2px; margin-right:auto}
+.brand h1{font-size:17px}
+.brand .sub{font-size:12.5px; color:var(--muted)}
+.mock-tag{
+  font-size:10.5px; color:var(--muted); border:1px dashed var(--border);
+  padding:3px 8px; border-radius:999px; white-space:nowrap;
+}
+.legend{display:flex; gap:8px; flex-wrap:wrap}
+.chip{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:11.5px; padding:4px 10px; border-radius:999px; border:1px solid var(--border);
+}
+.chip .dot{width:8px; height:8px; border-radius:50%}
+.chip.model{background:var(--model-bg); border-color:#2b3f6b; color:#cfe0ff}
+.chip.model .dot{background:var(--model-fg)}
+.chip.host{background:var(--host-bg); border-color:#155f38; color:#c9f7d8}
+.chip.host .dot{background:var(--host-fg)}
+
+/* ---------- layout shell ---------- */
+main{max-width:1240px; margin:0 auto; padding:24px}
+section{margin:0 0 34px}
+.sec-head{display:flex; align-items:baseline; gap:12px; margin-bottom:14px; flex-wrap:wrap}
+.sec-head .num{
+  font-size:11px; font-weight:700; color:var(--hi);
+  border:1px solid #1f6feb55; background:#1f6feb14; padding:2px 8px; border-radius:6px;
+}
+.sec-head h2{font-size:16px}
+.sec-head p{margin:0; color:var(--muted); font-size:12.5px}
+
+/* ---------- question bar ---------- */
+.ask{
+  display:flex; align-items:center; gap:12px;
+  background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
+  padding:12px 14px; box-shadow:var(--shadow);
+}
+.ask .q{
+  flex:1; background:transparent; border:none; color:var(--text);
+  font-size:14px; outline:none;
+}
+.ask .grounded{
+  display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
+  font-size:11.5px; color:#c9f7d8; background:var(--host-bg);
+  border:1px solid #155f38; border-radius:999px; padding:4px 10px;
+}
+.ask .grounded .dot{width:7px;height:7px;border-radius:50%;background:var(--host-fg)}
+
+/* ---------- trust seam callout ---------- */
+.seam{
+  display:grid; grid-template-columns:1fr auto 1fr; gap:14px; align-items:stretch;
+  margin-top:16px;
+}
+.seam .side{border-radius:var(--radius); padding:14px 16px; border:1px solid var(--border)}
+.seam .model{background:linear-gradient(180deg,#16223f,#131a2e); border-color:#2b3f6b}
+.seam .host{background:linear-gradient(180deg,#0c3327,#0b241c); border-color:#155f38}
+.seam .side .lab{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px}
+.seam .model .lab{color:var(--model-fg)}
+.seam .host .lab{color:var(--host-fg)}
+.seam ul{margin:0; padding-left:18px}
+.seam li{margin:3px 0; font-size:12.5px}
+.seam .arrow{
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:6px; min-width:130px; text-align:center;
+}
+.seam .arrow .glyph{font-size:22px; color:var(--muted)}
+.seam .arrow .zod{
+  font-size:10.5px; color:var(--muted); line-height:1.35;
+  border:1px solid var(--border); border-radius:8px; padding:6px 8px; background:var(--panel);
+}
+.seam .arrow .zod b{color:var(--host-fg)}
+
+/* ---------- archetype toolbar ---------- */
+.arch-bar{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px}
+.arch-btn{
+  cursor:pointer; border:1px solid var(--border); background:var(--panel);
+  color:var(--text); font-size:12.5px; font-weight:500;
+  padding:8px 14px; border-radius:999px; transition:all .18s var(--ease);
+}
+.arch-btn:hover{border-color:#4d5a6b; transform:translateY(-1px)}
+.arch-btn.active{
+  background:var(--model-bg); border-color:var(--model-fg); color:#dbe8ff;
+  box-shadow:0 0 0 1px var(--model-fg) inset;
+}
+.arch-btn .hint{color:var(--muted); font-weight:400; margin-left:6px; font-size:11px}
+.arch-btn.active .hint{color:#9fbcff}
+
+/* the "why this archetype" line from the planner (blue = model intent) */
+.plan-note{
+  display:flex; align-items:center; gap:8px; margin-bottom:14px;
+  font-size:12px; color:#cfe0ff; background:var(--model-bg);
+  border:1px solid #2b3f6b; border-radius:10px; padding:8px 12px;
+}
+.plan-note .tag{
+  font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em;
+  color:var(--model-fg); border:1px solid #2b3f6b; border-radius:6px; padding:2px 6px;
+}
+
+/* ---------- board grid ---------- */
+.board{
+  display:grid; grid-template-columns:repeat(12,1fr);
+  grid-auto-rows:150px; gap:14px; grid-auto-flow:row dense;
+}
+.tile{
+  background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
+  padding:12px; display:flex; flex-direction:column; min-width:0; box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.tile-head{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px}
+.tile-title{font-size:12px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+/* role/span tag makes the host-owned layout visible */
+.role-tag{
+  font-size:9.5px; font-family:ui-monospace,monospace; white-space:nowrap;
+  color:var(--host-fg); background:var(--host-bg); border:1px solid #155f38;
+  padding:2px 6px; border-radius:6px;
+}
+.tile-body{flex:1; min-height:0; display:flex; align-items:center; justify-content:center}
+.tile-body svg{width:100%; height:100%; display:block}
+
+/* KPI tile */
+.kpi .kpi-val{font-size:30px; font-weight:700; letter-spacing:-.02em; line-height:1}
+.kpi .kpi-lab{font-size:12px; color:var(--muted); margin-top:6px}
+.kpi .kpi-delta{font-size:11px; color:var(--host-fg); margin-top:2px}
+.tile.kpi .tile-body{flex-direction:column; align-items:flex-start; justify-content:center}
+
+/* master-detail list */
+.md-list{align-items:stretch !important; overflow:auto}
+.md-list .rowitem{
+  display:flex; justify-content:space-between; gap:8px; align-items:center;
+  padding:8px 10px; border-radius:8px; cursor:pointer; font-size:12.5px;
+  border:1px solid transparent; transition:background .12s;
+}
+.md-list .rowitem:hover{background:var(--panel-2)}
+.md-list .rowitem.sel{background:#132b45; border-color:#1f6feb66}
+.md-list .rowitem .k{font-size:10px; padding:1px 6px; border-radius:5px; background:#0000; border:1px solid var(--border); color:var(--muted)}
+
+/* staggered reveal */
+.tile.enter{opacity:0; transform:translateY(10px) scale(.98)}
+.tile.enter-active{opacity:1; transform:none; transition:opacity .35s var(--ease), transform .35s var(--ease)}
+
+/* ---------- Section 2: filter rail ---------- */
+.filter-wrap{display:grid; grid-template-columns:290px 1fr; gap:18px; align-items:start}
+.rail{
+  background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
+  padding:16px; box-shadow:var(--shadow);
+}
+.rail h3{font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-bottom:14px}
+.ctrl{margin-bottom:18px}
+.ctrl .why{
+  font-size:10.5px; color:var(--host-fg); background:var(--host-bg);
+  border:1px solid #155f38; border-radius:6px; padding:2px 7px; display:inline-block; margin-bottom:8px;
+}
+.ctrl .label{font-size:12.5px; font-weight:600; margin-bottom:8px; display:block}
+.checks{display:flex; flex-direction:column; gap:7px}
+.checks label{display:flex; align-items:center; gap:8px; font-size:12.5px; cursor:pointer}
+.checks input{accent-color:var(--hi); width:15px; height:15px}
+.checks .swatch{width:9px;height:9px;border-radius:2px;margin-left:auto}
+.checks .cnt{color:var(--muted); font-size:11px; min-width:18px; text-align:right}
+.range{display:flex; align-items:center; gap:8px}
+.range input[type=range]{flex:1; accent-color:var(--hi)}
+.range .val{font-family:ui-monospace,monospace; font-size:11.5px; color:var(--text); min-width:20px; text-align:center}
+.search-box{
+  width:100%; background:var(--bg); border:1px solid var(--border); border-radius:8px;
+  color:var(--text); padding:8px 10px; font-size:12.5px; outline:none;
+}
+.search-box:focus{border-color:var(--hi)}
+
+/* live preview panel */
+.preview{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow)}
+.counter{display:flex; align-items:center; gap:10px; margin-bottom:12px}
+.counter .big{font-size:22px; font-weight:700}
+.counter .of{color:var(--muted); font-size:13px}
+.counter .bar{flex:1; height:8px; border-radius:999px; background:var(--panel-2); overflow:hidden; margin-left:6px}
+.counter .bar i{display:block; height:100%; background:linear-gradient(90deg,var(--hi),#79c0ff); border-radius:999px; transition:width .3s var(--ease)}
+.chips{display:flex; gap:7px; flex-wrap:wrap; margin-bottom:14px; min-height:26px}
+.fchip{
+  display:inline-flex; align-items:center; gap:6px; font-size:11px;
+  background:var(--panel-2); border:1px solid var(--border); border-radius:999px; padding:3px 9px;
+}
+.fchip b{font-weight:600}
+.fchip .x{cursor:pointer; color:var(--muted); font-weight:700}
+.fchip .x:hover{color:var(--text)}
+.clear-all{
+  cursor:pointer; font-size:11px; color:var(--hi); background:transparent; border:none;
+}
+.clear-all:hover{text-decoration:underline}
+.preview-charts{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+.pchart{background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:12px}
+.pchart .ct{font-size:11.5px; font-weight:600; margin-bottom:8px; color:var(--muted)}
+.pchart svg{width:100%; height:130px; display:block}
+
+/* ---------- Section 3: candidate & rank ---------- */
+.cands{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
+.cand{
+  position:relative; background:var(--panel); border:1px solid var(--border);
+  border-radius:var(--radius); padding:14px; box-shadow:var(--shadow); cursor:pointer;
+  transition:transform .18s var(--ease), border-color .18s;
+}
+.cand:hover{transform:translateY(-2px); border-color:#4d5a6b}
+.cand.win{border-color:var(--host-fg); box-shadow:0 0 0 1px var(--host-fg), 0 8px 24px rgba(0,0,0,.25)}
+.cand .badge{
+  position:absolute; top:-10px; right:12px; font-size:10.5px; font-weight:700;
+  background:var(--host-bg); color:#c9f7d8; border:1px solid var(--host-fg);
+  border-radius:999px; padding:3px 10px;
+}
+.cand .thumb{background:var(--bg); border:1px solid var(--border); border-radius:8px; height:96px; padding:6px; margin-bottom:10px}
+.cand .thumb svg{width:100%; height:100%; display:block}
+.cand .cname{font-size:12.5px; font-weight:600; margin-bottom:6px}
+.cand .score-row{display:flex; align-items:center; gap:8px; margin-bottom:8px}
+.cand .score-bar{flex:1; height:7px; border-radius:999px; background:var(--panel-2); overflow:hidden}
+.cand .score-bar i{display:block; height:100%; border-radius:999px}
+.cand .score-num{font-family:ui-monospace,monospace; font-size:12px; font-weight:700; min-width:34px}
+.cand .rationale{font-size:11.5px; color:var(--muted); line-height:1.45}
+
+/* critic breakdown for winner */
+.critic{
+  margin-top:18px; background:var(--panel); border:1px solid var(--border);
+  border-radius:var(--radius); padding:16px; box-shadow:var(--shadow);
+}
+.critic h3{font-size:12.5px; margin-bottom:4px}
+.critic .sub{font-size:11.5px; color:var(--muted); margin-bottom:14px}
+.critic .metrics{display:grid; grid-template-columns:1fr 1fr; gap:12px 26px}
+.cmetric{display:flex; align-items:center; gap:10px}
+.cmetric .cm-lab{font-size:12px; width:130px; color:var(--text)}
+.cmetric .cm-bar{flex:1; height:8px; border-radius:999px; background:var(--panel-2); overflow:hidden}
+.cmetric .cm-bar i{display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,var(--host-fg),#3fb950)}
+.cmetric .cm-val{font-family:ui-monospace,monospace; font-size:11.5px; width:34px; text-align:right; color:var(--muted)}
+
+footer{color:var(--muted); font-size:11.5px; text-align:center; padding:20px 0 40px; border-top:1px solid var(--border); margin-top:10px}
+
+/* ---------- responsive ---------- */
+@media (max-width:900px){
+  .board{grid-auto-rows:130px}
+  .filter-wrap{grid-template-columns:1fr}
+  .cands{grid-template-columns:1fr}
+  .seam{grid-template-columns:1fr}
+  .seam .arrow{flex-direction:row; min-width:0}
+  .critic .metrics{grid-template-columns:1fr}
+  /* collapse the 12-col board to a simpler stack: every tile min half width */
+  .tile{grid-column:span 6 !important}
+  .tile[data-full]{grid-column:span 12 !important}
+}
+@media (max-width:560px){
+  .tile{grid-column:span 12 !important}
+  .preview-charts{grid-template-columns:1fr}
+}
+
+/* ---------- reduced motion: kill all non-essential animation ---------- */
+@media (prefers-reduced-motion:reduce){
+  *{transition:none !important; animation:none !important}
+  .tile.enter{opacity:1; transform:none}
+}
+</style>
+
+<!-- ============================= HEADER ============================= -->
+<header class="top">
+  <div class="top-row">
+    <div class="brand">
+      <h1>Query-Adaptive Dashboards — Generative Studio</h1>
+      <span class="sub">The same grounded question becomes a different purpose-built board — layout, filters, and ranking are all host-owned.</span>
+    </div>
+    <span class="mock-tag">Illustrative mockup — not live data</span>
+  </div>
+  <div class="top-row" style="margin-top:12px">
+    <div class="legend">
+      <span class="chip model"><span class="dot"></span> blue = model proposes intent</span>
+      <span class="chip host"><span class="dot"></span> green = trusted host owns render</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- ---------- prefilled grounded question ---------- -->
+  <div class="ask">
+    <input class="q" value="What do we know about the atrial fibrillation signal? Which subjects and evidence support it? Use the graph." readonly>
+    <span class="grounded"><span class="dot"></span> grounded · 19 cited nodes</span>
+  </div>
+
+  <!-- ---------- trust seam callout ---------- -->
+  <div class="seam">
+    <div class="side model">
+      <div class="lab">The model proposes intent only</div>
+      <ul>
+        <li>archetype <em>hint</em> (KPI-grid, hero-rail, …)</li>
+        <li>which fields to filter (field <em>names</em> only)</li>
+        <li>per-slot chart intent + encoding IR</li>
+      </ul>
+    </div>
+    <div class="arrow">
+      <div class="glyph">&rarr;</div>
+      <div class="zod"><b>.strict()</b> zod<br>fail-parse on any host key</div>
+    </div>
+    <div class="side host">
+      <div class="lab">The trusted host owns everything that renders</div>
+      <ul>
+        <li>every data value (bound from cited nodes)</li>
+        <li>layout role + span (assignLayout)</li>
+        <li>filter control kind + options (deriveFilters)</li>
+        <li>chart config + KPI numbers (host aggregate)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============================= SECTION 1 ============================= -->
+  <section id="s1" style="margin-top:34px">
+    <div class="sec-head">
+      <span class="num">01</span>
+      <h2>Same question &rarr; different boards</h2>
+      <p>Pick a layout archetype. The host re-lays-out the board — the data never changes, only the shape.</p>
+    </div>
+
+    <div class="arch-bar" id="archBar"><!-- archetype buttons injected --></div>
+    <div class="plan-note">
+      <span class="tag">planner intent</span>
+      <span id="planNote">The model hinted <b>kpi-grid</b>; the host assigned roles &amp; spans.</span>
+    </div>
+
+    <div class="board" id="board"><!-- tiles injected --></div>
+  </section>
+
+  <!-- ============================= SECTION 2 ============================= -->
+  <section id="s2">
+    <div class="sec-head">
+      <span class="num">02</span>
+      <h2>Filter rail — controls derived from the data</h2>
+      <p>The host reads each field's type &amp; cardinality and emits the right control. The model never authors a filter.</p>
+    </div>
+
+    <div class="filter-wrap">
+      <!-- LEFT: host-derived controls -->
+      <div class="rail">
+        <h3>Filters · host-derived</h3>
+
+        <div class="ctrl">
+          <span class="why">kind · 5 distinct &rarr; dropdown</span>
+          <span class="label">kind</span>
+          <div class="checks" id="kindChecks"><!-- checkboxes injected --></div>
+        </div>
+
+        <div class="ctrl">
+          <span class="why">degree · quantitative &rarr; range</span>
+          <span class="label">degree</span>
+          <div class="range">
+            <span class="val" id="degMinVal">1</span>
+            <input type="range" id="degMin" min="1" max="12" value="1">
+            <input type="range" id="degMax" min="1" max="12" value="12">
+            <span class="val" id="degMaxVal">12</span>
+          </div>
+        </div>
+
+        <div class="ctrl">
+          <span class="why">prr · quantitative &rarr; range</span>
+          <span class="label">prr</span>
+          <div class="range">
+            <span class="val" id="prrMinVal">0</span>
+            <input type="range" id="prrMin" min="0" max="6" step="0.5" value="0">
+            <input type="range" id="prrMax" min="0" max="6" step="0.5" value="6">
+            <span class="val" id="prrMaxVal">6</span>
+          </div>
+        </div>
+
+        <div class="ctrl" style="margin-bottom:0">
+          <span class="why">label · &gt;25 distinct &rarr; type-ahead</span>
+          <span class="label">label search</span>
+          <input class="search-box" id="labelSearch" placeholder="Type to filter, e.g. ibrutinib">
+        </div>
+      </div>
+
+      <!-- RIGHT: live preview reacting to the filters -->
+      <div class="preview">
+        <div class="counter">
+          <span class="big" id="shownN">19</span>
+          <span class="of">rows shown / 19</span>
+          <span class="bar"><i id="shownBar" style="width:100%"></i></span>
+        </div>
+        <div class="chips" id="chips">
+          <span class="muted" style="font-size:11.5px">No filters applied — all 19 cited rows shown.</span>
+        </div>
+        <div class="preview-charts">
+          <div class="pchart">
+            <div class="ct">count by kind</div>
+            <svg id="pvBar" viewBox="0 0 260 130" preserveAspectRatio="none"></svg>
+          </div>
+          <div class="pchart">
+            <div class="ct">kind distribution</div>
+            <svg id="pvDonut" viewBox="0 0 260 130"></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================= SECTION 3 ============================= -->
+  <section id="s3">
+    <div class="sec-head">
+      <span class="num">03</span>
+      <h2>Candidate &amp; rank — why this board</h2>
+      <p>The host generates candidates, scores each with a deterministic critic, and picks the winner. Click a candidate to load it above.</p>
+    </div>
+
+    <div class="cands" id="cands"><!-- candidate cards injected --></div>
+
+    <div class="critic">
+      <h3>Deterministic critic breakdown — winner (0.91)</h3>
+      <div class="sub">No LLM. Perceptual-effectiveness + coverage rules over the bound tiles.</div>
+      <div class="metrics" id="criticMetrics"><!-- metric bars injected --></div>
+    </div>
+  </section>
+
+  <footer>
+    Illustrative mockup for pharma R&amp;D · concept from <span class="mono">QUERY_ADAPTIVE_DASHBOARDS_DESIGN.md</span> ·
+    the model emits intent, the host owns every rendered value.
+  </footer>
+</main>
+
+<script>
+"use strict";
+/* ================================================================
+   Sample story data — AFIB / ibrutinib / BTK signal (fixed values)
+   ================================================================ */
+const REDUCE_MOTION = window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+
+const KPIS = [
+  {label:"Cited nodes",  value:"19",  delta:"grounded"},
+  {label:"Signal PRR",   value:"5.1", delta:"▲ above threshold"},
+  {label:"Subjects",     value:"42",  delta:"in cohort"},
+  {label:"Evidence edges",value:"27", delta:"cited support"},
+];
+
+const KINDS = [
+  {name:"AdverseEvent", n:5, color:"var(--k-ae)"},
+  {name:"Drug",         n:3, color:"var(--k-drug)"},
+  {name:"Subject",      n:6, color:"var(--k-subj)"},
+  {name:"Stat",         n:3, color:"var(--k-stat)"},
+  {name:"Study",        n:2, color:"var(--k-study)"},
+];
+// metrics used by bar/scatter
+const METRICS = {prr:5.1, ror:4.8, chi2:18.3, cases:14};
+
+// thematic labels per kind (so the type-ahead search genuinely works)
+const LABELS = {
+  AdverseEvent:["Atrial fibrillation","Palpitations","Bradycardia","Atrial flutter","Arrhythmia"],
+  Drug:["ibrutinib","acalabrutinib","zanubrutinib"],
+  Subject:["SUBJ-0142","SUBJ-0207","SUBJ-0311","SUBJ-0418","SUBJ-0526","SUBJ-0633"],
+  Stat:["PRR 5.1","ROR 4.8","chi2 18.3"],
+  Study:["PCYC-1112","RESONATE"],
+};
+
+/* Build the 19 concrete cited "rows" so filtering is real, not faked.
+   Each row carries kind, degree(1-12), prr(0-6), label. Deterministic values. */
+const ROWS = (()=>{
+  const rows=[]; let i=0;
+  KINDS.forEach(k=>{
+    for(let j=0;j<k.n;j++){
+      const degree = ((i*7+3)%12)+1;                 // 1..12
+      const prr    = Math.round((((i*5+2)%61)/10)*2)/2; // 0..6, .5 steps
+      rows.push({kind:k.name, degree, prr, label:LABELS[k.name][j], color:k.color});
+      i++;
+    }
+  });
+  return rows;
+})();
+const kindColor = name => (KINDS.find(k=>k.name===name)||{}).color || "var(--muted)";
+
+/* ================================================================
+   Inline-SVG mini-chart generators (host draws every value)
+   Each returns an SVG markup string sized to fill its tile.
+   ================================================================ */
+function svgBar(rows){
+  // count-by-kind bar chart from a set of rows
+  const counts = KINDS.map(k=>({name:k.name, color:k.color, c:rows.filter(r=>r.kind===k.name).length}));
+  const max = Math.max(1, ...counts.map(d=>d.c));
+  const W=260,H=130, pad=18, bw=(W-pad*2)/counts.length*0.62, gap=(W-pad*2)/counts.length;
+  let s=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">`;
+  counts.forEach((d,i)=>{
+    const h=(H-30)*(d.c/max), x=pad+i*gap+ (gap-bw)/2, y=H-20-h;
+    s+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="${d.color}">`;
+    if(!REDUCE_MOTION) s+=`<animate attributeName="height" from="0" to="${h.toFixed(1)}" dur="0.5s" fill="freeze"/><animate attributeName="y" from="${H-20}" to="${y.toFixed(1)}" dur="0.5s" fill="freeze"/>`;
+    s+=`</rect>`;
+    s+=`<text x="${(x+bw/2).toFixed(1)}" y="${H-6}" font-size="7.5" fill="#8b949e" text-anchor="middle">${d.name.slice(0,5)}</text>`;
+    s+=`<text x="${(x+bw/2).toFixed(1)}" y="${(y-3).toFixed(1)}" font-size="8" fill="#e6edf3" text-anchor="middle">${d.c}</text>`;
+  });
+  return s+`</svg>`;
+}
+
+function svgLine(){
+  // cases over time — cumulative to 14
+  const pts=[2,3,5,6,8,10,12,14], W=260,H=130,pad=16;
+  const max=14, step=(W-pad*2)/(pts.length-1);
+  let path="", area="";
+  pts.forEach((v,i)=>{
+    const x=pad+i*step, y=H-16-(H-30)*(v/max);
+    path+=(i?"L":"M")+x.toFixed(1)+" "+y.toFixed(1)+" ";
+    area+=(i?"L":"M"+pad+" "+(H-16)+" L")+x.toFixed(1)+" "+y.toFixed(1)+" ";
+  });
+  area+=`L ${W-pad} ${H-16} Z`;
+  let s=`<svg viewBox="0 0 ${W} ${H}">`;
+  s+=`<defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#58a6ff" stop-opacity=".35"/><stop offset="1" stop-color="#58a6ff" stop-opacity="0"/></linearGradient></defs>`;
+  s+=`<path d="${area}" fill="url(#lg)"/>`;
+  s+=`<path d="${path}" fill="none" stroke="#58a6ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"`;
+  if(!REDUCE_MOTION) s+=` stroke-dasharray="600" stroke-dashoffset="600"><animate attributeName="stroke-dashoffset" from="600" to="0" dur="0.9s" fill="freeze"/></path>`;
+  else s+=`/>`;
+  pts.forEach((v,i)=>{ const x=pad+i*step, y=H-16-(H-30)*(v/max); s+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.4" fill="#58a6ff"/>`; });
+  return s+`</svg>`;
+}
+
+function svgDonut(rows){
+  const counts = KINDS.map(k=>({color:k.color, c:rows.filter(r=>r.kind===k.name).length}));
+  const total = Math.max(1, counts.reduce((a,d)=>a+d.c,0));
+  const W=260,H=130,cx=W/2,cy=H/2,r=44,sw=20;
+  let s=`<svg viewBox="0 0 ${W} ${H}">`, off=0, C=2*Math.PI*r;
+  counts.forEach(d=>{
+    if(d.c===0) return;
+    const frac=d.c/total, len=frac*C;
+    s+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${d.color}" stroke-width="${sw}"
+         stroke-dasharray="${len.toFixed(1)} ${(C-len).toFixed(1)}" stroke-dashoffset="${(-off).toFixed(1)}"
+         transform="rotate(-90 ${cx} ${cy})"/>`;
+    off+=len;
+  });
+  s+=`<text x="${cx}" y="${cy-2}" font-size="20" font-weight="700" fill="#e6edf3" text-anchor="middle">${total}</text>`;
+  s+=`<text x="${cx}" y="${cy+13}" font-size="8.5" fill="#8b949e" text-anchor="middle">cited</text>`;
+  return s+`</svg>`;
+}
+
+function svgScatter(rows){
+  // prr (x, 0-6) vs degree (y, 1-12)
+  const W=260,H=130,pad=20;
+  let s=`<svg viewBox="0 0 ${W} ${H}">`;
+  // axes
+  s+=`<line x1="${pad}" y1="${H-16}" x2="${W-8}" y2="${H-16}" stroke="#30363d"/>`;
+  s+=`<line x1="${pad}" y1="8" x2="${pad}" y2="${H-16}" stroke="#30363d"/>`;
+  s+=`<text x="${W-8}" y="${H-5}" font-size="7.5" fill="#8b949e" text-anchor="end">prr &rarr;</text>`;
+  s+=`<text x="${pad-3}" y="12" font-size="7.5" fill="#8b949e" text-anchor="end">deg</text>`;
+  rows.forEach(r=>{
+    const x=pad+(W-pad-10)*(r.prr/6), y=(H-16)-(H-24)*((r.degree-1)/11);
+    s+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.4" fill="${r.color}" fill-opacity=".85"/>`;
+  });
+  return s+`</svg>`;
+}
+
+// mini facet chart (small-multiples): a small bar for one kind's degree spread
+function svgFacet(kindName){
+  const rows=ROWS.filter(r=>r.kind===kindName);
+  const W=200,H=90,pad=10, n=Math.max(rows.length,1), bw=(W-pad*2)/n*0.6, gap=(W-pad*2)/n;
+  const col=kindColor(kindName), max=12;
+  let s=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">`;
+  rows.forEach((r,i)=>{
+    const h=(H-16)*(r.degree/max), x=pad+i*gap+(gap-bw)/2, y=H-10-h;
+    s+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${col}"/>`;
+  });
+  return s+`</svg>`;
+}
+
+/* ================================================================
+   Board archetypes — host-owned role + span table (12-col mental model)
+   ================================================================ */
+const ARCHES = {
+  "kpi-grid":{
+    label:"KPI-grid", hint:"on track?",
+    note:"one subject, mixed measures &rarr; a KPI strip then two charts",
+    tiles:[
+      {chart:"kpi",kpi:0,role:"kpi",span:3},
+      {chart:"kpi",kpi:1,role:"kpi",span:3},
+      {chart:"kpi",kpi:2,role:"kpi",span:3},
+      {chart:"kpi",kpi:3,role:"kpi",span:3},
+      {chart:"bar",title:"Cited nodes by kind",role:"chart",span:6,rows:2},
+      {chart:"line",title:"AFIB cases over time",role:"chart",span:6,rows:2},
+    ]
+  },
+  "hero-rail":{
+    label:"Hero-rail", hint:"one trend dominates",
+    note:"a rate over time dominates &rarr; one hero chart + a supporting rail",
+    tiles:[
+      {chart:"kpi",kpi:0,role:"kpi",span:3},
+      {chart:"kpi",kpi:1,role:"kpi",span:3},
+      {chart:"kpi",kpi:2,role:"kpi",span:3},
+      {chart:"kpi",kpi:3,role:"kpi",span:3},
+      {chart:"line",title:"AFIB cases over time",role:"hero",span:8,rows:2},
+      {chart:"donut",title:"kind mix",role:"rail",span:4},
+      {chart:"bar",title:"by kind",role:"rail",span:4},
+    ]
+  },
+  "bento":{
+    label:"Bento", hint:"exec wow board",
+    note:"heterogeneous content &rarr; asymmetric tiles, size &prop; importance (&le;2 heroes)",
+    tiles:[
+      {chart:"donut",title:"kind distribution",role:"hero",span:6,rows:2},
+      {chart:"kpi",kpi:1,role:"kpi",span:3},
+      {chart:"kpi",kpi:3,role:"kpi",span:3},
+      {chart:"line",title:"cases over time",role:"wide",span:6},
+      {chart:"kpi",kpi:0,role:"kpi",span:3},
+      {chart:"scatter",title:"prr × degree",role:"med",span:4,rows:1},
+      {chart:"bar",title:"by kind",role:"med",span:5},
+    ]
+  },
+  "small-multiples":{
+    label:"Small-multiples", hint:"compare across kinds",
+    note:"compare one metric across a KG dimension &rarr; the same mini-chart, faceted by kind",
+    tiles:[
+      {chart:"facet",facet:"AdverseEvent",title:"AdverseEvent",role:"facet",span:4},
+      {chart:"facet",facet:"Drug",title:"Drug",role:"facet",span:4},
+      {chart:"facet",facet:"Subject",title:"Subject",role:"facet",span:4},
+      {chart:"facet",facet:"Stat",title:"Stat",role:"facet",span:4},
+      {chart:"facet",facet:"Study",title:"Study",role:"facet",span:4},
+      {chart:"bar",title:"All kinds",role:"facet",span:4},
+    ]
+  },
+  "master-detail":{
+    label:"Master-detail", hint:"entity exploration",
+    note:"pick a node, inspect its neighbourhood &rarr; overview list bound to a detail panel",
+    tiles:[
+      {chart:"mdlist",title:"Cited entities",role:"master",span:4,rows:3},
+      {chart:"mddetail",title:"Detail",role:"detail",span:8,rows:3},
+    ]
+  },
+  "analytic-grid":{
+    label:"Analytic-grid", hint:"BI default",
+    note:"multi-measure exploration &rarr; a uniform grid under a global filter bar",
+    tiles:[
+      {chart:"filterbar",role:"global",span:12,full:true},
+      {chart:"bar",title:"by kind",role:"cell",span:4},
+      {chart:"line",title:"cases over time",role:"cell",span:4},
+      {chart:"donut",title:"kind mix",role:"cell",span:4},
+      {chart:"scatter",title:"prr × degree",role:"cell",span:4},
+      {chart:"kpi",kpi:1,role:"cell",span:4},
+      {chart:"kpi",kpi:3,role:"cell",span:4},
+    ]
+  },
+};
+
+let selectedMaster = 0; // for master-detail interactivity
+
+/* Render a single tile's inner body given its config */
+function tileBody(t){
+  switch(t.chart){
+    case "kpi":{
+      const k=KPIS[t.kpi];
+      return `<div class="kpi-val">${k.value}</div><div class="kpi-lab">${k.label}</div><div class="kpi-delta">${k.delta}</div>`;
+    }
+    case "bar":    return svgBar(ROWS);
+    case "line":   return svgLine();
+    case "donut":  return svgDonut(ROWS);
+    case "scatter":return svgScatter(ROWS);
+    case "facet":  return svgFacet(t.facet);
+    case "mdlist": return mdListHTML();
+    case "mddetail": return mdDetailHTML();
+    case "filterbar": return filterBarHTML();
+    default: return "";
+  }
+}
+
+function mdListHTML(){
+  return `<div style="width:100%">`+ROWS.map((r,i)=>
+    `<div class="rowitem${i===selectedMaster?' sel':''}" data-idx="${i}">
+       <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.label}</span>
+       <span class="k" style="border-color:${r.color};color:${r.color}">${r.kind}</span>
+     </div>`).join("")+`</div>`;
+}
+function mdDetailHTML(){
+  const r=ROWS[selectedMaster];
+  return `<div style="width:100%;align-self:flex-start">
+     <div style="font-size:15px;font-weight:600;margin-bottom:4px">${r.label}</div>
+     <div class="muted" style="font-size:12px;margin-bottom:14px">${r.kind} · degree ${r.degree} · prr ${r.prr.toFixed(1)}</div>
+     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+       <div class="pchart" style="padding:10px"><div class="ct">neighbourhood by kind</div>${svgBar(ROWS)}</div>
+       <div class="pchart" style="padding:10px"><div class="ct">signal trend</div>${svgLine()}</div>
+     </div>
+   </div>`;
+}
+function filterBarHTML(){
+  return `<div style="width:100%;display:flex;gap:10px;flex-wrap:wrap;align-items:center;align-self:center">
+     <span class="role-tag">global · span 12</span>
+     <span class="fchip">kind <b>: all</b></span>
+     <span class="fchip">degree <b>1–12</b></span>
+     <span class="fchip">prr <b>0–6</b></span>
+     <span class="muted" style="font-size:11px;margin-left:auto">cross-filter on · click any mark to narrow</span>
+   </div>`;
+}
+
+/* Render an entire board archetype into #board with a staggered reveal */
+function renderBoard(key){
+  const arch=ARCHES[key], board=document.getElementById("board");
+  board.innerHTML="";
+  arch.tiles.forEach((t,idx)=>{
+    const el=document.createElement("div");
+    el.className="tile"+(t.chart==="kpi"?" kpi":"")+(t.chart==="mdlist"?" md-list":"");
+    el.style.gridColumn="span "+t.span;
+    if(t.rows) el.style.gridRow="span "+t.rows;
+    if(t.full) el.setAttribute("data-full","");
+    const roleTag = `${t.role} · span ${t.span}${t.rows?"×"+t.rows:""}`;
+    const title = t.title || (t.chart==="kpi"?KPIS[t.kpi].label:"");
+    // filterbar/global tile has no header
+    if(t.chart!=="filterbar"){
+      el.innerHTML=`<div class="tile-head"><span class="tile-title">${title}</span><span class="role-tag">${roleTag}</span></div>
+                    <div class="tile-body">${tileBody(t)}</div>`;
+    } else {
+      el.innerHTML=`<div class="tile-body">${tileBody(t)}</div>`;
+    }
+    // staggered reveal
+    if(!REDUCE_MOTION){
+      el.classList.add("enter");
+      board.appendChild(el);
+      requestAnimationFrame(()=>{
+        setTimeout(()=>{ el.classList.add("enter-active"); el.classList.remove("enter"); }, idx*45);
+      });
+    } else {
+      board.appendChild(el);
+    }
+  });
+
+  // wire master-detail list clicks
+  board.querySelectorAll(".rowitem").forEach(item=>{
+    item.addEventListener("click",()=>{
+      selectedMaster=+item.getAttribute("data-idx");
+      renderBoard(key); // re-render to update both list selection + detail
+    });
+  });
+
+  // planner note (blue = model intent)
+  document.getElementById("planNote").innerHTML =
+    `The model hinted <b>${key}</b> — ${arch.note}. The host assigned every role &amp; span.`;
+
+  // active button
+  document.querySelectorAll(".arch-btn").forEach(b=>b.classList.toggle("active", b.dataset.key===key));
+}
+
+/* Build archetype toolbar */
+(function buildArchBar(){
+  const bar=document.getElementById("archBar");
+  Object.entries(ARCHES).forEach(([key,a])=>{
+    const b=document.createElement("button");
+    b.className="arch-btn"; b.dataset.key=key;
+    b.innerHTML=`${a.label}<span class="hint">${a.hint}</span>`;
+    b.addEventListener("click",()=>renderBoard(key));
+    bar.appendChild(b);
+  });
+})();
+
+/* ================================================================
+   Section 2 — filter rail (host-derived controls) + live preview
+   ================================================================ */
+const FILTER = {
+  kinds: new Set(KINDS.map(k=>k.name)),   // all checked initially
+  degMin:1, degMax:12, prrMin:0, prrMax:6, search:""
+};
+
+function passes(r){
+  return FILTER.kinds.has(r.kind)
+    && r.degree>=FILTER.degMin && r.degree<=FILTER.degMax
+    && r.prr>=FILTER.prrMin && r.prr<=FILTER.prrMax
+    && (FILTER.search==="" || r.label.toLowerCase().includes(FILTER.search.toLowerCase()));
+}
+
+function activeChips(){
+  const chips=[];
+  if(FILTER.kinds.size!==KINDS.length)
+    chips.push({k:"kind", v:[...FILTER.kinds].join(", ")||"none", clear:()=>{FILTER.kinds=new Set(KINDS.map(k=>k.name));}});
+  if(FILTER.degMin!==1 || FILTER.degMax!==12)
+    chips.push({k:"degree", v:`${FILTER.degMin}–${FILTER.degMax}`, clear:()=>{FILTER.degMin=1;FILTER.degMax=12;}});
+  if(FILTER.prrMin!==0 || FILTER.prrMax!==6)
+    chips.push({k:"prr", v:`${FILTER.prrMin.toFixed(1)}–${FILTER.prrMax.toFixed(1)}`, clear:()=>{FILTER.prrMin=0;FILTER.prrMax=6;}});
+  if(FILTER.search!=="")
+    chips.push({k:"label", v:`"${FILTER.search}"`, clear:()=>{FILTER.search="";}});
+  return chips;
+}
+
+function applyFilters(){
+  const shown = ROWS.filter(passes);
+  const n=shown.length;
+  // counter
+  document.getElementById("shownN").textContent=n;
+  document.getElementById("shownBar").style.width=(100*n/ROWS.length).toFixed(0)+"%";
+  // redraw the two live charts with the filtered rows
+  document.getElementById("pvBar").outerHTML =
+    svgBar(shown).replace("<svg ", '<svg id="pvBar" ');
+  document.getElementById("pvDonut").outerHTML =
+    svgDonut(shown).replace("<svg ", '<svg id="pvDonut" ');
+  // chips
+  const chips=activeChips(), box=document.getElementById("chips");
+  if(chips.length===0){
+    box.innerHTML=`<span class="muted" style="font-size:11.5px">No filters applied — all 19 cited rows shown.</span>`;
+  } else {
+    box.innerHTML = chips.map((c,i)=>
+      `<span class="fchip" data-i="${i}"><b>${c.k}</b> ${c.v} <span class="x" data-i="${i}">×</span></span>`).join("")
+      + `<button class="clear-all" id="clearAll">clear all</button>`;
+    box.querySelectorAll(".x").forEach(x=>x.addEventListener("click",()=>{
+      chips[+x.getAttribute("data-i")].clear(); syncControls(); applyFilters();
+    }));
+    document.getElementById("clearAll").addEventListener("click",()=>{
+      FILTER.kinds=new Set(KINDS.map(k=>k.name)); FILTER.degMin=1;FILTER.degMax=12;
+      FILTER.prrMin=0;FILTER.prrMax=6;FILTER.search=""; syncControls(); applyFilters();
+    });
+  }
+}
+
+/* push FILTER state back into the control widgets (after chip clears) */
+function syncControls(){
+  document.querySelectorAll("#kindChecks input").forEach(cb=>cb.checked=FILTER.kinds.has(cb.value));
+  const set=(id,v)=>{const e=document.getElementById(id); if(e) e.value=v;};
+  set("degMin",FILTER.degMin); set("degMax",FILTER.degMax);
+  set("prrMin",FILTER.prrMin); set("prrMax",FILTER.prrMax);
+  document.getElementById("degMinVal").textContent=FILTER.degMin;
+  document.getElementById("degMaxVal").textContent=FILTER.degMax;
+  document.getElementById("prrMinVal").textContent=FILTER.prrMin.toFixed(1).replace(/\.0$/,"");
+  document.getElementById("prrMaxVal").textContent=FILTER.prrMax.toFixed(1).replace(/\.0$/,"");
+  document.getElementById("labelSearch").value=FILTER.search;
+}
+
+/* build kind checkboxes */
+(function buildKindChecks(){
+  const box=document.getElementById("kindChecks");
+  KINDS.forEach(k=>{
+    const lab=document.createElement("label");
+    lab.innerHTML=`<input type="checkbox" value="${k.name}" checked>
+       <span>${k.name}</span>
+       <span class="swatch" style="background:${k.color}"></span>
+       <span class="cnt">${k.n}</span>`;
+    lab.querySelector("input").addEventListener("change",e=>{
+      if(e.target.checked) FILTER.kinds.add(k.name); else FILTER.kinds.delete(k.name);
+      applyFilters();
+    });
+    box.appendChild(lab);
+  });
+})();
+
+/* wire range sliders (dual handles kept from crossing) */
+function wireRange(minId,maxId,minValId,maxValId,fMin,fMax,isFloat){
+  const mn=document.getElementById(minId), mx=document.getElementById(maxId);
+  const upd=()=>{
+    let a=parseFloat(mn.value), b=parseFloat(mx.value);
+    if(a>b){ [a,b]=[b,a]; mn.value=a; mx.value=b; }
+    FILTER[fMin]=a; FILTER[fMax]=b;
+    document.getElementById(minValId).textContent=isFloat?a.toFixed(1).replace(/\.0$/,""):a;
+    document.getElementById(maxValId).textContent=isFloat?b.toFixed(1).replace(/\.0$/,""):b;
+    applyFilters();
+  };
+  mn.addEventListener("input",upd); mx.addEventListener("input",upd);
+}
+wireRange("degMin","degMax","degMinVal","degMaxVal","degMin","degMax",false);
+wireRange("prrMin","prrMax","prrMinVal","prrMaxVal","prrMin","prrMax",true);
+
+document.getElementById("labelSearch").addEventListener("input",e=>{
+  FILTER.search=e.target.value.trim(); applyFilters();
+});
+
+/* ================================================================
+   Section 3 — candidate & rank
+   ================================================================ */
+const CANDIDATES = [
+  {name:"All-bar board", arch:"small-multiples", score:0.62, color:"#d29922",
+   rationale:"Low mark diversity — every tile is a bar. Reads as 'the same chart' repeated."},
+  {name:"Analytic-grid", arch:"analytic-grid", score:0.78, color:"#58a6ff",
+   rationale:"Good coverage, but one redundant tile (two identical breakdowns)."},
+  {name:"KPI + trend + breakdown", arch:"kpi-grid", score:0.91, color:"#2ea043", win:true,
+   rationale:"Balanced: KPI strip + trend + breakdown, filters complete. Best perceptual coverage."},
+];
+
+// tiny schematic thumbnails (host draws), roughly matching each archetype's shape
+function thumbSVG(arch){
+  const b=(x,y,w,h,c)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="${c}"/>`;
+  const g="#30363d", a="#58a6ff", k="#2ea043";
+  let r="";
+  if(arch==="small-multiples"){
+    for(let i=0;i<6;i++){ r+=b(6+(i%3)*62, 6+Math.floor(i/3)*40, 54, 32, g); r+=b(10+(i%3)*62, 22+Math.floor(i/3)*40, 46, 14, "#d2992255"); }
+  } else if(arch==="analytic-grid"){
+    r+=b(6,6,184,10,g);
+    for(let i=0;i<4;i++){ r+=b(6+(i%2)*96, 22+Math.floor(i/2)*32, 88, 26, i%2?a+"55":g); }
+  } else { // kpi-grid winner
+    for(let i=0;i<4;i++) r+=b(6+i*47, 6, 40, 22, k+"55");
+    r+=b(6,34,88,44,a+"55"); r+=b(102,34,88,44,g);
+  }
+  return `<svg viewBox="0 0 196 84" preserveAspectRatio="xMidYMid meet">${r}</svg>`;
+}
+
+(function buildCandidates(){
+  const box=document.getElementById("cands");
+  CANDIDATES.forEach(c=>{
+    const el=document.createElement("div");
+    el.className="cand"+(c.win?" win":"");
+    el.innerHTML=`${c.win?'<span class="badge">★ selected</span>':''}
+      <div class="thumb">${thumbSVG(c.arch)}</div>
+      <div class="cname">${c.name}</div>
+      <div class="score-row">
+        <span class="score-bar"><i style="width:${(c.score*100).toFixed(0)}%;background:${c.color}"></i></span>
+        <span class="score-num" style="color:${c.color}">${c.score.toFixed(2)}</span>
+      </div>
+      <div class="rationale">${c.rationale}</div>`;
+    el.addEventListener("click",()=>{
+      renderBoard(c.arch);
+      document.getElementById("s1").scrollIntoView({behavior:REDUCE_MOTION?"auto":"smooth", block:"start"});
+    });
+    box.appendChild(el);
+  });
+})();
+
+// deterministic critic breakdown for the winner
+const CRITIC = [
+  {lab:"Coverage",           v:0.95},
+  {lab:"Mark diversity",     v:0.88},
+  {lab:"Redundancy (inv.)",  v:0.90},
+  {lab:"Layout balance",     v:0.92},
+  {lab:"Filter completeness",v:1.00},
+];
+(function buildCritic(){
+  const box=document.getElementById("criticMetrics");
+  CRITIC.forEach(m=>{
+    const el=document.createElement("div");
+    el.className="cmetric";
+    el.innerHTML=`<span class="cm-lab">${m.lab}</span>
+      <span class="cm-bar"><i style="width:${(m.v*100).toFixed(0)}%"></i></span>
+      <span class="cm-val">${m.v.toFixed(2)}</span>`;
+    box.appendChild(el);
+  });
+})();
+
+/* ================================================================
+   Boot
+   ================================================================ */
+renderBoard("kpi-grid");   // default archetype
+applyFilters();            // seed the live preview at 19/19
+</script>

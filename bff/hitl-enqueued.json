@@ -1,0 +1,121 @@
+{
+  "items": [
+    {
+      "id": "enq-1782797449108-5s3dlo",
+      "title": "Review: grounded conclusion",
+      "description": "Grounded conclusion over 16 cited node(s): Disproportionality (PRR 3.6), Disproportionality (PRR 3.9), Disproportionality (PRR 4.2)…",
+      "effect": "Records a human review decision for this conclusion (no graph mutation).",
+      "targetNodeId": "STAT-VEGF-HTN",
+      "forwardOps": [],
+      "inverseOps": []
+    },
+    {
+      "id": "enq-1782851365122-zfg255",
+      "title": "Review: grounded conclusion",
+      "description": "Grounded conclusion over 5 cited node(s): Management of immune-related adverse events (PMID 29442540), Disproportionality (PRR 6.3), Disproportionality (PRR 7.0)…",
+      "effect": "Records a human review decision for this conclusion (no graph mutation).",
+      "targetNodeId": "LIT-PMID-29442540",
+      "forwardOps": [],
+      "inverseOps": []
+    },
+    {
+      "id": "enq-1782866828647-4qbsm3",
+      "title": "Review: grounded conclusion",
+      "description": "Confirm the myocarditis safety conclusion for the dossier. — ## Answer\n\nThe myocarditis signal (node **AE-MYOCARDITIS** — \"Immune-related myocarditis\", OAE code OAE_0001489) is supported by a convergent, multi-source evidence chain centered on anti‑PD‑1 checkpoint inhibitors: a strong pharmacovigilan",
+      "effect": "Records a human review decision for this conclusion (no graph mutation).",
+      "targetNodeId": "AE-CONFLICT",
+      "forwardOps": [],
+      "inverseOps": []
+    },
+    {
+      "id": "enq-1782866875318-s203pa",
+      "title": "Review: grounded conclusion",
+      "description": "Confirm the myocarditis safety conclusion for the dossier. — ## Answer\n\nThe myocarditis signal — centered on **`AE-MYOCARDITIS`** (\"Immune-related myocarditis\", OAE_0001489) — is supported by convergent evidence across statistics, spontaneous reports, a suspect drug, literature, an FDA label, a clini",
+      "effect": "Records a human review decision for this conclusion (no graph mutation).",
+      "targetNodeId": "AE-CONFLICT",
+      "forwardOps": [],
+      "inverseOps": []
+    },
+    {
+      "id": "enq-1782867553011-0kmrqh",
+      "title": "Review: grounded conclusion",
+      "description": "Confirm the myocarditis safety conclusion for the dossier. — The graph converges strongly on the myocarditis signal. Here's the answer.\n\n## The myocarditis signal is supported by five convergent, mutually reinforcing evidence streams\n\nThe signal centers on the AdverseEvent **`AE-MYOCARDITIS`** (\"Immu",
+      "effect": "Records a human review decision for this conclusion (no graph mutation).",
+      "targetNodeId": "AE-CONFLICT",
+      "forwardOps": [],
+      "inverseOps": []
+    },
+    {
+      "id": "enq-1782868946958-zdmqux",
+      "title": "Review: grounded conclusion",
+      "description": "Confirm the myocarditis safety conclusion for the dossier. — ## Answer\n\nThe myocarditis signal (node **AE-MYOCARDITIS**, \"Immune-related myocarditis,\" OAE_0001489) is supported by **multiple converging evidence lines tied to anti-PD-1 checkpoint inhibitors**: a statistically strong pharmacovigilance ",
+      "effect": "Records a human review decision for this conclusion (no graph mutation).",
+      "targetNodeId": "AE-CONFLICT",
+      "forwardOps": [],
+      "inverseOps": []
+    },
+    {
+      "id": "enq-1782869882094-qo626o",
+      "title": "Review: grounded conclusion",
+      "description": "Confirm the myocarditis safety conclusion for the dossier. — ## Answer\n\nThe myocarditis signal is supported by **multiple converging, independent evidence lines** all anchored on the AdverseEvent node `AE-MYOCARDITIS` (\"Immune-related myocarditis\", OAE_0001489): pharmacovigilance disproportionality s",
+      "effect": "Records a human review decision for this conclusion (no graph mutation).",
+      "targetNodeId": "AE-CONFLICT",
+      "forwardOps": [],
+      "inverseOps": []
+    },
+    {
+      "id": "enq-1782869973752-3rtazu",
+      "title": "Review: grounded conclusion",
+      "description": "Confirm the myocarditis safety conclusion for the dossier. — You've hit your session limit · resets 10pm (America/Chicago)",
+      "effect": "Records a human review decision for this conclusion (no graph mutation).",
+      "targetNodeId": "AE-CONFLICT",
+      "forwardOps": [],
+      "inverseOps": []
+    },
+    {
+      "id": "enq-1782875755028-pw82ol",
+      "title": "Review: grounded conclusion",
+      "description": "Confirm the myocarditis safety conclusion for the dossier. — ## Answer\n\nThe myocarditis signal in the graph is a **checkpoint-inhibitor (anti-PD-1) immune-related myocarditis** signal, and it is supported by convergent evidence across five independent lines: a positive disproportionality statistic, 6",
+      "effect": "Records a human review decision for this conclusion (no graph mutation).",
+      "targetNodeId": "AE-CONFLICT",
+      "forwardOps": [],
+      "inverseOps": []
+    },
+    {
+      "id": "enq-1782877220436-vvzhkp",
+      "title": "Review: grounded conclusion",
+      "description": "Confirm the myocarditis safety conclusion for the dossier. — ## Direct answer\n\nThe myocarditis signal (node **AE-MYOCARDITIS**, \"Immune-related myocarditis,\" OAE_0001489) is supported by a convergent, multi-source evidence chain centered on **anti-PD-1 checkpoint inhibitors (DRUG-CPI)**: pharmacovigi",
+      "effect": "Records a human review decision for this conclusion (no graph mutation).",
+      "targetNodeId": "AE-CONFLICT",
+      "forwardOps": [],
+      "inverseOps": []
+    },
+    {
+      "id": "enq-1782879139364-dmpu2f",
+      "title": "Review: grounded conclusion",
+      "description": "Present the assembled class members, quantified shared cardiovascular signals, mechanism/evidence links, and labeling findings to a pharmacovigilance reviewer for verification and sign-off before finalizing. — ## Answer\n\nFour `RegulatoryDoc` nodes are attached to drugs via `HAS_LABEL`, and each is also `HAS_LABEL`-linked to exactly one `AdverseEvent`. Three of those AEs are cardiovascular; one (serious infection/pneumonia) is not. Critically, **t",
+      "effect": "Records a human review decision for this conclusion (no graph mutation).",
+      "targetNodeId": "REG-EMA-HER2-LVDYS",
+      "forwardOps": [],
+      "inverseOps": []
+    },
+    {
+      "id": "enq-1783529245335-pnab5v",
+      "title": "Review: grounded conclusion",
+      "description": "Grounded conclusion over 15 cited node(s): FDA label - checkpoint inhibitor immune-mediated myocarditis warning (BLA 125514), Checkpoint inhibitor safety registry (NCT02743819), Fulminant myocarditis with combination checkpoint blockade (PMID 27959767)…",
+      "effect": "Records a human review decision for this conclusion (no graph mutation).",
+      "targetNodeId": "REG-FDA-CPI-MYOCARDITIS",
+      "forwardOps": [],
+      "inverseOps": []
+    },
+    {
+      "id": "enq-1783911502123-rqortc",
+      "title": "Review: grounded conclusion",
+      "description": "Review published dashboard \"Phase 3 proof board\" over 2 cited node(s).",
+      "effect": "Records a human review decision for this conclusion (no graph mutation).",
+      "targetNodeId": "PT-703",
+      "forwardOps": [],
+      "inverseOps": []
+    }
+  ]
+}

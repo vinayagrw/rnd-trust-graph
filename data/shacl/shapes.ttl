@@ -1,0 +1,246 @@
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix rtg:     <https://vinayagrw.github.io/rnd-trust-graph#> .
+
+# SHACL cameo — the production-grade equivalent of the readiness radar, mapped
+# to the W3C stack (OWL/RDF/SHACL/SPARQL). Validated live, in-process,
+# by shacl-engine over data/rdf/dataset.generated.ttl; the conformance report is
+# shown as audit evidence.
+#
+# Coverage goal: across the FULL dataset, EXACTLY the four deliberate noise nodes
+# fail — and only on the defect each was designed to demonstrate:
+#   DRUG-ORPHAN  no rtg:TARGETS link        -> DrugShape
+#   CON-STALE    ontologyVersion 2019-01     -> OntologyVersionShape
+#   TGT-NOPROV   no provenance triad         -> NodeProvenanceShape
+#   AE-CONFLICT  conflicting code (refuted)   -> ConflictingAnnotationShape
+#
+# Vocabulary note: the data uses UPPER_SNAKE relation IRIs (rtg:TARGETS) and
+# dcterms:license — the shapes below match that exactly.
+
+# --- ALCOA+ provenance triad -------------------------------------------------
+# Every node kind must declare a source system, an ISO-8601 timestamp, and a
+# license. Targeted at each concrete class so it applies to the whole dataset
+# (shacl-engine resolves sh:targetClass against the data graph's rdf:type, and
+# no instance is typed as the abstract rtg:GraphNode). Only TGT-NOPROV violates.
+rtg:NodeProvenanceShape a sh:NodeShape ;
+    sh:targetClass
+        rtg:AdverseEvent, rtg:Drug, rtg:BiologicalTarget, rtg:Pathway,
+        rtg:SignalStat, rtg:Evidence, rtg:Patient, rtg:PathologyImage,
+        rtg:OmicsProfile, rtg:Concept, rtg:LiteratureAbstract,
+        rtg:ClinicalTrial, rtg:OntologySlice, rtg:RegulatoryDoc,
+        rtg:GeneticAssociation ;
+    sh:property [
+        sh:path rtg:sourceSystem ;
+        sh:minCount 1 ;
+        sh:message "ALCOA+ (Attributable): every node must declare a source system." ;
+    ] ;
+    sh:property [
+        sh:path rtg:timestamp ;
+        sh:minCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:message "ALCOA+ (Contemporaneous): every node must carry a timestamp." ;
+    ] ;
+    sh:property [
+        sh:path dcterms:license ;
+        sh:minCount 1 ;
+        sh:message "Governance: every node must declare a license." ;
+    ] .
+
+# --- FAIR: a Drug must link to >= 1 biological target ------------------------
+# Path is rtg:TARGETS (UPPER_SNAKE — matches the data). Only DRUG-ORPHAN fails.
+rtg:DrugShape a sh:NodeShape ;
+    sh:targetClass rtg:Drug ;
+    sh:property [
+        sh:path rtg:TARGETS ;
+        sh:minCount 1 ;
+        sh:message "FAIR (Interoperable): a Drug must link to at least one biological target." ;
+    ] .
+
+# --- Currency: ontology version must be 2023+ --------------------------------
+# Scoped to Concept (the terminology surface). Only CON-STALE (2019-01) fails.
+rtg:OntologyVersionShape a sh:NodeShape ;
+    sh:targetClass rtg:Concept ;
+    sh:property [
+        sh:path rtg:ontologyVersion ;
+        sh:pattern "^(202[3-9]|20[3-9][0-9])" ;
+        sh:message "Currency: ontology version must be 2023 or later (no stale terminologies)." ;
+    ] .
+
+# --- Integrity: conflicting annotation (same code, refuted twin) -------------
+# An AdverseEvent that shares its rtg:code with a DIFFERENT node and is marked
+# refuted is a conflicting annotation. This catches AE-CONFLICT (which shares
+# code OAE_0001489 with AE-MYOCARDITIS and carries rtg:status "refuted") while
+# leaving the authoritative AE-MYOCARDITIS untouched.
+rtg:ConflictingAnnotationShape a sh:NodeShape ;
+    sh:targetClass rtg:AdverseEvent ;
+    sh:sparql [
+        sh:message "Integrity: conflicting annotation — a refuted node reuses a code already in use." ;
+        sh:select """
+            PREFIX rtg: <https://vinayagrw.github.io/rnd-trust-graph#>
+            SELECT $this WHERE {
+                $this rtg:code ?code .
+                $this rtg:status \"refuted\" .
+                ?other rtg:code ?code .
+                FILTER (?other != $this)
+            }
+        """ ;
+    ] .
+
+# --- Integrity: duplicate record (two distinct nodes share an identity key) ---
+# A SignalStat's rtg:code is an identity key that must be unique. Two DISTINCT
+# SignalStats that share the same code are a duplicate-record defect. This catches
+# the seeded near-duplicate pair STAT-DUP-A / STAT-DUP-B (both carry code
+# FAERS-DUP-0001) while leaving every authoritative (code-less) SignalStat
+# untouched. Scoped to SignalStat so the AE-CONFLICT code reuse (an AdverseEvent,
+# already covered by ConflictingAnnotationShape) is NOT double-counted here.
+rtg:DuplicateRecordShape a sh:NodeShape ;
+    sh:targetClass rtg:SignalStat ;
+    sh:sparql [
+        sh:message "Integrity: duplicate record — a SignalStat reuses an identity code already held by another SignalStat." ;
+        sh:select """
+            PREFIX rtg: <https://vinayagrw.github.io/rnd-trust-graph#>
+            SELECT $this WHERE {
+                $this  a rtg:SignalStat ;
+                       rtg:code ?code .
+                ?other a rtg:SignalStat ;
+                       rtg:code ?code .
+                FILTER (?other != $this)
+            }
+        """ ;
+    ] .
+
+# --- Process: referral without follow-up (required successor edge absent) -----
+# A SignalStat marked rtg:status "escalated" is a referral that REQUIRES a
+# downstream review — a rtg:REVIEWED_BY successor edge. A node escalated but with
+# no such follow-up edge is a governance gap. Catches the seeded STAT-NOFOLLOWUP
+# (escalated, no REVIEWED_BY) and nothing else (no other SignalStat is escalated).
+rtg:MissingFollowupShape a sh:NodeShape ;
+    sh:targetClass rtg:SignalStat ;
+    sh:sparql [
+        sh:message "Process: referral without follow-up — an escalated signal has no required downstream review (REVIEWED_BY) edge." ;
+        sh:select """
+            PREFIX rtg: <https://vinayagrw.github.io/rnd-trust-graph#>
+            SELECT $this WHERE {
+                $this rtg:status "escalated" .
+                FILTER NOT EXISTS { $this rtg:REVIEWED_BY ?reviewer }
+            }
+        """ ;
+    ] .
+
+# --- Workstream-1 modality provenance shapes (kept; redundant with the triad
+#     above but retained as explicit, message-rich per-modality documentation) -
+
+rtg:LiteratureAbstractShape a sh:NodeShape ;
+    sh:targetClass rtg:LiteratureAbstract ;
+    sh:property [
+        sh:path rtg:sourceSystem ;
+        sh:minCount 1 ;
+        sh:message "ALCOA+ (Attributable): a literature abstract must declare a source system." ;
+    ] ;
+    sh:property [
+        sh:path rtg:timestamp ;
+        sh:minCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:message "ALCOA+ (Contemporaneous): a literature abstract must carry a timestamp." ;
+    ] ;
+    sh:property [
+        sh:path dcterms:license ;
+        sh:minCount 1 ;
+        sh:message "Governance: a literature abstract must declare a license." ;
+    ] .
+
+rtg:ClinicalTrialShape a sh:NodeShape ;
+    sh:targetClass rtg:ClinicalTrial ;
+    sh:property [
+        sh:path rtg:sourceSystem ;
+        sh:minCount 1 ;
+        sh:message "ALCOA+ (Attributable): a clinical trial must declare a source system." ;
+    ] ;
+    sh:property [
+        sh:path rtg:timestamp ;
+        sh:minCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:message "ALCOA+ (Contemporaneous): a clinical trial must carry a timestamp." ;
+    ] ;
+    sh:property [
+        sh:path dcterms:license ;
+        sh:minCount 1 ;
+        sh:message "Governance: a clinical trial must declare a license." ;
+    ] .
+
+rtg:OntologySliceShape a sh:NodeShape ;
+    sh:targetClass rtg:OntologySlice ;
+    sh:property [
+        sh:path rtg:sourceSystem ;
+        sh:minCount 1 ;
+        sh:message "ALCOA+ (Attributable): an ontology slice must declare a source system." ;
+    ] ;
+    sh:property [
+        sh:path rtg:timestamp ;
+        sh:minCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:message "ALCOA+ (Contemporaneous): an ontology slice must carry a timestamp." ;
+    ] ;
+    sh:property [
+        sh:path dcterms:license ;
+        sh:minCount 1 ;
+        sh:message "Governance: an ontology slice must declare a license." ;
+    ] ;
+    sh:property [
+        sh:path rtg:ontologyVersion ;
+        sh:minCount 1 ;
+        sh:message "Currency: an ontology slice must declare its version." ;
+    ] .
+
+# --- Phase-1 modality provenance shapes --------------------------------------
+
+rtg:RegulatoryDocShape a sh:NodeShape ;
+    sh:targetClass rtg:RegulatoryDoc ;
+    sh:property [
+        sh:path rtg:sourceSystem ;
+        sh:minCount 1 ;
+        sh:message "ALCOA+ (Attributable): a regulatory document must declare a source system." ;
+    ] ;
+    sh:property [
+        sh:path rtg:timestamp ;
+        sh:minCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:message "ALCOA+ (Contemporaneous): a regulatory document must carry a timestamp." ;
+    ] ;
+    sh:property [
+        sh:path dcterms:license ;
+        sh:minCount 1 ;
+        sh:message "Governance: a regulatory document must declare a license." ;
+    ] ;
+    sh:property [
+        sh:path rtg:code ;
+        sh:minCount 1 ;
+        sh:message "Traceability: a regulatory document must carry a real document identifier." ;
+    ] .
+
+rtg:GeneticAssociationShape a sh:NodeShape ;
+    sh:targetClass rtg:GeneticAssociation ;
+    sh:property [
+        sh:path rtg:sourceSystem ;
+        sh:minCount 1 ;
+        sh:message "ALCOA+ (Attributable): a genetic association must declare a source system." ;
+    ] ;
+    sh:property [
+        sh:path rtg:timestamp ;
+        sh:minCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:message "ALCOA+ (Contemporaneous): a genetic association must carry a timestamp." ;
+    ] ;
+    sh:property [
+        sh:path dcterms:license ;
+        sh:minCount 1 ;
+        sh:message "Governance: a genetic association must declare a license." ;
+    ] ;
+    sh:property [
+        sh:path rtg:code ;
+        sh:minCount 1 ;
+        sh:message "Traceability: a genetic association must carry a real (Ensembl/Open Targets) identifier." ;
+    ] .

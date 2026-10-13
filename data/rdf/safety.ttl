@@ -1,0 +1,188 @@
+# =============================================================================
+# UC4 — Data-Quality & Patient-Safety Risk Radar : subject-safety A-Box
+#
+# ISOLATED instance data for the subject-safety radar (Use Case 4). It is
+# loaded ONLY by bff/src/safety/service.ts into its OWN reasoner store and
+# validated against data/shacl/safety-shapes.ttl — it is NEVER loaded into the
+# canonical reasoner (buildCanonicalReasoner), so the FAIR readiness radar and its
+# exact-flag test invariants stay byte-identical and untouched.
+#
+# R&D-native framing: "Subject" = a clinical-trial participant (PHI-free,
+# synthetic). The relationships model the patient-safety risks in a pharmaceutical
+# world (trial + pharmacovigilance), not an NHS bedside.
+#
+# Coverage goal — across this dataset, EXACTLY these subjects fail, each on the
+# ONE risk it is designed to demonstrate:
+#   SUBJ-201            missing-allergy-status     (on an active Rx, no allergy record)
+#   SUBJ-202            conflicting-medication     (two active Rx, contraindicated drugs)
+#   SUBJ-203            stale-lab-result           (renal-dosed Rx, lab from 2023)
+#   SUBJ-204            referral-without-followup  (open referral, no appointment)
+#   SUBJ-205A + 205B    duplicate-subject          (share enrolmentId ENR-2048)
+#   SUBJ-206            unmapped-local-code         (local code with no MAPS_TO)
+# SUBJ-101 is a CLEAN control (has an Rx WITH an allergy record + a RECENT lab, a
+# referral WITH a follow-up, a MAPPED local code, a unique enrolment id) and must
+# raise NO flag — proving the shapes are specific, not blanket.
+#
+# Vocabulary matches the canonical graph: UPPER_SNAKE relation IRIs, rtg:
+# datatype properties, dcterms:license. Every node carries the ALCOA+ triad
+# (sourceSystem / timestamp / license) so the finding can name the source systems.
+# =============================================================================
+
+@prefix rtg:     <https://vinayagrw.github.io/rnd-trust-graph#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+# --- Reference drugs (with a contraindication pair) --------------------------
+rtg:DRUG-ANTICOAG a rtg:Drug ;
+    rdfs:label "Apixaban (anticoagulant)" ;
+    rtg:sourceSystem "RxNorm / ChEMBL" ; rtg:timestamp "2025-11-02T09:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+rtg:DRUG-NSAID a rtg:Drug ;
+    rdfs:label "Ibuprofen (NSAID)" ;
+    rtg:sourceSystem "RxNorm / ChEMBL" ; rtg:timestamp "2025-11-02T09:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+rtg:DRUG-STATIN a rtg:Drug ;
+    rdfs:label "Atorvastatin (statin)" ;
+    rtg:sourceSystem "RxNorm / ChEMBL" ; rtg:timestamp "2025-11-02T09:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+rtg:DRUG-RENAL a rtg:Drug ;
+    rdfs:label "Gabapentin (renally dosed)" ;
+    rtg:sourceSystem "RxNorm / ChEMBL" ; rtg:timestamp "2025-11-02T09:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+
+# Bleed-risk contraindication (anticoagulant + NSAID). Asserted both directions
+# so the conflict shape fires regardless of prescription ordering.
+rtg:DRUG-ANTICOAG rtg:CONTRAINDICATES rtg:DRUG-NSAID .
+rtg:DRUG-NSAID    rtg:CONTRAINDICATES rtg:DRUG-ANTICOAG .
+
+# --- A current terminology concept (for the mapped local code) ---------------
+rtg:CON-RASH a rtg:Concept ;
+    rdfs:label "Rash (MedDRA 10037844)" ;
+    rtg:code "10037844" ; rtg:ontologyVersion "2025-09" ;
+    rtg:sourceSystem "MedDRA v27.1" ; rtg:timestamp "2025-09-01T00:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+
+# =============================================================================
+# SUBJ-101 — CLEAN control (must raise NO flag)
+# =============================================================================
+rtg:SUBJ-101 a rtg:Subject ;
+    rdfs:label "Trial subject 101 (control)" ;
+    rtg:enrolmentId "ENR-1001" ;
+    rtg:HAS_PRESCRIPTION rtg:RX-101 ;
+    rtg:HAS_ALLERGY_RECORD rtg:ALG-101 ;
+    rtg:HAS_LAB_RESULT rtg:LAB-101 ;
+    rtg:HAS_REFERRAL rtg:REF-101 ;
+    rtg:USES_CODE rtg:LC-101 ;
+    rtg:sourceSystem "Veeva Vault CTMS" ; rtg:timestamp "2026-01-05T10:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+rtg:RX-101 a rtg:Prescription ; rdfs:label "Active Rx — atorvastatin" ; rtg:PRESCRIBES rtg:DRUG-STATIN ;
+    rtg:sourceSystem "SAP eRx / dosing system" ; rtg:timestamp "2026-01-05T10:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+rtg:ALG-101 a rtg:AllergyRecord ; rdfs:label "Allergy record — penicillin" ;
+    rtg:sourceSystem "Clinical EDC (allergy module)" ; rtg:timestamp "2026-01-04T08:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+rtg:LAB-101 a rtg:LabResult ; rdfs:label "eGFR panel (recent)" ;
+    rtg:sourceSystem "LabConnect central lab" ; rtg:timestamp "2026-01-02T08:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+rtg:REF-101 a rtg:Referral ; rdfs:label "Cardiology referral" ; rtg:status "open" ; rtg:FOLLOWED_BY rtg:APPT-101 ;
+    rtg:sourceSystem "Referral & scheduling system" ; rtg:timestamp "2026-01-03T08:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+rtg:APPT-101 a rtg:Appointment ; rdfs:label "Cardiology appointment (booked)" ;
+    rtg:sourceSystem "Referral & scheduling system" ; rtg:timestamp "2026-01-20T13:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+rtg:LC-101 a rtg:LocalCode ; rdfs:label "Site code SITE-RASH-01" ; rtg:code "SITE-RASH-01" ; rtg:MAPS_TO rtg:CON-RASH ;
+    rtg:sourceSystem "Site local dictionary" ; rtg:timestamp "2026-01-04T08:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+
+# SUBJ-102 / SUBJ-103 — additional CLEAN controls (unique enrolment, allergy on
+# file, mapped code). No prescription/referral gaps → NO flag. They keep the
+# safety score realistic (not every subject is unsafe) and prove specificity.
+rtg:SUBJ-102 a rtg:Subject ; rdfs:label "Trial subject 102 (control)" ; rtg:enrolmentId "ENR-1002" ;
+    rtg:HAS_ALLERGY_RECORD rtg:ALG-102 ; rtg:USES_CODE rtg:LC-101 ;
+    rtg:sourceSystem "Veeva Vault CTMS" ; rtg:timestamp "2026-01-05T10:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+rtg:ALG-102 a rtg:AllergyRecord ; rdfs:label "Allergy record — none known" ;
+    rtg:sourceSystem "Clinical EDC (allergy module)" ; rtg:timestamp "2026-01-04T08:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+rtg:SUBJ-103 a rtg:Subject ; rdfs:label "Trial subject 103 (control)" ; rtg:enrolmentId "ENR-1003" ;
+    rtg:HAS_ALLERGY_RECORD rtg:ALG-103 ;
+    rtg:sourceSystem "Veeva Vault CTMS" ; rtg:timestamp "2026-01-05T10:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+rtg:ALG-103 a rtg:AllergyRecord ; rdfs:label "Allergy record — latex" ;
+    rtg:sourceSystem "Clinical EDC (allergy module)" ; rtg:timestamp "2026-01-04T08:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+
+# =============================================================================
+# SUBJ-201 — missing-allergy-status (active Rx, NO allergy record)
+# =============================================================================
+rtg:SUBJ-201 a rtg:Subject ;
+    rdfs:label "Trial subject 201" ;
+    rtg:enrolmentId "ENR-2001" ;
+    rtg:HAS_PRESCRIPTION rtg:RX-201 ;
+    rtg:sourceSystem "Veeva Vault CTMS" ; rtg:timestamp "2026-01-05T10:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+rtg:RX-201 a rtg:Prescription ; rdfs:label "Active Rx — apixaban" ; rtg:PRESCRIBES rtg:DRUG-ANTICOAG ;
+    rtg:sourceSystem "SAP eRx / dosing system" ; rtg:timestamp "2026-01-05T10:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+
+# =============================================================================
+# SUBJ-202 — conflicting-medication (two active Rx: anticoagulant + NSAID)
+# (has an allergy record so it does NOT also trip missing-allergy-status)
+# =============================================================================
+rtg:SUBJ-202 a rtg:Subject ;
+    rdfs:label "Trial subject 202" ;
+    rtg:enrolmentId "ENR-2002" ;
+    rtg:HAS_PRESCRIPTION rtg:RX-202A , rtg:RX-202B ;
+    rtg:HAS_ALLERGY_RECORD rtg:ALG-202 ;
+    rtg:sourceSystem "Veeva Vault CTMS" ; rtg:timestamp "2026-01-05T10:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+rtg:RX-202A a rtg:Prescription ; rdfs:label "Active Rx — apixaban" ; rtg:PRESCRIBES rtg:DRUG-ANTICOAG ;
+    rtg:sourceSystem "SAP eRx / dosing system" ; rtg:timestamp "2026-01-05T10:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+rtg:RX-202B a rtg:Prescription ; rdfs:label "Active Rx — ibuprofen" ; rtg:PRESCRIBES rtg:DRUG-NSAID ;
+    rtg:sourceSystem "Site pharmacy system" ; rtg:timestamp "2026-01-06T10:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+rtg:ALG-202 a rtg:AllergyRecord ; rdfs:label "Allergy record — none known" ;
+    rtg:sourceSystem "Clinical EDC (allergy module)" ; rtg:timestamp "2026-01-04T08:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+
+# =============================================================================
+# SUBJ-203 — stale-lab-result (renal-dosed Rx requires a recent lab; lab is 2023)
+# (allergy record present; lab is stale, not absent)
+# =============================================================================
+rtg:SUBJ-203 a rtg:Subject ;
+    rdfs:label "Trial subject 203" ;
+    rtg:enrolmentId "ENR-2003" ;
+    rtg:HAS_PRESCRIPTION rtg:RX-203 ;
+    rtg:HAS_ALLERGY_RECORD rtg:ALG-203 ;
+    rtg:HAS_LAB_RESULT rtg:LAB-203 ;
+    rtg:sourceSystem "Veeva Vault CTMS" ; rtg:timestamp "2026-01-05T10:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+rtg:RX-203 a rtg:Prescription ; rdfs:label "Active Rx — gabapentin (renally dosed)" ;
+    rtg:PRESCRIBES rtg:DRUG-RENAL ; rtg:requiresRecentLab true ;
+    rtg:sourceSystem "SAP eRx / dosing system" ; rtg:timestamp "2026-01-05T10:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+rtg:ALG-203 a rtg:AllergyRecord ; rdfs:label "Allergy record — sulfa" ;
+    rtg:sourceSystem "Clinical EDC (allergy module)" ; rtg:timestamp "2026-01-04T08:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+rtg:LAB-203 a rtg:LabResult ; rdfs:label "eGFR panel (renal function)" ;
+    rtg:sourceSystem "LabConnect central lab" ; rtg:timestamp "2023-02-11T08:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+
+# =============================================================================
+# SUBJ-204 — referral-without-followup (open referral, no FOLLOWED_BY appointment)
+# (no active prescription → allergy rule does not apply)
+# =============================================================================
+rtg:SUBJ-204 a rtg:Subject ;
+    rdfs:label "Trial subject 204" ;
+    rtg:enrolmentId "ENR-2004" ;
+    rtg:HAS_REFERRAL rtg:REF-204 ;
+    rtg:sourceSystem "Veeva Vault CTMS" ; rtg:timestamp "2026-01-05T10:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+rtg:REF-204 a rtg:Referral ; rdfs:label "Hepatology referral (safety escalation)" ; rtg:status "open" ;
+    rtg:sourceSystem "Referral & scheduling system" ; rtg:timestamp "2026-01-03T08:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+
+# =============================================================================
+# SUBJ-205A / SUBJ-205B — duplicate-subject (share enrolmentId ENR-2048)
+# (both have allergy records + no prescriptions → only the duplicate fires)
+# =============================================================================
+rtg:SUBJ-205A a rtg:Subject ;
+    rdfs:label "Trial subject 205 (record A)" ;
+    rtg:enrolmentId "ENR-2048" ;
+    rtg:HAS_ALLERGY_RECORD rtg:ALG-205A ;
+    rtg:sourceSystem "Veeva Vault CTMS" ; rtg:timestamp "2026-01-05T10:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+rtg:SUBJ-205B a rtg:Subject ;
+    rdfs:label "Trial subject 205 (record B — site re-enrolment)" ;
+    rtg:enrolmentId "ENR-2048" ;
+    rtg:HAS_ALLERGY_RECORD rtg:ALG-205B ;
+    rtg:sourceSystem "Site IRT / enrolment system" ; rtg:timestamp "2026-01-07T10:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+rtg:ALG-205A a rtg:AllergyRecord ; rdfs:label "Allergy record — none known" ;
+    rtg:sourceSystem "Clinical EDC (allergy module)" ; rtg:timestamp "2026-01-04T08:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+rtg:ALG-205B a rtg:AllergyRecord ; rdfs:label "Allergy record — none known" ;
+    rtg:sourceSystem "Clinical EDC (allergy module)" ; rtg:timestamp "2026-01-06T08:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+
+# =============================================================================
+# SUBJ-206 — unmapped-local-code (local code with no MAPS_TO terminology concept)
+# =============================================================================
+rtg:SUBJ-206 a rtg:Subject ;
+    rdfs:label "Trial subject 206" ;
+    rtg:enrolmentId "ENR-2006" ;
+    rtg:USES_CODE rtg:LC-206 ;
+    rtg:sourceSystem "Veeva Vault CTMS" ; rtg:timestamp "2026-01-05T10:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .
+rtg:LC-206 a rtg:LocalCode ; rdfs:label "Site code SITE-HEPTOX-07 (local)" ; rtg:code "SITE-HEPTOX-07" ;
+    rtg:sourceSystem "Site local dictionary" ; rtg:timestamp "2026-01-04T08:00:00Z"^^xsd:dateTime ; dcterms:license "CC-BY-4.0" .

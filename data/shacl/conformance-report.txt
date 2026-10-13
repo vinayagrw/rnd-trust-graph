@@ -1,0 +1,48 @@
+SHACL Validation Report (shacl-engine) — R&D Trust Graph side-copy
+Generated from the LIVE shapes (data/shacl/shapes.ttl) validated in-process by
+shacl-engine over data/rdf/dataset.generated.ttl — the same path getFairConformance()
+takes at runtime. Held as audit evidence (ALCOA+ / 21 CFR Part 11 cameo).
+Maps 1:1 to the W3C stack (OWL/RDF/SHACL/SPARQL).
+
+Conforms: False
+Results (6):
+
+[Violation] rtg:DrugShape on DRUG-ORPHAN
+  Focus node: rtg:DRUG-ORPHAN
+  Path: rtg:TARGETS
+  Constraint: sh:MinCountConstraintComponent
+  Message: FAIR (Interoperable): a Drug must link to at least one biological target.
+
+[Violation] rtg:OntologyVersionShape on CON-STALE
+  Focus node: rtg:CON-STALE
+  Path: rtg:ontologyVersion (value "2019-01")
+  Constraint: sh:PatternConstraintComponent
+  Message: Currency: ontology version must be 2023 or later (no stale terminologies).
+
+[Violation] rtg:NodeProvenanceShape on TGT-NOPROV
+  Focus node: rtg:TGT-NOPROV
+  Path: rtg:sourceSystem
+  Constraint: sh:MinCountConstraintComponent
+  Message: ALCOA+ (Attributable): every node must declare a source system.
+
+[Violation] rtg:NodeProvenanceShape on TGT-NOPROV
+  Focus node: rtg:TGT-NOPROV
+  Path: rtg:timestamp
+  Constraint: sh:MinCountConstraintComponent
+  Message: ALCOA+ (Contemporaneous): every node must carry a timestamp.
+
+[Violation] rtg:NodeProvenanceShape on TGT-NOPROV
+  Focus node: rtg:TGT-NOPROV
+  Path: dcterms:license
+  Constraint: sh:MinCountConstraintComponent
+  Message: Governance: every node must declare a license.
+
+[Violation] rtg:ConflictingAnnotationShape on AE-CONFLICT
+  Focus node: rtg:AE-CONFLICT
+  Path: (SPARQL constraint — no single property path)
+  Constraint: sh:SPARQLConstraintComponent
+  Message: Integrity: conflicting annotation — a refuted node reuses a code already in use.
+
+Summary: 4 nodes non-conformant (6 violations) — DRUG-ORPHAN, CON-STALE,
+TGT-NOPROV, AE-CONFLICT. These are the same gaps the readiness radar colours
+red — SHACL is the machine-checkable, regulator-facing form of that view.

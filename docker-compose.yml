@@ -1,0 +1,52 @@
+# Local, offline-first Neo4j for the R&D Trust Graph demo.
+# After the first `docker compose pull`, this runs with no network.
+services:
+  neo4j:
+    image: neo4j:5.26-community
+    container_name: rnd-trust-neo4j
+    ports:
+      - "7474:7474"   # Browser (authenticity cutaway during the demo)
+      - "7687:7687"   # Bolt (BFF driver + Neo4j MCP server)
+    environment:
+      # Demo-only credentials. Never reused anywhere real.
+      NEO4J_AUTH: "neo4j/demo-password-change-me"
+      # APOC (path expansion) + GDS-style procedures for the deterministic path.
+      NEO4J_PLUGINS: '["apoc"]'
+      NEO4J_apoc_import_file_enabled: "true"
+      NEO4J_apoc_import_file_use__neo4j__config: "true"
+      NEO4J_dbms_security_procedures_unrestricted: "apoc.*,db.index.vector.*"
+      NEO4J_dbms_security_procedures_allowlist: "apoc.*,db.index.vector.*"
+      # Headroom for the demo graph (few hundred nodes; tiny).
+      NEO4J_server_memory_heap_max__size: "1G"
+      NEO4J_server_memory_pagecache_size: "512M"
+    volumes:
+      - ./data/neo4j/data:/data
+      - ./data/neo4j/logs:/logs
+      # CSVs the ETL reads via LOAD CSV (file:///...).
+      - ./data/import:/var/lib/neo4j/import
+      - ./data/neo4j/plugins:/plugins
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:7474 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+
+
+ #infra/fuseki/compose.yml  (opt-in; standalone — keep separate from db:up)
+#services:
+# fuseki:
+#   image: apache/jena-fuseki:5.2.0          # or stain/jena-fuseki for older setups
+#   container_name: rtg-fuseki
+#   ports:
+#     - "3030:3030"                          # matches FUSEKI_URL default host:port
+#   environment:
+#     - ADMIN_PASSWORD=changeme              # dev only; never commit a real secret
+#     # Create an in-memory dataset named /rtg on startup so FUSEKI_URL works:
+#     - FUSEKI_DATASET_1=rtg
+#   # For persistence, mount a volume and use a TDB2 dataset instead of in-memory:
+#   # volumes:
+#   #   - rtg-fuseki-data:/fuseki
+#
+#volumes:
+# rtg-fuseki-data:

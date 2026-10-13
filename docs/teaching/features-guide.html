@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>R&D Trust Graph — Interactive Feature Map (Phases 1–3)</title>
+<style>
+  :root {
+    --navy-900:#04111f; --navy-800:#0a2742; --navy-700:#12365f;
+    --clinical:#1769d6; --clinical-bright:#318cf5;
+    --surface:#ffffff; --surface-2:#f7fafd; --border:#d7dfea; --border-strong:#c2cdda;
+    --text:#0a2540; --muted:#5b6b7f;
+    --p1:#1769d6; --p2:#0f9d8c; --p3:#8250c8;   /* phase accent colours */
+    --ok:#0a7d4b; --warn:#9a6a00; --bad:#b4231f;
+    --radius:12px; --radius-sm:8px; --radius-pill:999px;
+    --shadow:0 8px 28px rgba(4,17,31,.10);
+    --shadow-sm:0 1px 3px rgba(4,17,31,.10);
+    --font: "Georgia","Iowan Old Style",serif;
+    --sans: ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  * { box-sizing:border-box; }
+  html,body { margin:0; }
+  body {
+    font-family:var(--sans); color:var(--text);
+    background:
+      radial-gradient(1200px 500px at 80% -10%, rgba(23,105,214,.10), transparent 60%),
+      linear-gradient(180deg,#eef3f8 0%, #f7fafd 40%, #ffffff 100%);
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  .wrap { max-width:1120px; margin:0 auto; padding:0 22px 80px; }
+
+  /* Header */
+  header.hero {
+    background:linear-gradient(110deg,var(--navy-900) 0%,var(--navy-800) 46%,var(--navy-700) 100%);
+    color:#eaf2fb; padding:38px 0 30px; box-shadow:var(--shadow);
+    border-bottom:1px solid rgba(255,255,255,.06);
+  }
+  header.hero .wrap { padding-bottom:0; }
+  .kicker { font-family:var(--sans); letter-spacing:.22em; text-transform:uppercase;
+    font-size:11px; color:var(--clinical-bright); font-weight:700; }
+  h1 { font-family:var(--font); font-weight:600; margin:.35em 0 .15em; font-size:34px; line-height:1.1; }
+  header.hero p { color:#a9c2df; max-width:64ch; font-size:15px; line-height:1.55; margin:.4em 0 0; }
+
+  /* Answer-path diagram */
+  .diagram-card {
+    margin-top:26px; background:var(--surface); border:1px solid var(--border);
+    border-radius:var(--radius); box-shadow:var(--shadow); padding:20px 22px 14px;
+  }
+  .diagram-card h2 { font-family:var(--sans); font-size:13px; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--muted); margin:0 0 4px; font-weight:700; }
+  .diagram-card .sub { color:var(--muted); font-size:13px; margin:0 0 10px; }
+  svg .flow-node rect { fill:var(--surface-2); stroke:var(--border-strong); }
+  svg text { font-family:var(--sans); fill:var(--text); }
+  .pulse { stroke-dasharray:5 6; animation:dash 1.4s linear infinite; }
+  @keyframes dash { to { stroke-dashoffset:-22; } }
+  .spark { animation:travel 3.2s ease-in-out infinite; }
+  @keyframes travel { 0%{opacity:0;} 6%{opacity:1;} 94%{opacity:1;} 100%{opacity:0; transform:translateX(760px);} }
+
+  /* Controls */
+  .controls { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:30px 0 18px; }
+  .controls .lbl { font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:700; margin-right:4px; }
+  .filter {
+    font:inherit; font-size:13px; font-weight:600; cursor:pointer;
+    border:1px solid var(--border-strong); background:var(--surface); color:var(--text);
+    padding:7px 14px; border-radius:var(--radius-pill); transition:.15s;
+  }
+  .filter:hover { border-color:var(--clinical); color:var(--clinical); }
+  .filter[aria-pressed="true"] { background:var(--navy-800); color:#fff; border-color:var(--navy-800); }
+  .filter .dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:7px; vertical-align:middle; }
+
+  /* Beat strip */
+  .beats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:8px 0 30px; }
+  .beat {
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm);
+    padding:13px 14px; box-shadow:var(--shadow-sm); position:relative;
+  }
+  .beat .n { font-family:var(--font); font-size:22px; color:var(--clinical); line-height:1; }
+  .beat h3 { margin:6px 0 3px; font-size:14px; }
+  .beat p { margin:0; font-size:12px; color:var(--muted); line-height:1.45; }
+  @media(max-width:760px){ .beats{grid-template-columns:repeat(2,1fr);} }
+
+  /* Feature grid */
+  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  @media(max-width:900px){ .grid{grid-template-columns:repeat(2,1fr);} }
+  @media(max-width:600px){ .grid{grid-template-columns:1fr;} }
+  .card {
+    background:var(--surface); border:1px solid var(--border); border-left-width:4px;
+    border-radius:var(--radius-sm); box-shadow:var(--shadow-sm); overflow:hidden;
+    transition:.2s; cursor:pointer; display:flex; flex-direction:column;
+  }
+  .card:hover { box-shadow:var(--shadow); transform:translateY(-2px); }
+  .card[hidden] { display:none; }
+  .card.p1 { border-left-color:var(--p1); } .card.p2 { border-left-color:var(--p2); } .card.p3 { border-left-color:var(--p3); }
+  .card .head { padding:14px 15px; }
+  .card .tag { font-size:10.5px; font-weight:800; letter-spacing:.09em; text-transform:uppercase; }
+  .card.p1 .tag { color:var(--p1);} .card.p2 .tag { color:var(--p2);} .card.p3 .tag { color:var(--p3);}
+  .card .code { font-family:var(--font); font-size:19px; font-weight:600; margin:5px 0 2px; }
+  .card .name { font-size:13.5px; font-weight:700; }
+  .card .one { font-size:12.5px; color:var(--muted); line-height:1.45; margin-top:6px; }
+  .card .body {
+    max-height:0; opacity:0; padding:0 15px;
+    transition:max-height .32s ease, opacity .22s ease, padding .32s ease;
+    border-top:1px solid transparent; font-size:12.5px; line-height:1.5;
+  }
+  .card.open .body { max-height:460px; opacity:1; padding:12px 15px 15px; border-top-color:var(--border); }
+  .card .row { margin:7px 0; }
+  .card .row b { display:block; font-size:10.5px; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); margin-bottom:1px; }
+  .card code { font-family:ui-monospace,"SFMono-Regular",Menlo,monospace; font-size:11.5px;
+    background:var(--surface-2); border:1px solid var(--border); border-radius:4px; padding:1px 5px; }
+  .card .caveat { color:var(--warn); }
+  .card .more { font-size:11px; color:var(--clinical); font-weight:700; margin-top:2px; }
+
+  /* Legend + footer */
+  .legend { margin:34px 0 0; background:var(--surface); border:1px solid var(--border);
+    border-radius:var(--radius); padding:16px 20px; box-shadow:var(--shadow-sm); }
+  .legend h2 { font-family:var(--sans); font-size:13px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin:0 0 10px; }
+  .legend .items { display:flex; flex-wrap:wrap; gap:18px; }
+  .legend .li { display:flex; align-items:center; gap:9px; font-size:12.5px; color:var(--text); }
+  .glyph { width:22px; height:22px; border-radius:50%; display:grid; place-items:center; font-size:12px; font-weight:800; color:#fff; flex:none; }
+  .g-ok { background:var(--ok);} .g-warn{ background:var(--warn);} .g-low{ background:transparent; border:2px dashed var(--bad); }
+  .invariants { margin-top:22px; background:linear-gradient(180deg,#fbfdff,#f3f8fc);
+    border:1px solid var(--border); border-radius:var(--radius); padding:18px 22px; }
+  .invariants h2 { font-family:var(--font); font-weight:600; font-size:18px; margin:0 0 8px; }
+  .invariants li { font-size:13px; line-height:1.55; margin:5px 0; color:#20374d; }
+  footer { color:var(--muted); font-size:12px; margin-top:34px; text-align:center; }
+  footer a { color:var(--clinical); }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">R&amp;D Trust Graph · Teaching Deliverable</div>
+    <h1>Interactive Feature Map — Phases 1&ndash;3</h1>
+    <p>Every feature in the app, laid out as layers <em>around</em> one grounded answer path. Click any
+       card to expand it. Filter by phase to see exactly what shipped when. Colour = the phase a feature
+       landed in.</p>
+
+    <div class="diagram-card">
+      <h2>Where each feature sits around the answer path</h2>
+      <p class="sub">The agent answers from the graph; F-features observe, route, and govern — none of
+        them is a new answer source.</p>
+      <svg viewBox="0 0 980 150" width="100%" role="img" aria-label="Grounded answer path with features layered around it">
+        <defs>
+          <marker id="arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+            <path d="M0,0 L7,3 L0,6 Z" fill="#8aa0b8"/>
+          </marker>
+        </defs>
+        <!-- connecting line -->
+        <line x1="70" y1="70" x2="915" y2="70" stroke="#c2cdda" stroke-width="2" class="pulse" marker-end="url(#arr)"/>
+        <circle class="spark" cx="70" cy="70" r="4" fill="#318cf5"/>
+        <!-- nodes -->
+        <g class="flow-node" font-size="12" text-anchor="middle">
+          <g><rect x="20" y="52" width="96" height="36" rx="8"/><text x="68" y="75">Question</text></g>
+          <g><rect x="150" y="52" width="104" height="36" rx="8" fill="#eaf3ff" stroke="#1769d6"/><text x="202" y="70" fill="#1769d6" font-weight="700">Route</text><text x="202" y="83" font-size="9.5" fill="#1769d6">F3</text></g>
+          <g><rect x="288" y="52" width="118" height="36" rx="8"/><text x="347" y="75">Grounded Cypher</text></g>
+          <g><rect x="440" y="52" width="96" height="36" rx="8"/><text x="488" y="70">Rows &rarr;</text><text x="488" y="83" font-size="10">citations</text></g>
+          <g><rect x="570" y="40" width="150" height="60" rx="8" fill="#f2fbf6" stroke="#0a7d4b"/><text x="645" y="60" fill="#0a7d4b" font-weight="700">Faithfulness</text><text x="645" y="75" font-size="10" fill="#0a7d4b">F1 · hallucination F4</text><text x="645" y="90" font-size="10" fill="#0a7d4b">eval scorecard F2</text></g>
+          <g><rect x="758" y="52" width="150" height="36" rx="8" fill="#f6f1fb" stroke="#8250c8"/><text x="833" y="70" fill="#8250c8" font-weight="700">Send &rarr; Review</text><text x="833" y="83" font-size="9.5" fill="#8250c8">HITL · reviewer F6</text></g>
+        </g>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="controls" role="group" aria-label="Filter features by phase">
+    <span class="lbl">Show</span>
+    <button class="filter" data-phase="all" aria-pressed="true">All</button>
+    <button class="filter" data-phase="p1" aria-pressed="false"><span class="dot" style="background:var(--p1)"></span>Phase 1</button>
+    <button class="filter" data-phase="p2" aria-pressed="false"><span class="dot" style="background:var(--p2)"></span>Phase 2</button>
+    <button class="filter" data-phase="p3" aria-pressed="false"><span class="dot" style="background:var(--p3)"></span>Phase 3</button>
+  </div>
+
+  <!-- Beats -->
+  <div class="beats" aria-label="The four demo beats">
+    <div class="beat"><div class="n">1</div><h3>Radar</h3><p>FAIR/ALCOA+ readiness + live SHACL flags routed to owners.</p></div>
+    <div class="beat"><div class="n">2</div><h3>Explanation</h3><p>Hero: multi-hop signal-causality with an OWL inference trace.</p></div>
+    <div class="beat"><div class="n">3</div><h3>Multimodal</h3><p>Pathology/omics embedding &rarr; concept via real vector kNN.</p></div>
+    <div class="beat"><div class="n">4</div><h3>Conversation</h3><p>Grounded ask-the-graph chat; cites nodes, refuses off-graph.</p></div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <h2>Trust-lens legend (on the canvas)</h2>
+    <div class="items">
+      <div class="li"><span class="glyph g-ok">&#10003;</span> Human-verified node</div>
+      <div class="li"><span class="glyph g-warn">!</span> Flagged for review</div>
+      <div class="li"><span class="glyph g-low"></span> Low-confidence (dashed red halo)</div>
+      <div class="li"><span style="width:22px;height:6px;border-radius:3px;background:linear-gradient(90deg,#b4231f,#9a6a00,#0a7d4b);display:inline-block"></span> Ring colour/thickness = readiness</div>
+    </div>
+  </div>
+
+  <!-- Invariants -->
+  <div class="invariants">
+    <h2>The five invariants every feature protects</h2>
+    <ol>
+      <li><b>Served-payload-only citations</b> — the agent may only cite ids returned by its own Cypher rows, intersected with the valid-node allow-list. It cannot invent one.</li>
+      <li><b>Off-graph refusal draws nothing</b> — the <code>NOT_IN_GRAPH</code> marker renders an empty canvas, no diagrams. No confident fabrication.</li>
+      <li><b>Authorized-writer-only mutation</b> — only the HITL writer writes data; the agent's tools exclude every write tool and the Neo4j MCP is read-only.</li>
+      <li><b>Features layer around the answer</b> — F1/F2/F4 observe, F3 only seeds candidates the agent must still verify, F5 re-runs the same agent, F6 stamps audit metadata, F7 enforces inline cites &sube; supplied abstracts.</li>
+      <li><b>Synthetic never contaminates real</b> — F8 competitor nodes live only in a client-side overlay; never written to Neo4j, so never citable.</li>
+    </ol>
+  </div>
+
+  <footer>
+    Canonical reference: <a href="./FEATURES_GUIDE.md">FEATURES_GUIDE.md</a> ·
+    Accurate as of the codebase on 2026-06-30 · Synthetic, PHI-free data by design.
+  </footer>
+</div>
+
+<script>
+const FEATURES = [
+  { code:"F1", phase:"p1", name:"Faithfulness score + gate",
+    one:"Scores how well an answer's claims trace back to cited evidence; a low score stamps 'low confidence' but never suppresses the answer.",
+    where:"Beat 4 chat — green/amber/red badge on grounded answers; also per step in Playbooks.",
+    files:"bff/src/ask/faithfulness.ts · CopilotChatBeat.tsx (faithfulnessRenderer)",
+    api:"embedded in /api/agui (faithfulness tool call)",
+    caveat:"Deterministic core is pure + unit-tested; the LLM judge is optional and off by default. It observes, never gates." },
+  { code:"F4", phase:"p1", name:"Hallucination flag",
+    one:"Flags per-claim tokens that don't appear in the cited evidence and lists them in a ⚠ banner. Annotates; never edits the answer.",
+    where:"Beat 4 chat — ⚠ banner (up to 4 claims, '+N more' beyond).",
+    files:"bff/src/ask/faithfulness.ts · CopilotChatBeat.tsx (hallucinationRenderer)",
+    api:"embedded in /api/agui (hallucination_flag)",
+    caveat:"Only fires when unsupported claims exist; claims under 8 chars are ignored." },
+  { code:"F2", phase:"p1", name:"RAGAS-style eval scorecard",
+    one:"Rolling answer-quality: faithfulness, deterministic context-recall, optional answer-relevancy — recent entries + rolling averages.",
+    where:"Header 'Quality' button, or ⌘K → 'Open answer-quality scorecard'.",
+    files:"web/src/eval/EvalScorecard.tsx · bff/src/eval/scorecard.ts",
+    api:"GET /api/eval/summary?limit=50",
+    caveat:"Observability only; never gates the LLM. Refusals/fallbacks aren't scored; a corrupt ledger resets to empty." },
+  { code:"F7", phase:"p2", name:"Literature synthesis",
+    one:"Source-ranked, inline-cited synthesis over LiteratureAbstract nodes; every [LIT-PMID-…] is enforced ⊆ the supplied abstracts.",
+    where:"Component exists but NOT yet wired to a beat — intended from a LiteratureAbstract provenance drawer.",
+    files:"bff/src/litsynth/service.ts · web/src/components/LiteratureSynthesis.tsx",
+    api:"POST /api/litsynth (SSE)",
+    caveat:"Same grounding discipline as /narrate; deterministic fallback. Demo corpus is all PubMed, so recency is the tiebreaker." },
+  { code:"F6", phase:"p2", name:"Reviewer identity + purpose",
+    one:"Holds who is reviewing (name+role) and the purpose; stamped on every HITL write for the audit trail.",
+    where:"Header '⊙ [name] · [purpose]' → popover to set name/role/purpose.",
+    files:"web/src/identity/ReviewerContext.tsx · ReviewerSelector.tsx · server.ts (/api/hitl/apply)",
+    api:"reviewer/purpose in /api/hitl/apply & /api/hitl/flag bodies",
+    caveat:"A disclosure/affordance, NOT a hard data ACL — it never gates the read-only agent." },
+  { code:"F5", phase:"p3", name:"Safety-dossier playbooks",
+    one:"Curated ask + checkpoint templates: each ask runs the real grounded agent; each checkpoint enqueues an async HITL review. Assembles a dossier.",
+    where:"Header 'Playbooks' button, or ⌘K → 'Run a scientific playbook' → pick one → Run.",
+    files:"bff/src/playbooks/definitions.ts · runner.ts · web/src/playbooks/PlaybookPanel.tsx",
+    api:"GET /api/playbooks · POST /api/playbooks/run (SSE)",
+    caveat:"Checkpoints enqueue (non-blocking) — they don't auto-mutate the graph; a reviewer approves later." },
+  { code:"F3", phase:"p3", name:"Adaptive retrieval routing",
+    one:"Classifies each question vector / cypher / hybrid and gathers real candidate seeds labelled 'to verify'. A seed only becomes a citation if a Cypher row returns it.",
+    where:"Transparent — runs on every Beat 4 question; surfaces as a 'route' event in the trace.",
+    files:"bff/src/ask/router.ts · bff/src/ask/agent.ts",
+    api:"embedded in /api/ask & /api/agui (route event)",
+    caveat:"Classification is pure + unit-tested; seeds are never citations (rows-only guard untouched). Default → cypher." },
+  { code:"F8", phase:"p3", name:"Competitive-pipeline overlay",
+    one:"Clearly-synthetic competitor nodes (ExternalPipeline, COMPETES_WITH) merged client-side only. Ids never enter Neo4j, so the agent can never cite one.",
+    where:"Header 'Competitive' toggle (shows ✓ when on), or ⌘K.",
+    files:"bff/src/overlay/competitivePipeline.ts · web/src/App.tsx (displayGraph merge)",
+    api:"GET /api/overlay/competitive",
+    caveat:"EXT-PIPE-* ids are never in the allow-list; baseline graph/TTL stay byte-identical. A test asserts they're absent from Neo4j/RDF." },
+];
+const PHASE_LABEL = { p1:"Phase 1", p2:"Phase 2", p3:"Phase 3" };
+
+const grid = document.getElementById("grid");
+FEATURES.forEach(f => {
+  const el = document.createElement("article");
+  el.className = "card " + f.phase;
+  el.dataset.phase = f.phase;
+  el.innerHTML = `
+    <div class="head">
+      <div class="tag">${PHASE_LABEL[f.phase]}</div>
+      <div class="code">${f.code}</div>
+      <div class="name">${f.name}</div>
+      <div class="one">${f.one}</div>
+      <div class="more">Click to expand ▾</div>
+    </div>
+    <div class="body">
+      <div class="row"><b>Where to click</b>${f.where}</div>
+      <div class="row"><b>Key files</b><code>${f.files}</code></div>
+      <div class="row"><b>API</b><code>${f.api}</code></div>
+      <div class="row"><b>Honest caveat</b><span class="caveat">${f.caveat}</span></div>
+    </div>`;
+  el.addEventListener("click", () => {
+    el.classList.toggle("open");
+    const m = el.querySelector(".more");
+    m.textContent = el.classList.contains("open") ? "Click to collapse ▴" : "Click to expand ▾";
+  });
+  grid.appendChild(el);
+});
+
+const buttons = document.querySelectorAll(".filter");
+buttons.forEach(b => b.addEventListener("click", () => {
+  buttons.forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
+  const want = b.dataset.phase;
+  document.querySelectorAll(".card").forEach(c => {
+    c.hidden = !(want === "all" || c.dataset.phase === want);
+  });
+}));
+</script>
+</body>
+</html>

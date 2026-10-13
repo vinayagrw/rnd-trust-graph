@@ -1,0 +1,545 @@
+/* R&D Trust Graph — 2026 brand tokens + UNIFIED design system (Phase 3a).
+ *
+ * DESIGN DIRECTION: "clinical-trust data product". A confident deep-navy chrome
+ * wrapping a dark luminous graph canvas, lit by a single clinical-blue and a
+ * teal/green accent (the Business_Value family). Calm surfaces with layered
+ * depth (hairline borders + soft, low-spread shadows — not heavy drop shadows),
+ * a crisp modern type scale, precise focus rings, and ONE signature motion: the
+ * live-status pulse.
+ *
+ * PHASE 3a — ONE design system. This file is now the SINGLE Tailwind v4 entry
+ * for the whole app (was: admin-only, preflight-free). It pulls in Tailwind
+ * theme + preflight + utilities APP-WIDE and promotes the shadcn semantic tokens
+ * (--background/--foreground/--primary/--border/…) from the old `.admin-root`
+ * scope up to `:root`, so every surface — beats included — can be rebuilt on
+ * shadcn primitives against one token set. The brand vars (--frame-*, --canvas-*,
+ * --risk-*, --live, --radius, --gap, --font-*) are PRESERVED so any not-yet-
+ * converted inline style keeps resolving during the incremental rebuild.
+ *
+ * PREFLIGHT SAFETY: Tailwind preflight is now global. The unlayered base rules
+ * below (box-sizing, body, headings) sit OUTSIDE @layer and therefore WIN over
+ * preflight's `base` layer — and we set explicit heading size/weight here so
+ * preflight's "headings inherit" reset can't flatten un-converted surfaces.
+ */
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@plugin "tailwindcss-animate";
+
+/* shadcn dark-variant hook: components use `dark:` when an ancestor has `.dark`. */
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* ---- Brand anchors ---- */
+  /* Palette tune (war-room): deeper, slightly cooler navy stops for more
+     chromatic depth in the header gradient, and marginally richer accents. */
+  --navy: #0a2540;
+  --navy-900: #04111f; /* deepest — header gradient floor (richer black-navy) */
+  --navy-800: #0a2742;
+  --navy-700: #12365f;
+  --clinical-blue: #1769d6;
+  --clinical-blue-bright: #318cf5; /* hover / accent text on dark */
+  --teal: #13b8a6;
+  --teal-bright: #2fdccb;
+
+  /* ---- Clinical chrome (frame) ---- */
+  --frame-bg: #eef3f9;            /* calmer than pure #f4f7fb, a touch more depth */
+  --frame-bg-2: #e6edf6;          /* secondary fill for chips / wells */
+  --frame-surface: #ffffff;
+  --frame-surface-2: #f7fafd;     /* subtle inset surface */
+  --frame-border: #d7dfea;        /* hairline */
+  --frame-border-strong: #c2cdda; /* emphasised divider */
+  --frame-text: #0a2540;
+  --frame-text-muted: #5b6b7f;
+
+  /* ---- Dark luminous graph canvas — off-black to kill halation ---- */
+  --canvas: #14181f;
+  --canvas-surface: #1b212b;
+  --canvas-surface-2: #222a35;
+  --canvas-border: #2a3138;
+  --canvas-text: #e6edf3;         /* labels capped here, never pure #fff */
+  --canvas-text-muted: #9aa4b2;
+  --edge: #79b8ff;
+  --edge-idle: #3a424d;
+  --edge-active: #f0f6ff;
+  --edge-alt: #bc8cff;
+  --live: #3fb950;
+  --live-bright: #56d364;
+
+  /* Governance-chip text — must stay readable on the tinted chip background in
+     BOTH skins (AA 4.5:1). Defaults to the war-room colours (which pass); the
+     boardroom skin overrides them darker (the bright green/amber fall to
+     ~3.97–4.45:1 on the light surface otherwise). */
+  --gov-accept-text: var(--live);
+  --gov-review-text: var(--risk-mid);
+
+  /* ---- Readiness scale (Beat 1) — CVD-safer sequential ---- */
+  --risk-low: #de4a3b;
+  --risk-mid: #e0a93b;
+  --risk-high: #2bb673;
+
+  /* ---- Typography — distinctive, enterprise, crisp ---- */
+  --font-sans: "Geist", "Inter Tight", "SF Pro Display", -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-mono: "Geist Mono", ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+
+  /* ---- Spacing / radius ---- */
+  --radius: 10px;
+  --radius-sm: 7px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+  --gap: 16px;
+
+  /* ---- Elevation (soft, layered — never heavy) ---- */
+  --shadow-xs: 0 1px 2px rgba(10, 37, 64, 0.06);
+  --shadow-sm: 0 1px 2px rgba(10, 37, 64, 0.06), 0 2px 6px rgba(10, 37, 64, 0.05);
+  --shadow-md: 0 4px 14px rgba(10, 37, 64, 0.08), 0 1px 3px rgba(10, 37, 64, 0.06);
+  --shadow-lg: 0 12px 40px rgba(10, 37, 64, 0.14);
+
+  /* ---- Motion ---- */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur-fast: 0.14s;
+  --dur: 0.22s;
+
+  /* ---- Focus ring ---- */
+  --ring: var(--clinical-blue);
+
+  /* ====================================================================
+     shadcn/ui semantic tokens — PROMOTED to :root (Phase 3a).
+     Tuned to a clinical palette so shadcn primitives read as the same
+     product as the brand chrome. Defined as light, OKLCH-anchored values
+     matching the brand hex (navy/clinical-blue/teal). The boardroom skin and
+     compact density re-point the brand vars; these stay stable because the
+     content surfaces are light in BOTH skins (only the header chrome differs).
+     ==================================================================== */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.21 0.04 257); /* ~ navy #0a2540 */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.21 0.04 257);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.21 0.04 257);
+  --primary: oklch(0.52 0.18 257); /* ~ clinical-blue #1769d6 */
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0.01 257);
+  --secondary-foreground: oklch(0.21 0.04 257);
+  --muted: oklch(0.97 0.01 257);
+  --muted-foreground: oklch(0.5 0.03 257);
+  --accent: oklch(0.7 0.13 184); /* ~ teal #13b8a6 */
+  --accent-foreground: oklch(0.21 0.04 257);
+  --destructive: oklch(0.58 0.21 27); /* red */
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.9 0.01 257);
+  --input: oklch(0.9 0.01 257);
+}
+
+/* Map the shadcn semantic tokens into Tailwind's color namespace, app-wide. */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-feature-settings: "cv02", "cv03", "cv04", "ss01";
+  letter-spacing: -0.006em;
+  /* Subtle atmospheric ground: a faint clinical-blue/teal wash on the frame so
+     the chrome reads as a designed surface, not a flat fill. */
+  background-color: var(--frame-bg);
+  background-image:
+    radial-gradient(1100px 520px at 88% -8%, rgba(23, 105, 214, 0.07), transparent 60%),
+    radial-gradient(900px 480px at -6% 6%, rgba(19, 184, 166, 0.06), transparent 58%);
+  background-attachment: fixed;
+  color: var(--frame-text);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Crisp, slightly tightened headings. Explicit size/weight here (unlayered →
+   wins over preflight's `base` layer) so Tailwind preflight's "headings inherit
+   font" reset cannot flatten any not-yet-converted surface during the rebuild. */
+h1, h2, h3, h4 {
+  letter-spacing: -0.018em;
+  line-height: 1.15;
+  font-weight: 650;
+}
+h1 { font-size: 1.6rem; }
+h2 { font-size: 1.3rem; }
+h3 { font-size: 1.08rem; }
+h4 { font-size: 0.98rem; }
+
+/* ============================================================
+   App shell — deep navy chrome with a faint top sheen
+   ============================================================ */
+.app-header {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 40%),
+    linear-gradient(110deg, var(--navy-900) 0%, var(--navy-800) 46%, var(--navy-700) 100%);
+  color: #fff;
+  padding: 13px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* Wrap rather than overflow: below ~1830px the control cluster would otherwise
+     clip past the viewport edge and become unreachable. */
+  flex-wrap: wrap;
+  gap: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 6px 24px rgba(6, 23, 38, 0.28);
+}
+
+/* A hairline teal→blue progress thread under the header — a quiet signature. */
+.app-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(19, 184, 166, 0.62) 16%,
+    rgba(47, 134, 240, 0.95) 50%,
+    rgba(19, 184, 166, 0.62) 84%,
+    transparent 100%
+  );
+  opacity: 0.85;
+}
+
+/* Title lockup: brand strong with a clinical-blue ampersand accent feel.
+   Bolder hero — larger, heavier, more commanding, with a stronger brand chip. */
+.app-header > strong {
+  font-size: 18px;
+  font-weight: 720;
+  letter-spacing: -0.026em;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.app-header > strong::before {
+  content: "";
+  width: 13px;
+  height: 13px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, var(--teal-bright), var(--clinical-blue-bright));
+  box-shadow: 0 0 0 3px rgba(47, 134, 240, 0.22), 0 0 18px rgba(47, 212, 192, 0.55);
+}
+
+/* ============================================================
+   Surfaces
+   ============================================================ */
+.panel {
+  background: var(--frame-surface);
+  border: 1px solid var(--frame-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+/* The graph canvas region — the one dark surface; ringed so it reads as a
+   deliberate "viewport" rather than a hole in the layout. */
+.graph-canvas {
+  background:
+    radial-gradient(120% 90% at 50% -10%, rgba(47, 134, 240, 0.08), transparent 55%),
+    var(--canvas);
+  color: var(--canvas-text);
+  border: 1px solid var(--canvas-border);
+  border-radius: var(--radius);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.02) inset,
+    var(--shadow-md);
+}
+
+/* ============================================================
+   Buttons — one unified language across the app
+   ============================================================ */
+.btn {
+  cursor: pointer;
+  font: inherit;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  border-radius: var(--radius-sm);
+  transition:
+    background var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+.btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--frame-surface), 0 0 0 4px rgba(47, 134, 240, 0.6);
+}
+.btn:active { transform: translateY(0.5px); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* Header nav (beat selector): glassy pills on navy; active = clinical blue. */
+.btn-nav {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius-sm);
+  padding: 5px 12px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.82) !important;
+}
+.btn-nav:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+.btn-nav[aria-current="true"] {
+  background: linear-gradient(180deg, var(--clinical-blue-bright), var(--clinical-blue));
+  border-color: rgba(47, 134, 240, 0.9);
+  color: #fff !important;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.25) inset, 0 2px 10px rgba(23, 105, 214, 0.45);
+}
+.btn-nav:focus-visible {
+  box-shadow: 0 0 0 2px var(--navy-800), 0 0 0 4px rgba(47, 134, 240, 0.7);
+}
+
+/* Control buttons — used both on the navy header AND on light/dark beat areas.
+   A neutral translucent chrome that adapts to either background. */
+.btn-control {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.9);
+  padding: 5px 11px;
+  font-size: 13px;
+  border-radius: var(--radius-sm);
+  backdrop-filter: saturate(1.2);
+}
+.btn-control:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+/* When a control sits on a light panel/canvas, it adopts the frame palette.
+   The dark graph canvas keeps the translucent-on-dark look above. */
+.panel .btn-control,
+.admin-root .btn-control,
+.app-light .btn-control {
+  background: var(--frame-surface);
+  border: 1px solid var(--frame-border-strong);
+  color: var(--frame-text);
+  box-shadow: var(--shadow-xs);
+}
+.panel .btn-control:hover:not(:disabled),
+.admin-root .btn-control:hover:not(:disabled),
+.app-light .btn-control:hover:not(:disabled) {
+  background: var(--frame-surface-2);
+  border-color: var(--clinical-blue);
+  color: var(--clinical-blue);
+}
+
+/* Chip / suggestion pill. */
+.btn-chip {
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--frame-border-strong);
+  background: var(--frame-surface);
+  color: var(--frame-text);
+  box-shadow: var(--shadow-xs);
+}
+.btn-chip:hover {
+  border-color: var(--clinical-blue);
+  color: var(--clinical-blue);
+  background: var(--frame-surface-2);
+}
+
+/* ============================================================
+   Status badges
+   ============================================================ */
+.badge-fallback {
+  background: var(--risk-mid);
+  color: #1a1a17;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+}
+
+.badge-live {
+  color: var(--live-bright);
+  font-weight: 600;
+}
+
+/* ============================================================
+   Signature motion — the live-status pulse (Beat-agnostic).
+   The LiveStatusPill renders a leading ● dot inside `.badge-live`; we give that
+   dot a calm clinical heartbeat. Honors prefers-reduced-motion below.
+   ============================================================ */
+@keyframes trust-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(63, 185, 80, 0.55);
+    opacity: 1;
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(63, 185, 80, 0);
+    opacity: 0.78;
+  }
+}
+.badge-live > span:first-child {
+  border-radius: 50%;
+  animation: trust-pulse 2.4s var(--ease) infinite;
+}
+
+/* Inputs: consistent focus treatment for the hand-styled AskPanel input. */
+input:not(.admin-root input):focus-visible,
+textarea:not(.admin-root textarea):focus-visible {
+  outline: none;
+  border-color: var(--clinical-blue) !important;
+  box-shadow: 0 0 0 3px rgba(47, 134, 240, 0.16);
+}
+
+/* ============================================================
+   Reduced motion — calm base, motion only under no-preference.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .badge-live > span:first-child {
+    animation: none;
+  }
+}
+
+/* ============================================================
+   SKIN AXIS — [data-skin="boardroom"]
+   A light, airy, executive/boardroom variant. Default (absent /
+   data-skin="warroom") = the deep-navy war-room chrome above, unchanged.
+   Re-points the frame palette + header chrome only; the dark graph canvas
+   keeps its own theme (it has the independent lightCanvas toggle).
+   ============================================================ */
+[data-skin="boardroom"] {
+  /* Brighter, pearl-white frame surfaces with stronger hairlines. */
+  --frame-bg: #f4f7fb;
+  --frame-bg-2: #e9eff7;
+  --frame-surface: #ffffff;
+  --frame-surface-2: #f1f6fc;
+  --frame-border: #ccd7e6;        /* stronger hairline than war-room */
+  --frame-border-strong: #aebed3;
+  --frame-text: #0a2540;
+  --frame-text-muted: #51637a;
+  /* AA-safe governance-chip text on the light chip tint (was --live/--risk-mid
+     at ~3.97 / 4.45:1). */
+  --gov-accept-text: #166534; /* green-800 */
+  --gov-review-text: #8a5a00; /* dark amber */
+}
+
+/* Header becomes a soft pearl/white surface with navy text (NOT the navy
+   gradient). The thin clinical-blue→teal accent hairline is retained. */
+[data-skin="boardroom"] .app-header {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.9), transparent 60%),
+    linear-gradient(110deg, #ffffff 0%, #f3f7fc 52%, #eaf1f9 100%);
+  color: var(--frame-text);
+  border-bottom: 1px solid var(--frame-border-strong);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6) inset, 0 4px 18px rgba(10, 37, 64, 0.08);
+}
+[data-skin="boardroom"] .app-header::after {
+  opacity: 0.95; /* keep the teal→blue thread crisp on the light header */
+}
+[data-skin="boardroom"] .app-header > strong {
+  color: var(--frame-text);
+}
+[data-skin="boardroom"] .app-header > strong::before {
+  /* Tone the glow down for the light surface — keep the gradient chip. */
+  box-shadow: 0 0 0 2px rgba(47, 134, 240, 0.18), 0 0 10px rgba(19, 184, 166, 0.3);
+}
+
+/* Nav pills must read on a LIGHT header now. */
+[data-skin="boardroom"] .btn-nav {
+  background: var(--frame-surface);
+  border: 1px solid var(--frame-border-strong);
+  color: var(--frame-text-muted) !important;
+  box-shadow: var(--shadow-xs);
+}
+[data-skin="boardroom"] .btn-nav:hover {
+  background: var(--frame-surface-2);
+  border-color: var(--clinical-blue);
+  color: var(--frame-text) !important;
+}
+[data-skin="boardroom"] .btn-nav[aria-current="true"] {
+  background: linear-gradient(180deg, var(--clinical-blue-bright), var(--clinical-blue));
+  border-color: var(--clinical-blue);
+  color: #fff !important;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.35) inset, 0 2px 10px rgba(23, 105, 214, 0.3);
+}
+[data-skin="boardroom"] .btn-nav:focus-visible {
+  box-shadow: 0 0 0 2px var(--frame-surface), 0 0 0 4px rgba(47, 134, 240, 0.7);
+}
+
+/* Control buttons on the light header adopt the frame palette. The App.tsx
+   header control cluster has no .app-light/.panel wrapper, so target it here. */
+[data-skin="boardroom"] .app-header .btn-control {
+  background: var(--frame-surface);
+  border: 1px solid var(--frame-border-strong);
+  color: var(--frame-text);
+  box-shadow: var(--shadow-xs);
+}
+[data-skin="boardroom"] .app-header .btn-control:hover:not(:disabled) {
+  background: var(--frame-surface-2);
+  border-color: var(--clinical-blue);
+  color: var(--clinical-blue);
+}
+
+/* ============================================================
+   DENSITY AXIS — [data-density="compact"]
+   A denser exec-dashboard rhythm. Default (absent / "comfortable") = the
+   comfortable spacing above. Drives spacing through variables + shared
+   classes only (no component inline-padding literals touched).
+   ============================================================ */
+[data-density="compact"] {
+  --gap: 11px;
+  --radius: 8px;
+  --radius-sm: 6px;
+  --radius-lg: 12px;
+}
+[data-density="compact"] .app-header {
+  padding: 9px 18px;
+}
+[data-density="compact"] .app-header > strong {
+  font-size: 16px;
+}
+/* Tighten shared panel/aside padding and dense text. */
+[data-density="compact"] .panel {
+  padding: 11px !important;
+}
+[data-density="compact"] {
+  font-size: 14px;
+}

@@ -1,0 +1,36 @@
+{
+  "name": "@rnd/bff",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "etl": "tsx src/etl/run.ts",
+    "rdf:generate": "tsx src/etl/rdf/generate.ts",
+    "rdf:verify": "node src/etl/rdf/verify.mjs",
+    "rdf": "tsx src/etl/rdf/generate.ts && node src/etl/rdf/verify.mjs",
+    "eval:ask": "tsx src/eval/askEval.ts",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --import ./test-setup.ts --test \"src/**/*.test.ts\""
+  },
+  "dependencies": {
+    "@copilotkit/runtime": "^2.0.0-next.1",
+    "@fastify/cors": "^10.0.0",
+    "@rdfjs/parser-n3": "^2.0.2",
+    "@rnd/shared": "*",
+    "dotenv": "^16.4.0",
+    "fastify": "^5.1.0",
+    "neo4j-driver": "^5.27.0",
+    "oxigraph": "^0.5.9",
+    "rdf-ext": "^2.5.2",
+    "shacl-engine": "^1.1.1",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

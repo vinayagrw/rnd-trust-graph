@@ -1,0 +1,344 @@
+# =============================================================================
+# R&D Trust Graph — canonical W3C-RDF model of the hero subgraph (Turtle).
+#
+# This file is the SOURCE-OF-TRUTH artifact for the W3C/RDF stack
+# (OWL / RDF / SHACL / SPARQL). It is hand-authored and version-controlled.
+#
+# Production architecture: in production this model lives in a NATIVE TRIPLESTORE
+# (GraphDB / Amazon Neptune / Apache Jena Fuseki) addressable by SPARQL, with
+# Neo4j projected from it via the neosemantics (n10s) plugin as a low-latency
+# serving cache for the interactive force-graph. In this demo n10s is NOT
+# installed, so the BFF serializes the live Neo4j hero subgraph to RDF on the
+# fly (GET /api/rdf, see bff/src/graph/rdf.ts) — same vocabulary as below.
+#
+# The SHACL shapes in data/shacl/shapes.ttl validate this model.
+#
+# License hygiene: every asserted fact carries a commercial-clean license only
+# (CC0 / CC-BY-4.0 / public-domain / Apache-2.0). No copyleft, no proprietary.
+# =============================================================================
+
+@prefix rtg:     <https://vinayagrw.github.io/rnd-trust-graph#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+# -----------------------------------------------------------------------------
+# Nodes
+# -----------------------------------------------------------------------------
+
+rtg:AE-MYOCARDITIS a rtg:AdverseEvent ;
+    rdfs:label "Immune-related myocarditis (OAE_0001489)" ;
+    rtg:code "OAE_0001489" ;
+    prov:wasDerivedFrom "OAE" ;
+    rtg:sourceSystem "OAE" ;
+    rtg:ontologyVersion "2025-09" ;
+    rtg:timestamp "2026-06-02T10:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" .
+
+rtg:DRUG-CPI a rtg:Drug ;
+    rdfs:label "Checkpoint inhibitor (anti-PD-1)" ;
+    rtg:code "RXN-2563889" ;
+    rtg:class "PD-1 inhibitor" ;
+    prov:wasDerivedFrom "RxNorm" ;
+    rtg:sourceSystem "RxNorm" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-02T10:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:TGT-PDCD1 a rtg:BiologicalTarget ;
+    rdfs:label "PD-1 / PDCD1" ;
+    rtg:code "P15116" ;
+    prov:wasDerivedFrom "Hetionet" ;
+    rtg:sourceSystem "Hetionet" ;
+    rtg:ontologyVersion "2026-04" ;
+    rtg:timestamp "2026-06-02T10:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC0" .
+
+rtg:PW-CHECKPOINT a rtg:Pathway ;
+    rdfs:label "T-cell immune checkpoint signaling" ;
+    rtg:code "WP4585" ;
+    prov:wasDerivedFrom "Hetionet" ;
+    rtg:sourceSystem "Hetionet" ;
+    rtg:ontologyVersion "2026-05" ;
+    rtg:timestamp "2026-06-02T10:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC0" .
+
+rtg:STAT-MYO-CPI a rtg:SignalStat ;
+    rdfs:label "Disproportionality (PRR 4.2)" ;
+    rtg:prr "4.2"^^xsd:decimal ;
+    rtg:ror "4.6"^^xsd:decimal ;
+    rtg:chi2 "58.3"^^xsd:decimal ;
+    rtg:ci "2.9-6.1" ;
+    rtg:cases "37"^^xsd:decimal ;
+    prov:wasDerivedFrom "openFDA FAERS" ;
+    rtg:sourceSystem "openFDA FAERS" ;
+    rtg:timestamp "2026-06-15T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:EV-FAERS a rtg:Evidence ;
+    rdfs:label "openFDA FAERS aggregate 2024Q1-2026Q2" ;
+    rtg:records "37"^^xsd:decimal ;
+    prov:wasDerivedFrom "openFDA FAERS" ;
+    rtg:sourceSystem "openFDA FAERS" ;
+    rtg:timestamp "2026-06-15T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:EV-PMID a rtg:Evidence ;
+    rdfs:label "Lit: checkpoint-inhibitor myocarditis (synthetic PMID 99000001)" ;
+    rtg:code "99000001" ;
+    prov:wasDerivedFrom "Synthetic citation" ;
+    rtg:sourceSystem "Synthetic citation" ;
+    rtg:timestamp "2026-06-10T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+# -----------------------------------------------------------------------------
+# Relationships — the deterministic explanation path
+#   (:Patient)-[:REPORTS]->(:AdverseEvent)
+#   (:AdverseEvent)-[:SUSPECTED_IN]->(:Drug)-[:TARGETS]->(:BiologicalTarget)
+#       -[:IN_PATHWAY]->(:Pathway)
+#   (:AdverseEvent)-[:HAS_STAT]->(:SignalStat)-[:SUPPORTED_BY]->(:Evidence)
+# -----------------------------------------------------------------------------
+
+rtg:AE-MYOCARDITIS rtg:SUSPECTED_IN rtg:DRUG-CPI .
+rtg:DRUG-CPI       rtg:TARGETS      rtg:TGT-PDCD1 .
+rtg:TGT-PDCD1      rtg:IN_PATHWAY   rtg:PW-CHECKPOINT .
+rtg:AE-MYOCARDITIS rtg:HAS_STAT     rtg:STAT-MYO-CPI .
+rtg:STAT-MYO-CPI   rtg:SUPPORTED_BY rtg:EV-FAERS .
+rtg:STAT-MYO-CPI   rtg:SUPPORTED_BY rtg:EV-PMID .
+
+# =============================================================================
+# Workstream-1 extension — second mechanistically-complete signal
+#   anti-VEGFR2 → VEGFR2/KDR → angiogenesis pathway → drug-induced hypertension
+# plus the versioned OntologySlice nodes that make the provenance "ontology
+# version" real (IN_ONTOLOGY edges anchor codes to a dated release).
+# =============================================================================
+
+rtg:AE-HYPERTENSION a rtg:AdverseEvent ;
+    rdfs:label "Drug-induced hypertension (MedDRA 10020772)" ;
+    rtg:code "10020772" ;
+    prov:wasDerivedFrom "MedDRA" ;
+    rtg:sourceSystem "MedDRA" ;
+    rtg:ontologyVersion "2025-03" ;
+    rtg:timestamp "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:DRUG-VEGFR a rtg:Drug ;
+    rdfs:label "Anti-VEGFR2 inhibitor (ramucirumab)" ;
+    rtg:code "1535996" ;
+    rtg:class "VEGFR2 inhibitor" ;
+    prov:wasDerivedFrom "RxNorm" ;
+    rtg:sourceSystem "RxNorm" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:TGT-KDR a rtg:BiologicalTarget ;
+    rdfs:label "VEGFR2 / KDR" ;
+    rtg:code "P35968" ;
+    rtg:symbol "KDR" ;
+    prov:wasDerivedFrom "UniProt" ;
+    rtg:sourceSystem "UniProt" ;
+    rtg:ontologyVersion "2026-04" ;
+    rtg:timestamp "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" .
+
+rtg:PW-ANGIO a rtg:Pathway ;
+    rdfs:label "VEGFA-VEGFR2 signaling (angiogenesis)" ;
+    rtg:code "R-HSA-4420097" ;
+    prov:wasDerivedFrom "Reactome" ;
+    rtg:sourceSystem "Reactome" ;
+    rtg:ontologyVersion "2026-03" ;
+    rtg:timestamp "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" .
+
+rtg:STAT-VEGF-HTN a rtg:SignalStat ;
+    rdfs:label "Disproportionality (PRR 3.6)" ;
+    rtg:prr "3.6"^^xsd:decimal ;
+    rtg:ror "3.8"^^xsd:decimal ;
+    rtg:chi2 "41.2"^^xsd:decimal ;
+    rtg:ci "2.4-5.1" ;
+    rtg:cases "29"^^xsd:decimal ;
+    prov:wasDerivedFrom "openFDA FAERS" ;
+    rtg:sourceSystem "openFDA FAERS" ;
+    rtg:timestamp "2026-06-15T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:EV-PMID-VEGF a rtg:Evidence ;
+    rdfs:label "Lit: VEGF-inhibitor hypertension (PMID 20694011)" ;
+    prov:wasDerivedFrom "PubMed" ;
+    rtg:sourceSystem "PubMed" ;
+    rtg:timestamp "2026-06-12T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:ONTO-MESH-2026-06 a rtg:OntologySlice ;
+    rdfs:label "MeSH 2026 release" ;
+    rtg:url "https://meshb.nlm.nih.gov" ;
+    prov:wasDerivedFrom "NLM MeSH" ;
+    rtg:sourceSystem "NLM MeSH" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-01T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:ONTO-MONDO-2026-06 a rtg:OntologySlice ;
+    rdfs:label "MONDO 2026-06 release" ;
+    rtg:url "https://mondo.monarchinitiative.org" ;
+    prov:wasDerivedFrom "MONDO" ;
+    rtg:sourceSystem "MONDO" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-01T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:ONTO-OAE-2025-09 a rtg:OntologySlice ;
+    rdfs:label "OAE 2025-09 release" ;
+    rtg:url "https://www.oae-ontology.org" ;
+    prov:wasDerivedFrom "OAE" ;
+    rtg:sourceSystem "OAE" ;
+    rtg:ontologyVersion "2025-09" ;
+    rtg:timestamp "2025-09-01T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:ONTO-REACTOME-88 a rtg:OntologySlice ;
+    rdfs:label "Reactome v88 release" ;
+    rtg:url "https://reactome.org" ;
+    prov:wasDerivedFrom "Reactome" ;
+    rtg:sourceSystem "Reactome" ;
+    rtg:ontologyVersion "2026-03" ;
+    rtg:timestamp "2026-03-01T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:ONTO-MEDDRA-27 a rtg:OntologySlice ;
+    rdfs:label "MedDRA v27.0 release" ;
+    rtg:url "https://www.meddra.org" ;
+    prov:wasDerivedFrom "MedDRA" ;
+    rtg:sourceSystem "MedDRA" ;
+    rtg:ontologyVersion "2025-03" ;
+    rtg:timestamp "2025-03-01T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+# VEGF→hypertension explanation path (mirrors the myocarditis hero shape).
+rtg:AE-HYPERTENSION rtg:SUSPECTED_IN rtg:DRUG-VEGFR .
+rtg:DRUG-VEGFR      rtg:TARGETS      rtg:TGT-KDR .
+rtg:TGT-KDR         rtg:IN_PATHWAY   rtg:PW-ANGIO .
+rtg:AE-HYPERTENSION rtg:HAS_STAT     rtg:STAT-VEGF-HTN .
+rtg:STAT-VEGF-HTN   rtg:SUPPORTED_BY rtg:EV-PMID-VEGF .
+
+# Ontology anchoring — every coded entity belongs to a dated ontology slice.
+rtg:AE-MYOCARDITIS rtg:IN_ONTOLOGY rtg:ONTO-OAE-2025-09 .
+rtg:AE-HYPERTENSION rtg:IN_ONTOLOGY rtg:ONTO-MEDDRA-27 .
+rtg:PW-CHECKPOINT  rtg:IN_ONTOLOGY rtg:ONTO-REACTOME-88 .
+rtg:PW-ANGIO       rtg:IN_ONTOLOGY rtg:ONTO-REACTOME-88 .
+
+# =============================================================================
+# Phase-1 extension — new therapeutic area (Immunology / rheumatoid arthritis)
+#   JAK inhibitor (tofacitinib) → JAK1 → JAK-STAT signaling → serious infection
+# plus two NEW node kinds expressed in the same generic vocabulary:
+#   rtg:GeneticAssociation  (Open Targets-style target↔disease evidence)
+#   rtg:RegulatoryDoc       (FDA label / EMA assessment excerpt)
+# =============================================================================
+
+rtg:AE-SERIOUS-INFECTION a rtg:AdverseEvent ;
+    rdfs:label "Serious infection - pneumonia (MedDRA 10035664)" ;
+    rtg:code "10035664" ;
+    prov:wasDerivedFrom "MedDRA" ;
+    rtg:sourceSystem "MedDRA" ;
+    rtg:ontologyVersion "2025-03" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:DRUG-JAK a rtg:Drug ;
+    rdfs:label "JAK inhibitor (tofacitinib)" ;
+    rtg:code "CHEMBL221959" ;
+    rtg:class "JAK inhibitor" ;
+    prov:wasDerivedFrom "ChEMBL" ;
+    rtg:sourceSystem "ChEMBL" ;
+    rtg:ontologyVersion "2024-03" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" .
+
+rtg:TGT-JAK1 a rtg:BiologicalTarget ;
+    rdfs:label "Janus kinase 1 / JAK1" ;
+    rtg:code "P23458" ;
+    rtg:symbol "JAK1" ;
+    prov:wasDerivedFrom "UniProt" ;
+    rtg:sourceSystem "UniProt" ;
+    rtg:ontologyVersion "2026-04" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" .
+
+rtg:PW-JAKSTAT a rtg:Pathway ;
+    rdfs:label "JAK-STAT signaling (cytokine)" ;
+    rtg:code "R-HSA-6785807" ;
+    prov:wasDerivedFrom "Reactome" ;
+    rtg:sourceSystem "Reactome" ;
+    rtg:ontologyVersion "2026-03" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" .
+
+rtg:STAT-JAK-INFECTION a rtg:SignalStat ;
+    rdfs:label "Disproportionality (PRR 3.9)" ;
+    rtg:prr "3.9"^^xsd:decimal ;
+    rtg:ror "4.1"^^xsd:decimal ;
+    rtg:chi2 "47.6"^^xsd:decimal ;
+    rtg:ci "2.7-5.6" ;
+    rtg:cases "34"^^xsd:decimal ;
+    prov:wasDerivedFrom "openFDA FAERS" ;
+    rtg:sourceSystem "openFDA FAERS" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:EV-PMID-JAK a rtg:Evidence ;
+    rdfs:label "Lit: serious infections with tofacitinib (PMID 28953575)" ;
+    prov:wasDerivedFrom "PubMed" ;
+    rtg:sourceSystem "PubMed" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+rtg:CON-RA a rtg:Concept ;
+    rdfs:label "Rheumatoid arthritis" ;
+    rtg:code "MONDO_0008383" ;
+    prov:wasDerivedFrom "MONDO" ;
+    rtg:sourceSystem "MONDO" ;
+    rtg:ontologyVersion "2026-06" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC-BY-4.0" .
+
+# Open Targets-style genetic association (new rtg:GeneticAssociation kind).
+rtg:GA-OT-JAK1-RA a rtg:GeneticAssociation ;
+    rdfs:label "Open Targets: JAK1-rheumatoid-arthritis association" ;
+    rtg:code "ENSG00000162434" ;
+    rtg:otScore "0.52"^^xsd:decimal ;
+    rtg:efo "EFO_0000685" ;
+    prov:wasDerivedFrom "Open Targets" ;
+    rtg:sourceSystem "Open Targets" ;
+    rtg:ontologyVersion "2024-06" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "CC0" .
+
+# FDA boxed-warning excerpt (new rtg:RegulatoryDoc kind).
+rtg:REG-FDA-JAK-INFECTION a rtg:RegulatoryDoc ;
+    rdfs:label "FDA boxed warning - JAK inhibitor serious infections (NDA 203214)" ;
+    rtg:code "203214" ;
+    rtg:section "Boxed Warning" ;
+    prov:wasDerivedFrom "DailyMed" ;
+    rtg:sourceSystem "DailyMed" ;
+    rtg:ontologyVersion "2026-01" ;
+    rtg:timestamp "2026-06-18T00:00:00Z"^^xsd:dateTime ;
+    dcterms:license "public-domain" .
+
+# Immunology explanation path (mirrors the myocarditis hero shape).
+rtg:AE-SERIOUS-INFECTION rtg:SUSPECTED_IN rtg:DRUG-JAK .
+rtg:DRUG-JAK             rtg:TARGETS      rtg:TGT-JAK1 .
+rtg:TGT-JAK1             rtg:IN_PATHWAY   rtg:PW-JAKSTAT .
+rtg:AE-SERIOUS-INFECTION rtg:HAS_STAT     rtg:STAT-JAK-INFECTION .
+rtg:STAT-JAK-INFECTION   rtg:SUPPORTED_BY rtg:EV-PMID-JAK .
+
+# New edge kinds wiring the new node kinds in.
+rtg:GA-OT-JAK1-RA        rtg:GENETIC_EVIDENCE rtg:TGT-JAK1 .
+rtg:GA-OT-JAK1-RA        rtg:GENETIC_EVIDENCE rtg:CON-RA .
+rtg:REG-FDA-JAK-INFECTION rtg:HAS_LABEL       rtg:DRUG-JAK .
+rtg:REG-FDA-JAK-INFECTION rtg:HAS_LABEL       rtg:AE-SERIOUS-INFECTION .
+
+rtg:AE-SERIOUS-INFECTION rtg:IN_ONTOLOGY rtg:ONTO-MEDDRA-27 .
+rtg:PW-JAKSTAT           rtg:IN_ONTOLOGY rtg:ONTO-REACTOME-88 .

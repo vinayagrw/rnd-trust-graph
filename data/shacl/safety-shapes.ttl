@@ -1,0 +1,119 @@
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix rtg:     <https://vinayagrw.github.io/rnd-trust-graph#> .
+
+# =============================================================================
+# UC4 subject-safety SHACL shapes — the production-grade equivalent of the
+# patient-safety risk radar. Validated live, in-process, by shacl-engine (with
+# the sh:sparql extension) over data/rdf/safety.ttl by bff/src/safety/service.ts.
+#
+# Every shape targets rtg:Subject and uses sh:sparql so the constraint is a
+# RELATIONSHIP query (the source brief's point: healthcare data-quality risks are
+# relationship gaps, not field errors). Each sh:message is unambiguous so the
+# service can map message → SafetyRiskType. Coverage goal: EXACTLY the subjects
+# documented in safety.ttl fail, each on its one designed risk; SUBJ-101 passes.
+# =============================================================================
+
+# --- Missing allergy status --------------------------------------------------
+# A subject on an ACTIVE prescription must have an allergy record on file. Fires
+# on SUBJ-201 (Rx, no allergy record). Subjects with no prescription are exempt.
+rtg:AllergyStatusShape a sh:NodeShape ;
+    sh:targetClass rtg:Subject ;
+    sh:sparql [
+        sh:message "Patient safety: missing allergy status — a subject on an active prescription has no allergy record on file." ;
+        sh:select """
+            PREFIX rtg: <https://vinayagrw.github.io/rnd-trust-graph#>
+            SELECT $this WHERE {
+                $this rtg:HAS_PRESCRIPTION ?rx .
+                FILTER NOT EXISTS { $this rtg:HAS_ALLERGY_RECORD ?a }
+            }
+        """ ;
+    ] .
+
+# --- Conflicting medication records ------------------------------------------
+# Two active prescriptions for a contraindicated drug pair. Fires on SUBJ-202.
+rtg:MedicationConflictShape a sh:NodeShape ;
+    sh:targetClass rtg:Subject ;
+    sh:sparql [
+        sh:message "Patient safety: conflicting medication — a subject holds two active prescriptions for contraindicated drugs." ;
+        sh:select """
+            PREFIX rtg: <https://vinayagrw.github.io/rnd-trust-graph#>
+            SELECT $this WHERE {
+                $this rtg:HAS_PRESCRIPTION ?rx1 , ?rx2 .
+                ?rx1 rtg:PRESCRIBES ?d1 .
+                ?rx2 rtg:PRESCRIBES ?d2 .
+                ?d1 rtg:CONTRAINDICATES ?d2 .
+                FILTER (?rx1 != ?rx2)
+            }
+        """ ;
+    ] .
+
+# --- Lab result too old for pathway decision ---------------------------------
+# A prescription flagged rtg:requiresRecentLab true, whose subject's latest lab
+# is before the recency cutoff (2025-01-01). Fires on SUBJ-203 (lab from 2023).
+rtg:LabRecencyShape a sh:NodeShape ;
+    sh:targetClass rtg:Subject ;
+    sh:sparql [
+        sh:message "Patient safety: stale lab result — a dosing decision rests on a lab result older than the recency window." ;
+        sh:select """
+            PREFIX rtg: <https://vinayagrw.github.io/rnd-trust-graph#>
+            PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+            SELECT $this WHERE {
+                $this rtg:HAS_PRESCRIPTION ?rx .
+                ?rx rtg:requiresRecentLab true .
+                $this rtg:HAS_LAB_RESULT ?lab .
+                ?lab rtg:timestamp ?ts .
+                FILTER (?ts < "2025-01-01T00:00:00Z"^^xsd:dateTime)
+            }
+        """ ;
+    ] .
+
+# --- Referral without follow-up ----------------------------------------------
+# An OPEN referral with no booked follow-up appointment. Fires on SUBJ-204.
+rtg:ReferralFollowupShape a sh:NodeShape ;
+    sh:targetClass rtg:Subject ;
+    sh:sparql [
+        sh:message "Care continuity: referral without follow-up — an open referral has no booked follow-up appointment." ;
+        sh:select """
+            PREFIX rtg: <https://vinayagrw.github.io/rnd-trust-graph#>
+            SELECT $this WHERE {
+                $this rtg:HAS_REFERRAL ?ref .
+                ?ref rtg:status "open" .
+                FILTER NOT EXISTS { ?ref rtg:FOLLOWED_BY ?appt }
+            }
+        """ ;
+    ] .
+
+# --- Duplicate subject risk --------------------------------------------------
+# An enrolment id shared by more than one subject record. Fires on SUBJ-205A/B.
+rtg:DuplicateSubjectShape a sh:NodeShape ;
+    sh:targetClass rtg:Subject ;
+    sh:sparql [
+        sh:message "Data integrity: duplicate subject — an enrolment identifier resolves to more than one subject record." ;
+        sh:select """
+            PREFIX rtg: <https://vinayagrw.github.io/rnd-trust-graph#>
+            SELECT $this WHERE {
+                $this  a rtg:Subject ; rtg:enrolmentId ?enr .
+                ?other a rtg:Subject ; rtg:enrolmentId ?enr .
+                FILTER (?other != $this)
+            }
+        """ ;
+    ] .
+
+# --- Unmapped local code -----------------------------------------------------
+# A local code used on a subject record with no current terminology mapping.
+# Fires on SUBJ-206 (LC-206 has no rtg:MAPS_TO).
+rtg:LocalCodeMappingShape a sh:NodeShape ;
+    sh:targetClass rtg:Subject ;
+    sh:sparql [
+        sh:message "Terminology: unmapped local code — a subject record uses a local code with no current terminology mapping." ;
+        sh:select """
+            PREFIX rtg: <https://vinayagrw.github.io/rnd-trust-graph#>
+            SELECT $this WHERE {
+                $this rtg:USES_CODE ?lc .
+                ?lc a rtg:LocalCode .
+                FILTER NOT EXISTS { ?lc rtg:MAPS_TO ?concept }
+            }
+        """ ;
+    ] .

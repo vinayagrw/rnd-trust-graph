@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Generative Dashboards — Design &amp; Architecture</title>
+<style>
+  :root {
+    --navy-900:#04111f; --navy-800:#0a2742; --navy-700:#12365f;
+    --clinical:#1769d6; --clinical-bright:#318cf5;
+    --surface:#ffffff; --surface-2:#f7fafd; --border:#d7dfea; --border-strong:#c2cdda;
+    --text:#0a2540; --muted:#5b6b7f;
+    --f1:#1769d6; --f2:#8250c8; --f3:#0f9d8c; --f4:#0a7d4b; --f5:#9a6a00;
+    --ok:#0a7d4b; --warn:#9a6a00; --bad:#b4231f;
+    --radius:12px; --radius-sm:8px; --radius-pill:999px;
+    --shadow:0 8px 28px rgba(4,17,31,.10); --shadow-sm:0 1px 3px rgba(4,17,31,.10);
+    --font:"Georgia","Iowan Old Style",serif;
+    --sans:ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SFMono-Regular",Menlo,monospace;
+  }
+  * { box-sizing:border-box; }
+  html,body { margin:0; }
+  body {
+    font-family:var(--sans); color:var(--text);
+    background:
+      radial-gradient(1200px 500px at 80% -10%, rgba(23,105,214,.10), transparent 60%),
+      linear-gradient(180deg,#eef3f8 0%, #f7fafd 40%, #ffffff 100%);
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  .wrap { max-width:1120px; margin:0 auto; padding:0 22px 80px; }
+
+  header.hero {
+    background:linear-gradient(110deg,var(--navy-900) 0%,var(--navy-800) 46%,var(--navy-700) 100%);
+    color:#eaf2fb; padding:38px 0 30px; box-shadow:var(--shadow);
+    border-bottom:1px solid rgba(255,255,255,.06);
+  }
+  header.hero .wrap { padding-bottom:0; }
+  .kicker { letter-spacing:.22em; text-transform:uppercase; font-size:11px; color:var(--clinical-bright); font-weight:700; }
+  h1 { font-family:var(--font); font-weight:600; margin:.35em 0 .15em; font-size:34px; line-height:1.1; }
+  header.hero p { color:#a9c2df; max-width:74ch; font-size:15px; line-height:1.55; margin:.4em 0 0; }
+  .badges { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+  .badge { font-size:11px; font-weight:700; letter-spacing:.04em; padding:5px 11px; border-radius:var(--radius-pill);
+    background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); color:#dce9f8; }
+  .badge b { color:#fff; }
+
+  section { margin-top:36px; }
+  h2.sec { font-family:var(--font); font-weight:600; font-size:24px; margin:0 0 4px; }
+  .lead { color:var(--muted); font-size:14px; line-height:1.55; max-width:78ch; margin:0 0 16px; }
+  .eyebrow { font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--clinical); font-weight:800; margin-bottom:6px; }
+
+  .diagram-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px 20px 12px; }
+  .diagram-card h3 { font-size:13px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin:0 0 2px; font-weight:700; }
+  .diagram-card .sub { color:var(--muted); font-size:13px; margin:0 0 6px; }
+  .replay { float:right; font:inherit; font-size:12px; font-weight:700; cursor:pointer; color:var(--clinical);
+    background:var(--surface-2); border:1px solid var(--border-strong); border-radius:var(--radius-pill); padding:5px 13px; }
+  .replay:hover { border-color:var(--clinical); }
+
+  /* hero SVG animation */
+  .flow-svg { width:100%; height:auto; display:block; }
+  .flow-svg .node rect, .flow-svg .node ellipse { stroke-width:1.6; }
+  .flow-svg text { font-family:var(--sans); }
+  .flow-svg .lbl { font-size:12px; font-weight:700; }
+  .flow-svg .sub2 { font-size:9.5px; fill:var(--muted); font-weight:500; }
+  .wire { fill:none; stroke:var(--border-strong); stroke-width:1.8; }
+  .anim .wire.draw { stroke-dasharray:600; stroke-dashoffset:600; animation:draw 1.1s ease forwards; }
+  .anim .wire.flowing { stroke:var(--clinical); stroke-dasharray:5 9; animation:flowdash 1.2s linear infinite; }
+  .anim .node { opacity:0; animation:pop .5s ease forwards; }
+  .anim .particle { opacity:0; }
+  .anim .particle.go { opacity:1; }
+  @keyframes draw { to { stroke-dashoffset:0; } }
+  @keyframes flowdash { to { stroke-dashoffset:-14; } }
+  @keyframes pop { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+
+  /* before/after */
+  .ba { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media(max-width:760px){ .ba{grid-template-columns:1fr;} }
+  .panel { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); box-shadow:var(--shadow-sm); padding:15px 16px; }
+  .panel.before { border-top:3px solid var(--bad); }
+  .panel.after { border-top:3px solid var(--f3); }
+  .panel h4 { margin:0 0 8px; font-size:14px; }
+  .panel .tagline { font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
+  .before .tagline { color:var(--bad); } .after .tagline { color:var(--f3); }
+  .fakecard { border:1px solid var(--border); border-left:3px solid var(--muted); border-radius:6px; padding:8px 10px; margin:6px 0; font-size:12px; color:var(--muted); background:var(--surface-2); }
+  .after .fakecard { border-left-color:var(--f3); }
+  .mini-dash { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px; }
+  .widgetlet { border:1px solid var(--border); border-radius:6px; background:var(--surface-2); padding:7px 8px; font-size:10.5px; color:var(--muted); }
+  .widgetlet b { display:block; color:var(--text); font-size:10px; letter-spacing:.05em; text-transform:uppercase; margin-bottom:3px; }
+  .sparkbar { display:flex; align-items:flex-end; gap:3px; height:26px; margin-top:3px; }
+  .sparkbar i { width:9px; background:var(--clinical); border-radius:2px 2px 0 0; display:block; transform-origin:bottom; }
+  .anim2 .sparkbar i { animation:grow .7s ease both; }
+  @keyframes grow { from { transform:scaleY(0); } }
+  .provrow { font-family:var(--mono); font-size:9px; color:var(--muted); margin-top:5px; border-top:1px dashed var(--border); padding-top:4px; }
+
+  /* family cards */
+  .grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
+  @media(max-width:760px){ .grid{grid-template-columns:1fr;} }
+  .card { background:var(--surface); border:1px solid var(--border); border-left-width:4px; border-radius:var(--radius-sm);
+    box-shadow:var(--shadow-sm); overflow:hidden; transition:.2s; cursor:pointer; }
+  .card:hover { box-shadow:var(--shadow); transform:translateY(-2px); }
+  .card.f1 { border-left-color:var(--f1);} .card.f2 { border-left-color:var(--f2);}
+  .card.f3 { border-left-color:var(--f3);} .card.f4 { border-left-color:var(--f4);} .card.f5 { border-left-color:var(--f5);}
+  .card .head { padding:14px 15px; }
+  .card .tag { font-size:10.5px; font-weight:800; letter-spacing:.09em; text-transform:uppercase; }
+  .card.f1 .tag{color:var(--f1);} .card.f2 .tag{color:var(--f2);} .card.f3 .tag{color:var(--f3);} .card.f4 .tag{color:var(--f4);} .card.f5 .tag{color:var(--f5);}
+  .card .code { font-family:var(--font); font-size:18px; font-weight:600; margin:5px 0 2px; }
+  .card .one { font-size:12.5px; color:var(--muted); line-height:1.45; margin-top:5px; }
+  .card .more { font-size:11px; font-weight:700; margin-top:8px; }
+  .card.f1 .more{color:var(--f1);} .card.f2 .more{color:var(--f2);} .card.f3 .more{color:var(--f3);} .card.f4 .more{color:var(--f4);} .card.f5 .more{color:var(--f5);}
+  .card .body { max-height:0; opacity:0; padding:0 15px; transition:max-height .34s ease, opacity .22s ease, padding .34s ease;
+    border-top:1px solid transparent; font-size:12.5px; line-height:1.5; }
+  .card.open .body { max-height:560px; opacity:1; padding:12px 15px 15px; border-top-color:var(--border); }
+  .card .row { margin:8px 0; }
+  .card .row b { display:block; font-size:10px; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); margin-bottom:2px; }
+  .card code { font-family:var(--mono); font-size:11px; background:var(--surface-2); border:1px solid var(--border); border-radius:4px; padding:1px 5px; }
+
+  table { width:100%; border-collapse:collapse; background:var(--surface); border:1px solid var(--border);
+    border-radius:var(--radius-sm); overflow:hidden; box-shadow:var(--shadow-sm); font-size:12.5px; }
+  th,td { text-align:left; padding:9px 12px; border-bottom:1px solid var(--border); vertical-align:top; }
+  th { background:var(--surface-2); font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:var(--muted); }
+  tr:last-child td { border-bottom:none; }
+  td b { color:var(--text); }
+  .tblwrap { overflow-x:auto; }
+  .chip { display:inline-block; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:var(--radius-pill); color:#fff; }
+  .chip.g { background:var(--ok); } .chip.o { background:var(--warn); } .chip.r { background:var(--bad); } .chip.b { background:var(--clinical); }
+
+  /* personas */
+  .personas { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; }
+  @media(max-width:900px){ .personas{grid-template-columns:repeat(2,1fr);} }
+  .persona { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); box-shadow:var(--shadow-sm);
+    padding:12px 13px; border-top:3px solid var(--clinical); }
+  .persona.p2{border-top-color:var(--f2);} .persona.p3{border-top-color:var(--f3);} .persona.p4{border-top-color:var(--bad);} .persona.p5{border-top-color:var(--f5);}
+  .persona h4 { margin:0; font-family:var(--font); font-size:16px; }
+  .persona .role { font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:800; margin:2px 0 6px; }
+  .persona p { margin:0; font-size:11.5px; color:var(--muted); line-height:1.45; }
+
+  /* critique list */
+  .crit { display:grid; gap:9px; }
+  .critrow { display:flex; gap:12px; align-items:flex-start; background:var(--surface); border:1px solid var(--border);
+    border-radius:var(--radius-sm); box-shadow:var(--shadow-sm); padding:11px 13px; }
+  .critrow .cid { font-family:var(--font); font-size:16px; font-weight:600; color:var(--clinical); min-width:34px; }
+  .critrow .ct { font-size:12.5px; line-height:1.5; }
+  .critrow .ct b { display:block; font-size:12.5px; }
+  .critrow .st { margin-left:auto; flex-shrink:0; }
+
+  /* phases */
+  .phases { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  @media(max-width:860px){ .phases{grid-template-columns:1fr;} }
+  .phase { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); box-shadow:var(--shadow-sm); padding:14px 15px; position:relative; }
+  .phase .pn { font-family:var(--font); font-size:26px; color:var(--border-strong); position:absolute; top:8px; right:14px; }
+  .phase h4 { margin:0 0 4px; font-size:14px; }
+  .phase p { margin:0 0 7px; font-size:11.5px; color:var(--muted); line-height:1.5; }
+  .phase ul { margin:0; padding-left:16px; font-size:11.5px; color:var(--muted); line-height:1.55; }
+  .phase.pA { border-top:3px solid var(--f3); } .phase.pB { border-top:3px solid var(--f1); } .phase.pC { border-top:3px solid var(--f2); }
+
+  footer { margin-top:44px; color:var(--muted); font-size:11.5px; border-top:1px solid var(--border); padding-top:14px; line-height:1.6; }
+  .reveal { opacity:0; transform:translateY(14px); transition:opacity .5s ease, transform .5s ease; }
+  .reveal.in { opacity:1; transform:none; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">R&amp;D Trust Graph · Design Direction · July 2026</div>
+    <h1>Generative Dashboards</h1>
+    <p>From static panels to <b>query-driven, animated, interactive dashboards composed live from the AI chat</b> —
+       without giving up a single trust invariant. The LLM decides <i>what you should see</i>; deterministic code
+       does everything that must be fast, correct, or auditable.</p>
+    <div class="badges">
+      <span class="badge">Grounded-by-construction · <b>LLM never emits a number</b></span>
+      <span class="badge">Declarative <b>DashboardSpec</b> · A2UI-shaped</span>
+      <span class="badge">Template-first · <b>upgrade in place</b></span>
+      <span class="badge">Per-widget <b>provenance + faithfulness + HITL</b></span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- HERO FLOW -->
+  <section class="reveal">
+    <div class="eyebrow">The architecture in one picture</div>
+    <h2 class="sec">Chat question in — grounded dashboard out</h2>
+    <p class="lead">The answer path is untouched. The composer runs <i>beside</i> it, its output crosses one strict gate
+       as inert JSON, and a trusted widget registry — the render kit the app already has — draws everything.</p>
+    <div class="diagram-card">
+      <button class="replay" id="replayFlow">↻ Replay</button>
+      <h3>render_dashboard pipeline</h3>
+      <p class="sub">Watch the flow: blue dashes = data moving; the amber gate is the only place model output crosses the trust boundary.</p>
+      <svg class="flow-svg" id="flowSvg" viewBox="0 0 1060 330" xmlns="http://www.w3.org/2000/svg" aria-label="Architecture flow: user question through grounded agent, composer, Zod gate, AG-UI bridge, widget registry, to an interactive dashboard">
+        <!-- wires -->
+        <path class="wire draw" id="w1" d="M148 70 H 250" style="animation-delay:.15s"/>
+        <path class="wire draw" id="w2" d="M420 70 H 520" style="animation-delay:.55s"/>
+        <path class="wire draw" id="w3" d="M660 70 L 660 130" style="animation-delay:.95s"/>
+        <path class="wire draw" id="w4" d="M660 196 L 660 240" style="animation-delay:1.35s"/>
+        <path class="wire draw" id="w5" d="M590 270 H 470" style="animation-delay:1.7s"/>
+        <path class="wire draw" id="w6" d="M300 270 H 190" style="animation-delay:2.05s"/>
+        <path class="wire draw" d="M335 110 C 335 190 320 230 320 240" style="animation-delay:1.5s" stroke-dasharray="4 6"/>
+        <path class="wire draw" d="M900 70 L 940 70 L 940 110" style="animation-delay:1.0s" stroke-dasharray="4 6"/>
+        <path class="wire draw" d="M940 200 L 940 258 L 480 258" style="animation-delay:1.9s" stroke-dasharray="4 6"/>
+        <!-- flowing overlays (activated after draw) -->
+        <path class="wire flowpath" data-flow d="M148 70 H 250" style="display:none"/>
+        <path class="wire flowpath" data-flow d="M420 70 H 520" style="display:none"/>
+        <path class="wire flowpath" data-flow d="M660 196 L 660 240" style="display:none"/>
+        <path class="wire flowpath" data-flow d="M590 270 H 470" style="display:none"/>
+        <path class="wire flowpath" data-flow d="M300 270 H 190" style="display:none"/>
+
+        <!-- nodes -->
+        <g class="node" style="animation-delay:.0s">
+          <rect x="20" y="42" width="128" height="56" rx="10" fill="#dcfce7" stroke="#22c55e"/>
+          <text x="84" y="66" text-anchor="middle" class="lbl">User question</text>
+          <text x="84" y="82" text-anchor="middle" class="sub2">"safety picture for Drug X?"</text>
+        </g>
+        <g class="node" style="animation-delay:.3s">
+          <rect x="250" y="34" width="170" height="72" rx="10" fill="#fee2e2" stroke="#ef4444"/>
+          <text x="335" y="58" text-anchor="middle" class="lbl">Grounded ask-agent</text>
+          <text x="335" y="74" text-anchor="middle" class="sub2">read-only Cypher · citations</text>
+          <text x="335" y="88" text-anchor="middle" class="sub2">UNCHANGED · ask/agent.ts</text>
+        </g>
+        <g class="node" style="animation-delay:.7s">
+          <rect x="520" y="34" width="170" height="72" rx="10" fill="#fee2e2" stroke="#ef4444"/>
+          <text x="605" y="56" text-anchor="middle" class="lbl">Dashboard composer</text>
+          <text x="605" y="72" text-anchor="middle" class="sub2">NEW · fast tier · off answer path</text>
+          <text x="605" y="88" text-anchor="middle" class="sub2">emits DashboardSpec JSON</text>
+        </g>
+        <g class="node" style="animation-delay:.85s">
+          <rect x="760" y="34" width="140" height="72" rx="10" fill="#dbeafe" stroke="#3b82f6"/>
+          <text x="830" y="58" text-anchor="middle" class="lbl">Template composer</text>
+          <text x="830" y="74" text-anchor="middle" class="sub2">deterministic · instant</text>
+          <text x="830" y="88" text-anchor="middle" class="sub2">first paint, always</text>
+        </g>
+        <g class="node" style="animation-delay:1.1s">
+          <polygon points="660,130 745,163 660,196 575,163" fill="#fef9c3" stroke="#eab308" stroke-width="1.6"/>
+          <text x="660" y="158" text-anchor="middle" class="lbl">Zod gate</text>
+          <text x="660" y="174" text-anchor="middle" class="sub2">citations ⊆ answer · views known</text>
+        </g>
+        <g class="node" style="animation-delay:1.3s">
+          <rect x="870" y="110" width="140" height="90" rx="10" fill="#e5e7eb" stroke="#6b7280"/>
+          <text x="940" y="134" text-anchor="middle" class="lbl">Data views</text>
+          <text x="940" y="152" text-anchor="middle" class="sub2">/api/risk · /api/safety/*</text>
+          <text x="940" y="166" text-anchor="middle" class="sub2">/api/graph · /api/finops/*</text>
+          <text x="940" y="184" text-anchor="middle" class="sub2">server-computed numbers</text>
+        </g>
+        <g class="node" style="animation-delay:1.5s">
+          <rect x="590" y="240" width="170" height="60" rx="10" fill="#dbeafe" stroke="#3b82f6"/>
+          <text x="675" y="264" text-anchor="middle" class="lbl">AG-UI bridge</text>
+          <text x="675" y="280" text-anchor="middle" class="sub2">TOOL_CALL: render_dashboard</text>
+        </g>
+        <g class="node" style="animation-delay:1.85s">
+          <rect x="300" y="240" width="170" height="60" rx="10" fill="#dbeafe" stroke="#3b82f6"/>
+          <text x="385" y="262" text-anchor="middle" class="lbl">Widget registry</text>
+          <text x="385" y="278" text-anchor="middle" class="sub2">DashboardCanvas.tsx reuses</text>
+          <text x="385" y="290" text-anchor="middle" class="sub2">GroundedDiagrams · GraphCanvas</text>
+        </g>
+        <g class="node" style="animation-delay:2.2s">
+          <rect x="20" y="232" width="170" height="76" rx="10" fill="#dcfce7" stroke="#22c55e"/>
+          <text x="105" y="254" text-anchor="middle" class="lbl">Live dashboard</text>
+          <text x="105" y="270" text-anchor="middle" class="sub2">animated flows · drill-down</text>
+          <text x="105" y="284" text-anchor="middle" class="sub2">provenance ⓘ · faithfulness band</text>
+          <text x="105" y="298" text-anchor="middle" class="sub2">click → context pill → follow-up</text>
+        </g>
+      </svg>
+    </div>
+  </section>
+
+  <!-- BEFORE / AFTER -->
+  <section class="reveal">
+    <div class="eyebrow">Why move</div>
+    <h2 class="sec">Static panel → composed answer</h2>
+    <div class="ba">
+      <div class="panel before">
+        <span class="tagline">Today — fixed panels</span>
+        <h4>One diagram per answer; dashboards live elsewhere</h4>
+        <div class="fakecard">Chat answer → single auto-selected diagram (<code>render_evidence</code>)</div>
+        <div class="fakecard">FinOps / Eval / Safety Radar = separate static pages, same layout for every question</div>
+        <div class="fakecard">"Compare X across trials" → prose + one chart, user assembles the picture mentally</div>
+      </div>
+      <div class="panel after" id="afterPanel">
+        <span class="tagline">Proposed — composed per question</span>
+        <h4>The question shapes the surface</h4>
+        <div class="mini-dash">
+          <div class="widgetlet"><b>PRR / ROR</b>
+            <div class="sparkbar"><i style="height:40%"></i><i style="height:72%"></i><i style="height:55%"></i><i style="height:92%;background:var(--bad)"></i><i style="height:34%"></i><i style="height:60%"></i></div>
+            <div class="provrow">ⓘ MATCH (d:Drug)… · 14:02:11 · 128 rows</div>
+          </div>
+          <div class="widgetlet"><b>Mechanism flow</b>
+            <svg viewBox="0 0 150 44" width="100%" aria-hidden="true">
+              <path d="M8 22 H 46 M62 22 H 98 M114 22 H 142" stroke="#c2cdda" stroke-width="2" fill="none"/>
+              <path class="dashflow" d="M8 22 H 142" stroke="#1769d6" stroke-width="2" fill="none" stroke-dasharray="4 8"/>
+              <circle cx="8" cy="22" r="6" fill="#1769d6"/><circle cx="54" cy="22" r="6" fill="#8250c8"/>
+              <circle cx="106" cy="22" r="6" fill="#0f9d8c"/><circle cx="142" cy="22" r="6" fill="#0a7d4b"/>
+            </svg>
+            <div class="provrow">ⓘ AE→Drug→Target→Pathway · cited ids only</div>
+          </div>
+          <div class="widgetlet"><b>Safety trend</b>
+            <svg viewBox="0 0 150 40" width="100%" aria-hidden="true">
+              <polyline class="trendline" points="6,32 34,30 62,26 90,27 118,16 144,10" fill="none" stroke="#0f9d8c" stroke-width="2.4" stroke-linecap="round"/>
+            </svg>
+            <div class="provrow">ⓘ :SafetyScoreSnapshot series · 30 → 40</div>
+          </div>
+          <div class="widgetlet"><b>Known / Missing / Conflicting</b>
+            <div class="sparkbar" style="height:20px"><i style="height:100%;background:var(--ok);width:34px"></i><i style="height:100%;background:var(--warn);width:20px"></i><i style="height:100%;background:var(--bad);width:12px"></i></div>
+            <div class="provrow">ⓘ EvidenceLedger · faithfulness 0.86 · high</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PERSONAS -->
+  <section class="reveal">
+    <div class="eyebrow">How the design was argued</div>
+    <h2 class="sec">Five personas, five vetoes</h2>
+    <p class="lead">The design document reasons every component through this panel — when two stakes collide
+       (Maya's "one fast call" vs Alex's "never rearrange what the user is reading"), the resolution is written down.</p>
+    <div class="personas">
+      <div class="persona"><h4>Maya</h4><div class="role">Solution architect</div><p>The LLM does only what deterministic code can't. ~90% reuse or it's over-engineered.</p></div>
+      <div class="persona p2"><h4>Dev</h4><div class="role">Pharma / PV SME</div><p>Widgets are domain analytics — PRR/ROR with case counts and MedDRA terms — not generic charts.</p></div>
+      <div class="persona p3"><h4>Sam</h4><div class="role">MLOps / evals</div><p>A wrong dashboard that <i>looks</i> right is the real enemy. Spec-snapshot evals from day one.</p></div>
+      <div class="persona p4"><h4>Priya</h4><div class="role">Security / grounding</div><p>The dangerous thing must be unrepresentable: no URLs, no HTML, no Mermaid source in the spec.</p></div>
+      <div class="persona p5"><h4>Alex</h4><div class="role">UX / motion / HITL</div><p>Motion means something — flow, causality, change. Upgrades append; they never reflow.</p></div>
+    </div>
+  </section>
+
+  <!-- FAMILIES -->
+  <section class="reveal">
+    <div class="eyebrow">What the industry does (July 2026)</div>
+    <h2 class="sec">Five approach families — layered, not chosen</h2>
+    <p class="lead">Click a card. The recommendation stacks four of them and excludes one from the grounded path.</p>
+    <div class="grid">
+      <div class="card f1" data-toggle>
+        <div class="head">
+          <span class="tag">Family 1 · delivery channel — adopted</span>
+          <div class="code">Tool-call → registered renderers</div>
+          <div class="one">LLM emits a typed tool call; a pre-registered React component renders it. The dominant production pattern — and exactly what <code>render_evidence</code> already is.</div>
+          <div class="more">Where it fits ▾</div>
+        </div>
+        <div class="body">
+          <div class="row"><b>Implementations</b> CopilotKit <code>renderToolCalls</code>/<code>useRenderTool</code> · Vercel AI SDK client tools (RSC <code>streamUI</code> paused) · assistant-ui</div>
+          <div class="row"><b>Wins / breaks</b> Strongest trust story; constrained to your component library. Breaks on novel layouts — those need code.</div>
+          <div class="row"><b>Role here</b> The transport: <code>render_dashboard</code> rides the same verified AG-UI <code>TOOL_CALL_*</code> channel as today's five tool calls.</div>
+        </div>
+      </div>
+      <div class="card f2" data-toggle>
+        <div class="head">
+          <span class="tag">Family 2 · spec language — adapted</span>
+          <div class="code">Declarative UI-spec (A2UI-shaped)</div>
+          <div class="one">The LLM writes a JSON component tree, validated against a closed catalog. Where the industry converged in 2026 — A2UI v1.0-RC, Open-JSON-UI, json-render.</div>
+          <div class="more">Where it fits ▾</div>
+        </div>
+        <div class="body">
+          <div class="row"><b>Adopt vs adapt</b> A2UI GA lands Q4 2026 and already broke once (0.8→0.9). Decision: <b>custom Zod spec now, deliberately A2UI-shaped</b> (flat list, ids, data-by-reference), one-seam adapter later.</div>
+          <div class="row"><b>Key alignment</b> A2UI natively separates literals from JSON-Pointer data references — the same "no inline values" rule our grounding demands.</div>
+          <div class="row"><b>Role here</b> The composer's output language: <code>shared/dashboardSpec.ts</code>.</div>
+        </div>
+      </div>
+      <div class="card f4" data-toggle>
+        <div class="head">
+          <span class="tag">Family 4 · deterministic floor — adopted</span>
+          <div class="code">Template slot-filling</div>
+          <div class="one">Code derives a dashboard from cited node kinds + intent — no LLM, zero latency. The app's F5 playbooks and GroundedDiagrams auto-select are already this family.</div>
+          <div class="more">Where it fits ▾</div>
+        </div>
+        <div class="body">
+          <div class="row"><b>Wins</b> Deterministic, auditable, instant first paint. NL2Dashboard (Jan 2026) argues this is the controllable core of dashboard generation.</div>
+          <div class="row"><b>Role here</b> Always present: the instant first paint <i>and</i> the fallback when the composer fails validation twice. The feature can never degrade below today's behavior.</div>
+        </div>
+      </div>
+      <div class="card f5" data-toggle>
+        <div class="head">
+          <span class="tag">Family 5 · planner — thin, phase 2</span>
+          <div class="code">Agentic composer</div>
+          <div class="one">Planner → per-widget binder → critic pipelines (Databricks Genie-class). Powerful, slow, hard to eval.</div>
+          <div class="more">Where it fits ▾</div>
+        </div>
+        <div class="body">
+          <div class="row"><b>Verdict</b> Multi-call pipelines are unaffordable on a 10–25s/call local provider. One bounded composer call (with a fast-tier route) captures most of the value.</div>
+          <div class="row"><b>Role here</b> A thin planning step only — never a top-level autonomous controller.</div>
+        </div>
+      </div>
+      <div class="card f3" data-toggle style="grid-column:1 / -1;">
+        <div class="head">
+          <span class="tag">Family 3 · excluded from the grounded path</span>
+          <div class="code">LLM-written code in a sandbox</div>
+          <div class="one">Artifacts-style generated HTML/JS in a sandboxed iframe (MCP Apps is the tamer pre-authored cousin). Unlimited expressiveness — and the one family that cannot prove it renders only graph-derived facts.</div>
+          <div class="more">Why it's out ▾</div>
+        </div>
+        <div class="body">
+          <div class="row"><b>Why excluded</b> Model output becomes executable (OWASP LLM01 class); can't share the app's React context or design tokens; slowest to first paint; grounding unprovable. Acceptable someday as an explicitly-labeled exploratory escape hatch — never the trust surface.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARISON -->
+  <section class="reveal">
+    <div class="eyebrow">Patterns, compared honestly</div>
+    <h2 class="sec">The composer-layer matrix</h2>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>Dimension</th><th>A · single-call spec</th><th>B · template</th><th>C · routing</th><th>D · planner-binder</th><th>E · eval-optimize</th></tr></thead>
+        <tbody>
+          <tr><td><b>Added latency (local CLI)</b></td><td><span class="chip o">one call</span></td><td><span class="chip g">zero</span></td><td><span class="chip g">~zero</span></td><td><span class="chip r">N calls</span></td><td><span class="chip r">2× calls</span></td></tr>
+          <tr><td><b>Hard-20% composition</b></td><td><span class="chip o">fair</span></td><td><span class="chip r">poor</span></td><td>—</td><td><span class="chip g">best</span></td><td><span class="chip g">good</span></td></tr>
+          <tr><td><b>Determinism / audit</b></td><td><span class="chip o">gated</span></td><td><span class="chip g">total</span></td><td><span class="chip g">logged</span></td><td><span class="chip r">low</span></td><td><span class="chip r">low</span></td></tr>
+          <tr><td><b>Eval difficulty</b></td><td><span class="chip g">spec snapshot</span></td><td><span class="chip g">trivial</span></td><td><span class="chip g">easy</span></td><td><span class="chip r">hard</span></td><td><span class="chip r">hard</span></td></tr>
+          <tr><td><b>Role in the composite</b></td><td><span class="chip b">v1 inner engine</span></td><td><span class="chip b">floor + first paint</span></td><td><span class="chip b">front door</span></td><td>future, fast tier only</td><td>offline harness only</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead" style="margin-top:12px"><b>The composite:</b> C routes → B paints instantly → A upgrades asynchronously, append-only →
+       Zod + faithfulness gates wrap every path → HITL wraps the whole thing. D waits for a fast model tier; E stays offline.</p>
+  </section>
+
+  <!-- RED TEAM -->
+  <section class="reveal">
+    <div class="eyebrow">We attacked our own design</div>
+    <h2 class="sec">Red-team findings — and what closed</h2>
+    <div class="crit">
+      <div class="critrow"><span class="cid">C1</span><span class="ct"><b>The platform under us is moving</b>Pinned CopilotKit 2.0.0-next.1 doesn't match the public registry (1.62.x line). Mitigation: isolate all CopilotKit types behind one renderer seam.</span><span class="st chip o">RISK REGISTER</span></div>
+      <div class="critrow"><span class="cid">C2</span><span class="ct"><b>Composer latency could kill the feel</b>10–25s local-CLI calls. Closed: template paints instantly; composer runs off-path on a fast tier (~1–3s Haiku-class); upgrade appends, never reflows.</span><span class="st chip g">CLOSED</span></div>
+      <div class="critrow"><span class="cid">C3</span><span class="ct"><b>Inventing a spec mid-standardization</b>A2UI v1.0 GA is Q4 2026 and broke once already. Closed: adapt, don't adopt — A2UI-shaped custom Zod spec, one-seam migration later.</span><span class="st chip g">CLOSED</span></div>
+      <div class="critrow"><span class="cid">C4</span><span class="ct"><b>Wrong-but-plausible dashboards</b>Valid widgets, real data, wrong view. No published harness exists; the golden-question spec-snapshot suite must accrue. Stated plainly as the open risk.</span><span class="st chip r">OPEN — HONEST</span></div>
+      <div class="critrow"><span class="cid">C6</span><span class="ct"><b>Injection via graph node labels</b>Mermaid context escapes (CVE-2026-41149 class). Design closed (strict mode, renderer-built source, 11.16.0 installed); the adversarial-label test fixture is a named Phase-1 gate.</span><span class="st chip o">TEST GATE</span></div>
+      <div class="critrow"><span class="cid">C5–C9</span><span class="ct"><b>Thread perf · determinism wording · motion policy · eval home</b>Freeze-on-blur pulled into Phase 2; "deterministic" softened to template-tier-only; motion toggle now initializes from the OS query with user override winning; evals scoped spec-level (Node-runnable) first.</span><span class="st chip g">FOLDED IN</span></div>
+    </div>
+  </section>
+
+  <!-- PHASES -->
+  <section class="reveal">
+    <div class="eyebrow">Honest scope</div>
+    <h2 class="sec">Three phases, each independently demonstrable</h2>
+    <div class="phases">
+      <div class="phase pA"><span class="pn">1</span><h4>Grounded generative dashboards</h4>
+        <p>Days, not weeks — every hard primitive exists and has passed live render-proof.</p>
+        <ul><li><code>DashboardSpec</code> in <code>shared/</code> (Zod)</li><li>Template composer + routing (no LLM)</li><li><code>render_dashboard</code> bridge event</li><li><code>DashboardCanvas</code> + registry reuse</li><li>Context-pill drill-down · provenance ⓘ</li><li>Adversarial-label fixture (C6 gate)</li></ul></div>
+      <div class="phase pB"><span class="pn">2</span><h4>LLM composition + animation</h4>
+        <p>"The AI designed this view" becomes literally true — with the evals that make it defensible.</p>
+        <ul><li>Composer call, fast tier, repair loop</li><li>Upgrade-in-place (append-only)</li><li>Mermaid animated-edge flows</li><li>Faithfulness-gated captions</li><li>Golden-question spec-snapshot suite</li><li>Thread freeze-on-blur (from C5)</li></ul></div>
+      <div class="phase pC"><span class="pn">3</span><h4>Interactive flow + pinning</h4>
+        <p>Optional per demo needs.</p>
+        <ul><li>React Flow drill-down tier (xyflow)</li><li>Pin-to-canvas full-width board</li><li>Dashboard-in-dossier export</li><li>Thread virtualization</li></ul></div>
+    </div>
+  </section>
+
+  <!-- CLOSE -->
+  <section class="reveal">
+    <div class="eyebrow">Why this wins</div>
+    <h2 class="sec">The differentiator is trust, not chart generation</h2>
+    <p class="lead">Databricks Genie and Snowflake Intelligence generate charts from natural language today.
+       <b>None of them show per-widget query provenance, faithfulness scoring, and in-thread human review as first-class UI.</b>
+       This design makes every generated dashboard <i>more</i> auditable than the static panel it replaces —
+       the exact Cypher, timestamp, record count, model version, and review status ride with every widget.
+       That is the on-screen reproducibility a GxP-adjacent reviewer expects, and the claim no agentic-BI vendor currently makes.</p>
+  </section>
+
+  <footer>
+    Companion to <b>GENERATIVE_DASHBOARDS_Technical_Design.md</b> (same folder) — full research briefs, persona rationale,
+    Mermaid architecture diagrams, source ledger with confidence grades, and the implementation blueprint mapped to real files.
+    Research current as of 2026-07-12. Design proposal — no application code was changed.
+  </footer>
+</div>
+
+<script>
+  // scroll reveal
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold:.12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // hero flow: draw-on, then switch wires to flowing dashes
+  const svg = document.getElementById('flowSvg');
+  function playFlow() {
+    svg.classList.remove('anim');
+    svg.querySelectorAll('[data-flow]').forEach(p => { p.style.display = 'none'; p.classList.remove('flowing'); });
+    void svg.getBoundingClientRect(); // reflow to restart CSS animations
+    svg.classList.add('anim');
+    setTimeout(() => {
+      svg.querySelectorAll('[data-flow]').forEach(p => { p.style.display = ''; p.classList.add('flowing'); });
+    }, 2600);
+  }
+  document.getElementById('replayFlow').addEventListener('click', playFlow);
+  const heroIO = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { playFlow(); heroIO.disconnect(); } }), { threshold:.3 });
+  heroIO.observe(svg);
+
+  // after-panel bar growth + mini flows
+  const ap = document.getElementById('afterPanel');
+  const apIO = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { ap.classList.add('anim2'); startMini(); apIO.disconnect(); } }), { threshold:.3 });
+  apIO.observe(ap);
+  function startMini() {
+    document.querySelectorAll('.dashflow').forEach(p => { p.style.animation = 'flowdash 1.1s linear infinite'; });
+    document.querySelectorAll('.trendline').forEach(p => {
+      const len = p.getTotalLength();
+      p.style.strokeDasharray = len; p.style.strokeDashoffset = len;
+      p.style.animation = 'draw 1.4s ease forwards';
+    });
+    ap.querySelectorAll('.sparkbar i').forEach((b,i) => { b.style.animationDelay = (i*0.07)+'s'; });
+  }
+
+  // family cards
+  document.querySelectorAll('[data-toggle]').forEach(c => c.addEventListener('click', () => c.classList.toggle('open')));
+</script>
+</body>
+</html>

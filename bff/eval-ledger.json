@@ -1,0 +1,624 @@
+{
+  "entries": [
+    {
+      "id": "f9fd0d06-3cd5-4b5d-a535-93678505167c",
+      "ts": "2026-06-30T21:28:44.638Z",
+      "surface": "runtime",
+      "question": "What is the safety signal for the checkpoint inhibitor",
+      "faithfulness": 0.81,
+      "contextRecall": 0.2,
+      "answerRelevancy": null,
+      "citedCount": 8
+    },
+    {
+      "id": "7950de75-7f28-45f2-a146-15afbc131162",
+      "ts": "2026-06-30T21:29:45.832Z",
+      "surface": "runtime",
+      "question": "What is the safety signal for the checkpoint inhibitor",
+      "faithfulness": 0.86,
+      "contextRecall": 0.4,
+      "answerRelevancy": null,
+      "citedCount": 11
+    },
+    {
+      "id": "5cbf5dbf-00fe-4282-92b5-0212d74df27d",
+      "ts": "2026-06-30T23:00:35.390Z",
+      "surface": "runtime",
+      "question": "How is Immune-related myocarditis (OAE_0001489) connected in the graph, and to what?",
+      "faithfulness": 0.89,
+      "contextRecall": 0.67,
+      "answerRelevancy": null,
+      "citedCount": 6
+    },
+    {
+      "id": "7ccf6d61-bae8-414e-8b0e-11f1582b32d3",
+      "ts": "2026-06-30T23:57:11.424Z",
+      "surface": "runtime",
+      "question": "How are Open Targets: KDR-hypertension association, PD-1 / PDCD1, Immune-mediated colitis (MedDRA 10009887) and Management of immune-related adverse events (PMI",
+      "faithfulness": 0.83,
+      "contextRecall": 0.83,
+      "answerRelevancy": null,
+      "citedCount": 11
+    },
+    {
+      "id": "d7093f64-1486-4a07-a175-4006ecab5bbf",
+      "ts": "2026-07-01T00:02:45.985Z",
+      "surface": "runtime",
+      "question": "What evidence in the graph supports Subject SYN-006?",
+      "faithfulness": 0.94,
+      "contextRecall": 0.4,
+      "answerRelevancy": null,
+      "citedCount": 19
+    },
+    {
+      "id": "201fb1ca-6d8b-45ce-8bc2-669532991f14",
+      "ts": "2026-07-01T00:44:26.860Z",
+      "surface": "ask",
+      "question": "What is the safety signal for the checkpoint inhibitor?",
+      "faithfulness": 1,
+      "contextRecall": 0.6,
+      "answerRelevancy": null,
+      "citedCount": 10
+    },
+    {
+      "id": "f5dbbac9-5e91-48af-b681-404289f3f973",
+      "ts": "2026-07-01T00:45:16.618Z",
+      "surface": "ask",
+      "question": "What is the safety signal for the checkpoint inhibitor?",
+      "faithfulness": 1,
+      "contextRecall": 0.6,
+      "answerRelevancy": null,
+      "citedCount": 18
+    },
+    {
+      "id": "64b1a299-4954-437d-8f6f-5e501809b80b",
+      "ts": "2026-07-01T00:45:34.910Z",
+      "surface": "ask",
+      "question": "How does the checkpoint inhibitor cause myocarditis?",
+      "faithfulness": 0.8,
+      "contextRecall": 0.6,
+      "answerRelevancy": null,
+      "citedCount": 25
+    },
+    {
+      "id": "ccf8fcce-36c0-44cb-afef-aa93328e4df0",
+      "ts": "2026-07-01T00:46:28.142Z",
+      "surface": "ask",
+      "question": "How does the checkpoint inhibitor cause myocarditis?",
+      "faithfulness": 0.71,
+      "contextRecall": 0.8,
+      "answerRelevancy": null,
+      "citedCount": 21
+    },
+    {
+      "id": "d6aa5c1c-a8a1-4fa0-a02a-4001cd812efc",
+      "ts": "2026-07-01T00:47:08.643Z",
+      "surface": "ask",
+      "question": "What evidence supports the myocarditis signal?",
+      "faithfulness": 0.77,
+      "contextRecall": 0.25,
+      "answerRelevancy": null,
+      "citedCount": 11
+    },
+    {
+      "id": "e72ae1e0-0190-44f5-87b6-9ac38e4fb3ca",
+      "ts": "2026-07-01T00:47:55.314Z",
+      "surface": "ask",
+      "question": "What evidence supports the myocarditis signal?",
+      "faithfulness": 0.88,
+      "contextRecall": 0.25,
+      "answerRelevancy": null,
+      "citedCount": 12
+    },
+    {
+      "id": "f4adcb4e-a87f-4c97-97aa-d0152b30dfb9",
+      "ts": "2026-07-01T00:56:47.987Z",
+      "surface": "ask",
+      "question": "What is the safety signal for the checkpoint inhibitor?",
+      "faithfulness": 1,
+      "contextRecall": 0.6,
+      "answerRelevancy": null,
+      "citedCount": 13
+    },
+    {
+      "id": "e1ef96da-ee41-48be-a7f1-0fe513be2fe2",
+      "ts": "2026-07-01T00:57:52.273Z",
+      "surface": "ask",
+      "question": "How does the checkpoint inhibitor cause myocarditis?",
+      "faithfulness": 0.82,
+      "contextRecall": 0.6,
+      "answerRelevancy": null,
+      "citedCount": 35
+    },
+    {
+      "id": "6618ab70-473b-4235-a459-3e6e358b19bc",
+      "ts": "2026-07-01T00:59:13.008Z",
+      "surface": "ask",
+      "question": "What evidence supports the myocarditis signal?",
+      "faithfulness": 0.78,
+      "contextRecall": 0.25,
+      "answerRelevancy": null,
+      "citedCount": 14
+    },
+    {
+      "id": "bd2174ab-796c-47fe-8f2f-0dcb955652f6",
+      "ts": "2026-07-01T01:19:32.715Z",
+      "surface": "ask",
+      "question": "What is the safety signal for the checkpoint inhibitor?",
+      "faithfulness": 0.94,
+      "contextRecall": 0.6,
+      "answerRelevancy": null,
+      "citedCount": 15
+    },
+    {
+      "id": "f3233c18-6f89-41a5-8db1-9599348cb9df",
+      "ts": "2026-07-01T01:20:53.649Z",
+      "surface": "ask",
+      "question": "How does the checkpoint inhibitor cause myocarditis?",
+      "faithfulness": 0.82,
+      "contextRecall": 0.6,
+      "answerRelevancy": null,
+      "citedCount": 21
+    },
+    {
+      "id": "6f8ac37a-a2a0-4510-abb7-0e6ee07f0c78",
+      "ts": "2026-07-01T01:22:26.955Z",
+      "surface": "ask",
+      "question": "What evidence supports the myocarditis signal?",
+      "faithfulness": 0.7,
+      "contextRecall": 0.25,
+      "answerRelevancy": null,
+      "citedCount": 12
+    },
+    {
+      "id": "bf20fe5f-c289-49bc-b17b-2bb0301f74fc",
+      "ts": "2026-07-01T01:35:33.315Z",
+      "surface": "ask",
+      "question": "What is the safety signal for the checkpoint inhibitor?",
+      "faithfulness": 0.86,
+      "contextRecall": 0.6,
+      "answerRelevancy": null,
+      "citedCount": 14
+    },
+    {
+      "id": "ff0edb3b-72ea-4c37-b071-1adb7e03ee00",
+      "ts": "2026-07-01T01:36:42.361Z",
+      "surface": "ask",
+      "question": "How does the checkpoint inhibitor cause myocarditis?",
+      "faithfulness": 0.86,
+      "contextRecall": 0.6,
+      "answerRelevancy": null,
+      "citedCount": 27
+    },
+    {
+      "id": "1c1ad986-6855-4921-a0ad-388f17e52403",
+      "ts": "2026-07-01T01:37:32.158Z",
+      "surface": "ask",
+      "question": "What is the safety signal for the checkpoint inhibitor?",
+      "faithfulness": 1,
+      "contextRecall": 0.6,
+      "answerRelevancy": null,
+      "citedCount": 13
+    },
+    {
+      "id": "621cbb76-053d-4b00-81e5-a2f4d22e3d43",
+      "ts": "2026-07-01T01:38:02.091Z",
+      "surface": "ask",
+      "question": "What evidence supports the myocarditis signal?",
+      "faithfulness": 0.82,
+      "contextRecall": 0.25,
+      "answerRelevancy": null,
+      "citedCount": 12
+    },
+    {
+      "id": "4539637b-701f-487f-b444-b24e09c29939",
+      "ts": "2026-07-01T01:38:48.223Z",
+      "surface": "ask",
+      "question": "How does the checkpoint inhibitor cause myocarditis?",
+      "faithfulness": 0.82,
+      "contextRecall": 0.6,
+      "answerRelevancy": null,
+      "citedCount": 22
+    },
+    {
+      "id": "65970c72-861f-4797-9d8d-20667725c309",
+      "ts": "2026-07-01T01:39:33.750Z",
+      "surface": "ask",
+      "question": "What evidence supports the myocarditis signal?",
+      "faithfulness": 0,
+      "contextRecall": 0.25,
+      "answerRelevancy": null,
+      "citedCount": 10
+    },
+    {
+      "id": "f1428adc-e48b-4b08-9c5b-0e9527a671f2",
+      "ts": "2026-07-01T03:13:26.311Z",
+      "surface": "ask",
+      "question": "What is the safety signal for the checkpoint inhibitor?",
+      "faithfulness": 0.88,
+      "contextRecall": 0.6,
+      "answerRelevancy": null,
+      "citedCount": 15
+    },
+    {
+      "id": "0b94379c-261d-49ac-b289-ad7f468803f1",
+      "ts": "2026-07-01T03:14:31.029Z",
+      "surface": "ask",
+      "question": "How does the checkpoint inhibitor cause myocarditis?",
+      "faithfulness": 0.83,
+      "contextRecall": 0.6,
+      "answerRelevancy": null,
+      "citedCount": 25
+    },
+    {
+      "id": "b2c46f54-1c0f-47f2-9213-960d14747803",
+      "ts": "2026-07-01T03:15:55.025Z",
+      "surface": "ask",
+      "question": "What evidence supports the myocarditis signal?",
+      "faithfulness": 0.84,
+      "contextRecall": 0.25,
+      "answerRelevancy": null,
+      "citedCount": 14
+    },
+    {
+      "id": "2ceed511-6cf8-4976-b112-708c8ae20121",
+      "ts": "2026-07-01T03:32:34.323Z",
+      "surface": "runtime",
+      "question": "What evidence in the graph supports Disproportionality (PRR 3.9)?",
+      "faithfulness": 0.8,
+      "contextRecall": 0.5,
+      "answerRelevancy": null,
+      "citedCount": 10
+    },
+    {
+      "id": "c0f8b4e3-5983-41f4-8d0d-797d9530cdbf",
+      "ts": "2026-07-01T03:37:59.892Z",
+      "surface": "ask",
+      "question": "What is the safety signal for the checkpoint inhibitor?",
+      "faithfulness": 0.86,
+      "contextRecall": 0.6,
+      "answerRelevancy": null,
+      "citedCount": 14
+    },
+    {
+      "id": "64727cf5-ce29-48ee-9c12-b8893e1e1317",
+      "ts": "2026-07-01T03:39:05.255Z",
+      "surface": "ask",
+      "question": "How does the checkpoint inhibitor cause myocarditis?",
+      "faithfulness": 0.82,
+      "contextRecall": 0.6,
+      "answerRelevancy": null,
+      "citedCount": 20
+    },
+    {
+      "id": "65cf8ba1-34b6-49ce-b806-74c67003cf44",
+      "ts": "2026-07-01T03:40:20.433Z",
+      "surface": "ask",
+      "question": "What evidence supports the myocarditis signal?",
+      "faithfulness": 0.79,
+      "contextRecall": 0.25,
+      "answerRelevancy": null,
+      "citedCount": 14
+    },
+    {
+      "id": "42e87045-2ecc-4a51-9892-425bf01bce8f",
+      "ts": "2026-07-01T04:11:05.787Z",
+      "surface": "ask",
+      "question": "Which Pathway, BiologicalTarget, GeneticAssociation, and Evidence nodes are connected to those cardiovascular AdverseEvents via IN_PATHWAY, TARGETS, GENETIC_EVI",
+      "faithfulness": 0.89,
+      "contextRecall": 0.55,
+      "answerRelevancy": null,
+      "citedCount": 18
+    },
+    {
+      "id": "8b0c1fe0-024d-42ce-a095-23113139d624",
+      "ts": "2026-07-01T14:55:05.575Z",
+      "surface": "runtime",
+      "question": "What evidence in the graph supports Disproportionality (PRR 3.9)?",
+      "faithfulness": 0.75,
+      "contextRecall": 0.5,
+      "answerRelevancy": null,
+      "citedCount": 11
+    },
+    {
+      "id": "80d78bc3-8f67-45a1-acf2-ff60d3da33a0",
+      "ts": "2026-07-08T16:46:50.599Z",
+      "surface": "runtime",
+      "question": "What evidence in the graph supports Checkpoint inhibitor (anti-PD-1)?",
+      "faithfulness": 0.68,
+      "contextRecall": 0.57,
+      "answerRelevancy": null,
+      "citedCount": 15
+    },
+    {
+      "id": "565336e6-5451-40bd-9451-4dae941d8a54",
+      "ts": "2026-07-08T16:57:12.809Z",
+      "surface": "runtime",
+      "question": "Which adverse events are associated with Checkpoint inhibitor (anti-PD-1)?",
+      "faithfulness": 0.86,
+      "contextRecall": 0.75,
+      "answerRelevancy": null,
+      "citedCount": 14
+    },
+    {
+      "id": "48846395-e794-42bd-b64a-83230ec5ebc4",
+      "ts": "2026-07-13T02:19:44.722Z",
+      "surface": "runtime",
+      "question": "Explain the myocarditis signal, its disproportionality metrics (PRR/ROR), and the drug-to-target mechanism chain.",
+      "faithfulness": 0.85,
+      "contextRecall": 0.33,
+      "answerRelevancy": null,
+      "citedCount": 10
+    },
+    {
+      "id": "ccb4a90b-9c1c-4999-b006-c5f127a14cbf",
+      "ts": "2026-07-13T02:38:52.814Z",
+      "surface": "runtime",
+      "question": "Build a live dashboard for the checkpoint-inhibitor myocarditis safety signal — show the disproportionality, the mechanism, and the supporting evidence.",
+      "faithfulness": 0.85,
+      "contextRecall": 0.45,
+      "answerRelevancy": null,
+      "citedCount": 15
+    },
+    {
+      "id": "1e8789a6-8d9a-4297-af74-1e1fbd46e2cb",
+      "ts": "2026-07-13T03:19:30.118Z",
+      "surface": "runtime",
+      "question": "Build a live dashboard for the checkpoint-inhibitor myocarditis safety signal — show the disproportionality, the mechanism, and the supporting evidence.",
+      "faithfulness": 0.8,
+      "contextRecall": 0.45,
+      "answerRelevancy": null,
+      "citedCount": 16
+    },
+    {
+      "id": "cfef10c1-af2e-4a59-bdd4-5f6380f318f1",
+      "ts": "2026-07-13T03:27:12.084Z",
+      "surface": "runtime",
+      "question": "Build a live dashboard for the checkpoint-inhibitor myocarditis safety signal — show the disproportionality, the mechanism, and the supporting evidence.",
+      "faithfulness": 0.81,
+      "contextRecall": 0.45,
+      "answerRelevancy": null,
+      "citedCount": 18
+    },
+    {
+      "id": "a917b7f2-4bc6-4b2f-b26f-a76f2056dd58",
+      "ts": "2026-07-13T22:33:01.366Z",
+      "surface": "ask",
+      "question": "What do we know about the atrial fibrillation adverse-event signal? Which subjects and evidence nodes support it? Use the graph.",
+      "faithfulness": 0.83,
+      "contextRecall": 0.33,
+      "answerRelevancy": null,
+      "citedCount": 23
+    },
+    {
+      "id": "86b862f5-88e1-4885-b9c0-b6af41334937",
+      "ts": "2026-07-13T22:48:25.305Z",
+      "surface": "runtime",
+      "question": "What do we know about the atrial fibrillation adverse-event signal? Which subjects and evidence nodes support it? Use the graph.",
+      "faithfulness": 0.79,
+      "contextRecall": 0.22,
+      "answerRelevancy": null,
+      "citedCount": 19
+    },
+    {
+      "id": "5bc0575f-fe6c-45da-8658-77f17d16bed3",
+      "ts": "2026-07-14T00:33:20.721Z",
+      "surface": "runtime",
+      "question": "Build a live dashboard for the checkpoint-inhibitor myocarditis safety signal — show the disproportionality, the mechanism, and the supporting evidence.",
+      "faithfulness": 0.83,
+      "contextRecall": 0.45,
+      "answerRelevancy": null,
+      "citedCount": 12
+    },
+    {
+      "id": "59eff94e-06cc-48d1-a913-e08b139341b1",
+      "ts": "2026-07-14T00:55:41.711Z",
+      "surface": "runtime",
+      "question": "Build a live dashboard for the checkpoint-inhibitor myocarditis safety signal — show the disproportionality, the mechanism, and the supporting evidence.",
+      "faithfulness": 0.76,
+      "contextRecall": 0.45,
+      "answerRelevancy": null,
+      "citedCount": 13
+    },
+    {
+      "id": "a839fad4-565a-4915-890b-152bbac57e36",
+      "ts": "2026-07-14T01:00:28.780Z",
+      "surface": "runtime",
+      "question": "Build a live dashboard for the checkpoint-inhibitor myocarditis safety signal — show the disproportionality, the mechanism, and the supporting evidence.",
+      "faithfulness": 0.84,
+      "contextRecall": 0.45,
+      "answerRelevancy": null,
+      "citedCount": 13
+    },
+    {
+      "id": "70989ed7-8248-4e1b-a5cc-2d251b55b0fb",
+      "ts": "2026-07-14T01:04:32.617Z",
+      "surface": "runtime",
+      "question": "Give me a dashboard summarising what is known, missing, and conflicting for the myocarditis signal, with the relational subgraph.",
+      "faithfulness": 0.81,
+      "contextRecall": 0.18,
+      "answerRelevancy": null,
+      "citedCount": 13
+    },
+    {
+      "id": "c2e8ca84-7fc2-4644-a2f3-e64e293ecdfd",
+      "ts": "2026-07-14T01:16:25.966Z",
+      "surface": "ask",
+      "question": "What do we know about the atrial fibrillation signal? Which subjects and evidence support it? Use the graph.",
+      "faithfulness": 0.68,
+      "contextRecall": 0.29,
+      "answerRelevancy": null,
+      "citedCount": 6
+    },
+    {
+      "id": "161da01b-d850-4fbc-9545-053e482afe72",
+      "ts": "2026-07-14T04:10:24.533Z",
+      "surface": "runtime",
+      "question": "Compose a dashboard of the evidence and provenance behind the myocarditis signal.",
+      "faithfulness": 0.84,
+      "contextRecall": 0.17,
+      "answerRelevancy": null,
+      "citedCount": 21
+    },
+    {
+      "id": "f3c9000c-f1aa-4397-89b7-564b5a7dd982",
+      "ts": "2026-07-14T04:58:54.897Z",
+      "surface": "runtime",
+      "question": "What do we know about the atrial fibrillation signal? Which subjects and evidence support it? Use the graph.",
+      "faithfulness": 0.77,
+      "contextRecall": 0.29,
+      "answerRelevancy": null,
+      "citedCount": 10
+    },
+    {
+      "id": "b43b056f-db62-49d5-bde7-12e3613fc8e6",
+      "ts": "2026-07-14T13:05:55.941Z",
+      "surface": "runtime",
+      "question": "What do we know about the atrial fibrillation signal? Which subjects and evidence support it? Use the graph.",
+      "faithfulness": 0.84,
+      "contextRecall": 0.29,
+      "answerRelevancy": null,
+      "citedCount": 11
+    },
+    {
+      "id": "3c553dec-adb7-4f7c-8ab4-1f4dbd492968",
+      "ts": "2026-07-14T13:09:05.554Z",
+      "surface": "runtime",
+      "question": "What do we know about the atrial fibrillation signal? Which subjects and evidence support it? Use the graph.",
+      "faithfulness": 0.84,
+      "contextRecall": 0.29,
+      "answerRelevancy": null,
+      "citedCount": 11
+    },
+    {
+      "id": "2681dca4-5610-4962-b05d-14b36d31d8a7",
+      "ts": "2026-07-14T20:13:04.386Z",
+      "surface": "runtime",
+      "question": "What do we know about the atrial fibrillation signal? Which subjects and evidence support it? Use the graph.",
+      "faithfulness": 0.87,
+      "contextRecall": 0.29,
+      "answerRelevancy": null,
+      "citedCount": 11
+    },
+    {
+      "id": "8d909f8e-931f-4df2-9676-01218284414c",
+      "ts": "2026-07-14T20:23:47.489Z",
+      "surface": "runtime",
+      "question": "What do we know about the atrial fibrillation signal? Which subjects and evidence support it? Use the graph.",
+      "faithfulness": 0.85,
+      "contextRecall": 0.29,
+      "answerRelevancy": null,
+      "citedCount": 10
+    },
+    {
+      "id": "0e90a22c-449d-4372-91ec-2a690adf50d0",
+      "ts": "2026-07-14T20:34:37.498Z",
+      "surface": "runtime",
+      "question": "How does the checkpoint inhibitor cause myocarditis?",
+      "faithfulness": 0.91,
+      "contextRecall": 0.6,
+      "answerRelevancy": null,
+      "citedCount": 11
+    },
+    {
+      "id": "6bc240cc-ed50-414e-b34b-abda50846456",
+      "ts": "2026-07-14T20:45:50.132Z",
+      "surface": "runtime",
+      "question": "What do we know about the atrial fibrillation signal? Which subjects and evidence support it? Use the graph.",
+      "faithfulness": 0.63,
+      "contextRecall": 0.29,
+      "answerRelevancy": null,
+      "citedCount": 10
+    },
+    {
+      "id": "c9fdde25-f3ff-4a63-98cd-5e4d2d65654e",
+      "ts": "2026-07-14T20:53:11.411Z",
+      "surface": "runtime",
+      "question": "What do we know about the atrial fibrillation signal? Which subjects and evidence support it? Use the graph.",
+      "faithfulness": 0.86,
+      "contextRecall": 0.29,
+      "answerRelevancy": null,
+      "citedCount": 11
+    },
+    {
+      "id": "98aa1bed-1231-44e1-ac8c-ead850d4a00b",
+      "ts": "2026-07-14T23:29:59.960Z",
+      "surface": "runtime",
+      "question": "What do we know about the atrial fibrillation signal? Which subjects and evidence support it? Use the graph.",
+      "faithfulness": 0.84,
+      "contextRecall": 0.29,
+      "answerRelevancy": null,
+      "citedCount": 12
+    },
+    {
+      "id": "922d3ad0-4c6d-4fd5-99e8-b357a1bdeeaa",
+      "ts": "2026-07-15T01:16:08.251Z",
+      "surface": "runtime",
+      "question": "What do we know about the atrial fibrillation signal? Which subjects and evidence support it? Use the graph.",
+      "faithfulness": 0.84,
+      "contextRecall": 0.29,
+      "answerRelevancy": null,
+      "citedCount": 11
+    },
+    {
+      "id": "8a1aa7a5-b8ab-4a74-8235-0e6000cc6693",
+      "ts": "2026-07-15T01:21:12.021Z",
+      "surface": "runtime",
+      "question": "Compare the disproportionality metrics — PRR, ROR, chi-square and case counts — behind the atrial fibrillation signal, and show how many subjects and studies su",
+      "faithfulness": 0.79,
+      "contextRecall": 0.21,
+      "answerRelevancy": null,
+      "citedCount": 5
+    },
+    {
+      "id": "b757a4e4-f3b9-44aa-90b0-6dc094e75794",
+      "ts": "2026-07-15T01:24:47.779Z",
+      "surface": "runtime",
+      "question": "What do we know about the atrial fibrillation signal? Which subjects and evidence support it? Use the graph.",
+      "faithfulness": 0.71,
+      "contextRecall": 0.29,
+      "answerRelevancy": null,
+      "citedCount": 11
+    },
+    {
+      "id": "3b3e0040-4aed-478e-8e8d-50cb0031b55a",
+      "ts": "2026-07-15T01:45:46.987Z",
+      "surface": "runtime",
+      "question": "What is the safety signal for the checkpoint inhibitor?",
+      "faithfulness": 0.87,
+      "contextRecall": 0.6,
+      "answerRelevancy": null,
+      "citedCount": 7
+    },
+    {
+      "id": "132bae6d-9759-4f25-90ea-72c0d329a382",
+      "ts": "2026-07-15T01:57:36.185Z",
+      "surface": "runtime",
+      "question": "What evidence supports the myocarditis signal?",
+      "faithfulness": 0.72,
+      "contextRecall": 0.25,
+      "answerRelevancy": null,
+      "citedCount": 12
+    },
+    {
+      "id": "872423ca-74e2-4f67-9b60-b535d8f90742",
+      "ts": "2026-07-15T02:11:24.532Z",
+      "surface": "runtime",
+      "question": "What evidence supports the myocarditis signal?",
+      "faithfulness": 1,
+      "contextRecall": 0.25,
+      "answerRelevancy": null,
+      "citedCount": 10
+    },
+    {
+      "id": "33c7aa74-0aa0-4f6a-a865-c375fe6bd71a",
+      "ts": "2026-07-15T02:47:26.994Z",
+      "surface": "runtime",
+      "question": "Build a live dashboard for the checkpoint-inhibitor myocarditis safety signal — show the disproportionality, the mechanism, and the supporting evidence.",
+      "faithfulness": 0.75,
+      "contextRecall": 0.27,
+      "answerRelevancy": null,
+      "citedCount": 18
+    }
+  ]
+}
