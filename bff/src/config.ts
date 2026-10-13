@@ -111,8 +111,23 @@ export const config = {
     model: process.env.ASK_MODEL ?? process.env.NARRATOR_MODEL ?? "claude-opus-4-8",
     /** Idle watchdog per MCP iteration (ms). Must outlast the worst Neo4j RTT. */
     idleTimeoutMs: Number(process.env.ASK_IDLE_TIMEOUT_MS ?? 45_000),
-    /** Absolute hard-abort cap for a full /ask run (ms). */
-    hardTimeoutMs: Number(process.env.ASK_HARD_TIMEOUT_MS ?? 300_000),
+    /** Absolute hard-abort cap for a full /ask run (ms).
+     *
+     *  Sized from measurement, not guesswork. The orchestrated board lane
+     *  (`?compose=board`: planner -> workers -> critic -> composer) is the
+     *  heaviest /ask path; seven completed runs through the CopilotKit UI
+     *  measured 105, 126, 137, 138, 144, 227 and 287 seconds.
+     *
+     *  The cap must clear the SLOWEST run, not the median: when it fires,
+     *  runClaudeCode returns {ok:false}, askGraph takes its fallback branch,
+     *  and the `result.ok && cited.length && answerText` gate in agent.ts
+     *  skips emitGenerative entirely -- so the Studio renders NOTHING, with
+     *  no error surfaced anywhere in the UI. A too-tight cap is therefore an
+     *  intermittent silent-blank-dashboard bug, not a slow response.
+     *
+     *  600s is ~2x the observed worst case. The earlier 120s default sat
+     *  below every single measurement above. */
+    hardTimeoutMs: Number(process.env.ASK_HARD_TIMEOUT_MS ?? 600_000),
     /** --max-turns for the `claude` CLI during /ask. Min 3 (schema+query+answer). */
     maxTurns: Math.max(3, Number(process.env.ASK_MAX_TURNS ?? 12)),
   },
