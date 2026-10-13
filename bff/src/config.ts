@@ -45,7 +45,10 @@ if (existsSync(userBin)) {
  *                             must be > the worst-case Neo4j round-trip.
  *                             Default: 45 000.
  *  ASK_HARD_TIMEOUT_MS      — absolute abort cap for a full /ask run (ms).
- *                             Default: 120 000.
+ *                             Default: 300 000 (a grounded board run was
+ *                             measured at ~144 s end to end; 120 000 cut it off
+ *                             before any prose was emitted, which silently
+ *                             disabled the Generative Studio).
  *  ASK_MAX_TURNS            — --max-turns passed to the `claude` CLI for /ask.
  *                             Must be >= 3 (schema + query + answer).
  *                             Default: 12.
@@ -109,7 +112,7 @@ export const config = {
     /** Idle watchdog per MCP iteration (ms). Must outlast the worst Neo4j RTT. */
     idleTimeoutMs: Number(process.env.ASK_IDLE_TIMEOUT_MS ?? 45_000),
     /** Absolute hard-abort cap for a full /ask run (ms). */
-    hardTimeoutMs: Number(process.env.ASK_HARD_TIMEOUT_MS ?? 120_000),
+    hardTimeoutMs: Number(process.env.ASK_HARD_TIMEOUT_MS ?? 300_000),
     /** --max-turns for the `claude` CLI during /ask. Min 3 (schema+query+answer). */
     maxTurns: Math.max(3, Number(process.env.ASK_MAX_TURNS ?? 12)),
   },
